@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Servicios · Taller Alianza</title>
+<style>
+:root{--bg:#0b0f14;--pnl:#131a22;--pnl2:#1a232e;--bd:#243140;--tx:#e6edf3;--mut:#8b97a6;--acc:#ff8a1f;--acc2:#ffb86b;--ok:#2ecc71;--err:#e74c3c;--info:#3498db}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.4;padding-bottom:80px}
+header{background:linear-gradient(135deg,#131a22,#1a232e);border-bottom:2px solid var(--acc);padding:12px 16px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+h1{font-size:18px;color:var(--acc)}
+h1 small{color:var(--mut);font-size:11px;font-weight:400;display:block}
+.modo{font-size:11px;padding:4px 10px;border-radius:12px;background:#2a3441;color:var(--acc2);border:1px solid var(--bd)}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a,.btn{background:var(--pnl2);border:1px solid var(--bd);color:var(--tx);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;text-decoration:none;display:inline-block}
+.btn.pri{background:var(--acc);color:#000;font-weight:600;border-color:var(--acc)}
+.btn.ok{background:var(--ok);color:#000;border-color:var(--ok)}
+.btn.err{background:var(--err);color:#fff;border-color:var(--err)}
+.btn:hover{filter:brightness(1.15)}
+main{max-width:1100px;margin:0 auto;padding:14px}
+.card{background:var(--pnl);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h2{font-size:14px;color:var(--acc2);margin-bottom:10px;border-bottom:1px solid var(--bd);padding-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+label{display:block;font-size:11px;color:var(--mut);margin-bottom:3px;text-transform:uppercase}
+input,textarea,select{width:100%;background:var(--bg);border:1px solid var(--bd);color:var(--tx);padding:9px 11px;border-radius:7px;font-size:14px;font-family:inherit}
+input:focus,textarea:focus{outline:none;border-color:var(--acc)}
+textarea{resize:vertical;min-height:60px}
+.placa{font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--acc)}
+.info-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--bd);font-size:13px}
+.info-row:last-child{border:none}
+.info-row b{color:var(--acc2)}
+.hist-item{background:var(--pnl2);border-left:3px solid var(--acc);padding:8px 10px;margin-bottom:6px;border-radius:6px;font-size:12px}
+.hist-item .f{color:var(--mut);font-size:11px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.alert{padding:8px 12px;border-radius:6px;margin:8px 0;font-size:12px}
+.alert.ok{background:#0d3d20;color:#7ee0a0;border:1px solid var(--ok)}
+.alert.err{background:#3d0d0d;color:#ff9999;border:1px solid var(--err)}
+.hide{display:none!important}
+.modo-asist .duenno{display:none}
+@media print{
+body{background:#fff;color:#000;padding:0}
+header,.nav,.no-print,.card:not(.proforma){display:none!important}
+.proforma{border:none;background:#fff;color:#000;padding:20px;max-width:none;position:relative;overflow:hidden}
+.proforma::before{content:"ANTICOPIA";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:120px;color:rgba(200,200,200,0.25);font-weight:900;z-index:0;pointer-events:none;white-space:nowrap}
+.proforma *{position:relative;z-index:1}
+.proforma h2{color:#000;border-color:#000}
+.proforma .info-row{border-color:#999}
+.proforma .info-row b{color:#000}
+@page{size:A4;margin:15mm}
+}
+.proforma-head{text-align:center;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--acc)}
+.proforma-head h3{color:var(--acc);font-size:20px}
+.proforma-head p{font-size:11px;color:var(--mut);margin:2px 0}
+.num-prof{display:inline-block;background:var(--pnl2);padding:4px 10px;border-radius:6px;color:var(--acc2);font-weight:700;margin-top:6px}
+.foot{text-align:center;font-size:10px;color:var(--mut);margin-top:14px;padding-top:8px;border-top:1px dashed var(--bd);font-style:italic}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--bd);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){h1{font-size:15px}.nav a,.btn{padding:7px 10px;font-size:12px}main{padding:10px}}
+</style>
+</head>
+<body class="modo-asist">
+<header>
+<div><h1>🔧 SERVICIOS<small>Taller Alianza · Chincha</small></h1></div>
+<div class="nav">
+<a href="index.html">📦 Stock</a>
+<button class="btn" id="btnModo">🔒 Asistente</button>
+<span class="modo" id="modoLbl">Asistente</span>
+</div>
+</header>
+
+<main>
+<div class="card">
+<h2>🚗 Buscar Vehículo</h2>
+<label>Placa</label>
+<input type="text" id="inPlaca" class="placa" placeholder="ATI-745" autocomplete="off" maxlength="10">
+<div id="msgBuscar"></div>
+</div>
+
+<div class="card hide" id="cardVehic">
+<h2>📋 Datos del Vehículo</h2>
+<div id="datosVehic"></div>
+</div>
+
+<div class="card hide" id="cardFicha">
+<h2>🔧 Ficha Técnica</h2>
+<div id="datosFicha"></div>
+</div>
+
+<div class="card hide" id="cardHist">
+<h2>📜 Historial de Servicios</h2>
+<div id="datosHist"></div>
+</div>
+
+<div class="card hide" id="cardNuevo">
+<h2>➕ Registrar Nuevo Servicio</h2>
+<div class="grid">
+<div><label>Fecha</label><input type="date" id="nFecha"></div>
+<div><label>Costo (S/)</label><input type="number" id="nCosto" step="0.01" placeholder="0.00"></div>
+</div>
+<div style="margin-top:8px"><label>Descripción del trabajo</label><textarea id="nDesc" placeholder="Cambio de aceite, filtros, diagnóstico..."></textarea></div>
+<div class="actions">
+<button class="btn pri" id="btnGuardar">💾 Guardar Servicio</button>
+<button class="btn ok" id="btnProf">🧾 Generar Proforma</button>
+</div>
+<div id="msgNuevo"></div>
+</div>
+
+<div class="card proforma hide" id="cardProf">
+<div class="proforma-head">
+<h3>TALLER ALIANZA</h3>
+<p><b>Juan Barrios Pariona</b></p>
+<p>Av. Oscar R. Benavides 1176, Chincha</p>
+<p>WhatsApp: 957388710 · Email: sgalianzaperu@gmail.com</p>
+<p>RUC: 10434002597</p>
+<div class="num-prof" id="numProf">PROF-2026-0001</div>
+</div>
+<h2>PROFORMA DE SERVICIO</h2>
+<div id="profBody"></div>
+<div class="foot">Cotización referencial sin valor fiscal</div>
+<div class="actions no-print"><button class="btn pri" onclick="window.print()">🖨️ Imprimir A4</button></div>
+</div>
+</main>
+
+<script>
+const CFG_KEY='stk_alianza_cfg_v3';
+const cfg=JSON.parse(localStorage.getItem(CFG_KEY)||'{}');
+const URL_API=cfg.url||'';
+const SECRET=cfg.secret||'';
+let modo='asistente',vehicActual=null,servActual=null;
+
+const $=id=>document.getElementById(id);
+const showMsg=(el,txt,tipo)=>{el.innerHTML=`<div class="alert ${tipo}">${txt}</div>`;setTimeout(()=>el.innerHTML='',4000)};
+
+async function api(action,params={}){
+  if(!URL_API)throw new Error('Configura URL en Stock primero');
+  const u=new URL(URL_API);
+  u.searchParams.set('action',action);
+  u.searchParams.set('secret',SECRET);
+  Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v));
+  const r=await fetch(u);return r.json();
+}
+
+$('btnModo').onclick=()=>{
+  if(modo==='asistente'){
+    const p=prompt('Contraseña Dueño:');
+    if(p==='2580'){modo='dueno';document.body.classList.remove('modo-asist');$('modoLbl').textContent='Dueño';$('btnModo').textContent='🔓 Dueño'}
+  }else{modo='asistente';document.body.classList.add('modo-asist');$('modoLbl').textContent='Asistente';$('btnModo').textContent='🔒 Asistente'}
+};
+
+let tBuscar;
+$('inPlaca').addEventListener('input',e=>{
+  clearTimeout(tBuscar);
+  const p=e.target.value.toUpperCase().trim();
+  e.target.value=p;
+  if(p.length<5)return;
+  tBuscar=setTimeout(()=>buscarPlaca(p),400);
+});
+
+async function buscarPlaca(placa){
+  $('msgBuscar').innerHTML='<div class="alert ok"><span class="spinner"></span> Buscando...</div>';
+  try{
+    const r=await api('buscarVehiculo',{placa});
+    if(!r.ok||!r.vehiculo){$('msgBuscar').innerHTML='<div class="alert err">Placa no encontrada en hoja Vehiculos</div>';['cardVehic','cardFicha','cardHist','cardNuevo'].forEach(i=>$(i).classList.add('hide'));return}
+    vehicActual=r.vehiculo;
+    $('msgBuscar').innerHTML='';
+    renderVehic(r.vehiculo);
+    renderFicha(r.vehiculo);
+    cargarHistorial(placa);
+    $('cardNuevo').classList.remove('hide');
+    $('nFecha').valueAsDate=new Date();
+  }catch(err){$('msgBuscar').innerHTML=`<div class="alert err">${err.message}</div>`}
+}
+
+function row(k,v){return v?`<div class="info-row"><b>${k}</b><span>${v}</span></div>`:''}
+
+function renderVehic(v){
+  $('datosVehic').innerHTML=row('Marca',v.marca)+row('Modelo',v.modelo)+row('Año',v.anio)+row('Motor',v.motor)+row('Combustible',v.combustible)+row('Cliente',v.cliente)+row('Teléfono',v.telefono);
+  $('cardVehic').classList.remove('hide');
+}
+function renderFicha(v){
+  $('datosFicha').innerHTML=row('CCA Batería',v.cca)+row('Capacidad Aceite',v.oil)+row('Ubicación OBD2',v.obd2)+row('Batería',v.bateria)+row('Ruta Scanner',v.scanner)+row('Bujías',v.bujias)+row('Notas',v.notas);
+  $('cardFicha').classList.remove('hide');
+}
+
+async function cargarHistorial(placa){
+  $('datosHist').innerHTML='<span class="spinner"></span>';
+  $('cardHist').classList.remove('hide');
+  try{
+    const r=await api('historialServicios',{placa});
+    if(!r.ok||!r.servicios||!r.servicios.length){$('datosHist').innerHTML='<p style="color:var(--mut);font-size:12px">Sin servicios previos</p>';return}
+    $('datosHist').innerHTML=r.servicios.map(s=>`<div class="hist-item"><div class="f">${s.fecha} · S/ ${s.total||s.costo||'0'}</div>${s.descripcion||''}</div>`).join('');
+  }catch(e){$('datosHist').innerHTML=`<div class="alert err">${e.message}</div>`}
+}
+
+$('btnGuardar').onclick=async()=>{
+  if(!vehicActual)return;
+  const fecha=$('nFecha').value,desc=$('nDesc').value,costo=parseFloat($('nCosto').value)||0;
+  if(!fecha||!desc){showMsg($('msgNuevo'),'Completa fecha y descripción','err');return}
+  try{
+    const r=await api('nuevoServicio',{placa:vehicActual.placa,fecha,descripcion:desc,costo,total:costo});
+    if(r.ok){showMsg($('msgNuevo'),'✓ Servicio guardado','ok');servActual={fecha,desc,costo};cargarHistorial(vehicActual.placa)}
+    else showMsg($('msgNuevo'),r.error||'Error','err');
+  }catch(e){showMsg($('msgNuevo'),e.message,'err')}
+};
+
+$('btnProf').onclick=()=>{
+  if(!vehicActual){alert('Busca un vehículo primero');return}
+  const fecha=$('nFecha').value||new Date().toISOString().slice(0,10);
+  const desc=$('nDesc').value||'(sin descripción)';
+  const costo=parseFloat($('nCosto').value)||0;
+  let n=parseInt(localStorage.getItem('prof_num')||'0')+1;
+  localStorage.setItem('prof_num',n);
+  $('numProf').textContent=`PROF-2026-${String(n).padStart(4,'0')}`;
+  $('profBody').innerHTML=`<div style="margin:10px 0">${row('Fecha',fecha)}${row('Placa',vehicActual.placa)}${row('Cliente',vehicActual.cliente)}${row('Vehículo',(vehicActual.marca||'')+' '+(vehicActual.modelo||''))}${row('Teléfono',vehicActual.telefono)}</div><div style="background:var(--pnl2);padding:10px;border-radius:6px;margin:10px 0"><b style="color:var(--acc2)">Trabajo a realizar:</b><p style="margin-top:6px;white-space:pre-wrap">${desc}</p></div><div class="info-row" style="font-size:18px;border-top:2px solid var(--acc);padding-top:10px"><b>TOTAL</b><span style="color:var(--acc);font-weight:700">S/ ${costo.toFixed(2)}</span></div>`;
+  $('cardProf').classList.remove('hide');
+  $('cardProf').scrollIntoView({behavior:'smooth'});
+};
+
+if(!URL_API){document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="alert err">⚠️ Abre primero <a href="index.html" style="color:#fff">Stock</a> para configurar la conexión Apps Script.</div>')}
+</script>
+</body>
+</html>
