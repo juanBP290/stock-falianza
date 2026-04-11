@@ -40,6 +40,59 @@ main{padding:18px 0 40px}
 
 .toolbar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
 @media (max-width:900px){.toolbar{grid-template-columns:1fr 1fr}}
+
+/* ===== VISTA MÓVIL ===== */
+@media (max-width:768px){
+  .wrap{padding:0 8px}
+  h1{font-size:16px}
+  .sub{display:none}
+  .tabs{gap:2px;font-size:11px}
+  .tab{padding:8px 10px;font-size:12px}
+  /* Tarjetas compactas en grid 3 columnas */
+  .cards{grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+  .card{padding:8px 6px}
+  .card .lbl{font-size:8px}
+  .card .val{font-size:15px;margin-top:2px}
+  /* Toolbar más compacta */
+  .toolbar{grid-template-columns:1fr 1fr;gap:6px}
+  .toolbar input,.toolbar select{padding:8px;font-size:12px}
+  .btn{padding:8px 10px;font-size:12px}
+  .hint{display:none}
+  /* Tabla se convierte en tarjetas verticales */
+  .tblwrap{border:0;background:transparent}
+  .scroll{max-height:none;overflow:visible}
+  table{min-width:auto;font-size:13px;display:block}
+  thead{display:none}
+  tbody{display:block}
+  tbody tr{display:block;background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:8px}
+  tbody tr.stk-crit{border-left:4px solid var(--crit)}
+  tbody tr.stk-warn{border-left:4px solid var(--warn)}
+  tbody td{display:block;padding:2px 0;border:0;text-align:left !important}
+  tbody td.num{text-align:left !important}
+  tbody td:nth-child(1){display:inline-block;color:var(--mut);font-size:11px;margin-right:8px}
+  tbody td:nth-child(2){display:inline-block;font-weight:700;color:var(--ac);font-size:14px}
+  tbody td:nth-child(3){font-size:11px;color:#ffd479}
+  tbody td:nth-child(4){font-size:11px;color:var(--mut)}
+  tbody td:nth-child(5){font-size:12px;max-width:none;white-space:normal;margin:4px 0}
+  tbody td:nth-child(6)::before{content:"📦 Stock: ";color:var(--mut);font-size:11px}
+  tbody td:nth-child(6){display:inline-block;margin-right:10px;font-weight:700}
+  tbody td:nth-child(7)::before{content:"Mín: ";color:var(--mut);font-size:11px}
+  tbody td:nth-child(7){display:inline-block;margin-right:10px}
+  tbody td:nth-child(8){display:none}
+  tbody td:nth-child(9){display:none}
+  tbody td:nth-child(10)::before{content:"Costo S/. ";color:var(--mut);font-size:11px}
+  tbody td:nth-child(10){display:inline-block;margin-right:10px}
+  tbody td:nth-child(11)::before{content:"Precio S/. ";color:var(--mut);font-size:11px}
+  tbody td:nth-child(11){display:inline-block;font-weight:700;color:#86efac}
+  tbody td:nth-child(12){display:none}
+  tbody td:nth-child(13){font-size:10px;color:var(--mut)}
+  tbody td:nth-child(14){margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)}
+  .act{gap:6px}
+  .act button{padding:8px 12px;font-size:16px;flex:1}
+  .hscroll-bottom{display:none}
+  .footer{padding:8px}
+  .cards .card:nth-child(n+7){display:none}
+}
 .toolbar input,.toolbar select{background:var(--panel2);border:1px solid var(--bd);color:var(--tx);padding:10px 12px;border-radius:8px;font-size:13px;outline:none;width:100%}
 .toolbar input:focus,.toolbar select:focus{border-color:var(--ac)}
 .btnrow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center}
