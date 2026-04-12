@@ -416,16 +416,13 @@ function showTab(id){
 }
 
 /* ============ APPS SCRIPT ============ */
-async function callAS(action,params={}){
-  if(!state.cfg.url){throw new Error('Configura la URL en pestaña Config')}
-  const body=Object.assign({action,secret:state.cfg.secret},params);
-  const res=await fetch(state.cfg.url,{
-    method:'POST',
-    body:JSON.stringify(body),
-    headers:{'Content-Type':'text/plain;charset=utf-8'}
-  });
-  const txt=await res.text();
-  try{return JSON.parse(txt)}catch(e){throw new Error('Respuesta inválida: '+txt.substring(0,100))}
+async function callAS(what){
+  if(!state.cfg.url)throw new Error('Configura la URL en pestaña Config');
+  const url=state.cfg.url+'?token='+encodeURIComponent(state.cfg.secret)+'&what='+what;
+  const res=await fetch(url);
+  const data=await res.json();
+  if(!data.ok)throw new Error(data.error||'Error');
+  return data;
 }
 
 /* ============ BUSCAR VEHÍCULO ============ */
@@ -435,7 +432,7 @@ async function buscarVehiculo(){
   const box=document.getElementById('vehResult');
   box.innerHTML='<div class="loading">Buscando...</div>';
   try{
-    const r=await callAS('list',{sheet:'Vehiculos'});
+    const r=await callAS('veh');
     const rows=r.rows||r.data||[];
     const veh=rows.find(v=>(v.Placa||v.placa||'').toString().toUpperCase().replace(/[-\s]/g,'')===placa.replace(/[-\s]/g,''));
     if(!veh){
@@ -474,7 +471,7 @@ async function cargarHistorial(){
   const list=document.getElementById('histList');
   list.innerHTML='<div class="loading">Cargando servicios...</div>';
   try{
-    const r=await callAS('list',{sheet:'Servicios'});
+    const r=await callAS('srv');
     const rows=r.rows||r.data||[];
     const norm=s=>(s||'').toString().toUpperCase().replace(/[-\s]/g,'');
     const filtered=rows.filter(s=>norm(s.Placa||s.placa)===norm(placa));
@@ -538,14 +535,14 @@ function showTab2(id){
 
 /* ============ PROFORMA ============ */
 function usarEnProforma(){
-  if(!state.vehiculo){return}
+  if(!state.vehiculo)return;
   const v=state.vehiculo;
-  document.getElementById('pfCliente').value=v.Cliente||v.Propietario||'';
-  document.getElementById('pfDoc').value=v.DNI||v.RUC||v.Documento||'';
-  document.getElementById('pfTel').value=v.Telefono||v.Tel||'';
-  document.getElementById('pfDir').value=v.Direccion||v.Dirección||'';
-  document.getElementById('pfPlaca').value=v.Placa||v.placa||'';
-  document.getElementById('pfModelo').value=((v.Marca||'')+' '+(v.Modelo||'')+' '+(v.Anio||v.Año||'')).trim();
+  document.getElementById('pfCliente').value=v.chofer__empresa||v.chofer||'';
+  document.getElementById('pfDoc').value=v.ruc||v.dni||'';
+  document.getElementById('pfTel').value=v.telefono||'';
+  document.getElementById('pfDir').value=v.direccion||'';
+  document.getElementById('pfPlaca').value=v.placa||'';
+  document.getElementById('pfModelo').value=((v.modelo||'')+' '+(v.ano||'')).trim();
   showTab2('tProf');
 }
 
