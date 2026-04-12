@@ -1,315 +1,700 @@
-<!doctype html>
-<html lang="es"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Servicios - Taller Alianza</title>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Servicios · Taller Alianza</title>
 <style>
-:root{--bg:#0a1020;--panel:#111a2e;--panel2:#0f1729;--bd:#1f2b47;--tx:#e6edf7;--mut:#8aa0c6;--ac:#3ea6ff;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(180deg,#060d1c,#0a1020);color:var(--tx);min-height:100vh}
-header{padding:14px 16px;border-bottom:1px solid var(--bd);background:rgba(8,14,28,.9);position:sticky;top:0;z-index:10}
-.wrap{max-width:100%;margin:0 auto;padding:0 16px}
-h1{margin:0;font-size:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.sub{color:var(--mut);font-size:12px;margin-top:4px}
-.status{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:3px 10px;border-radius:999px}
-.status.on{background:#0c2a17;color:var(--ok);border:1px solid #1d4a2a}
-.status.off{background:#2a1c0a;color:var(--warn);border:1px solid #4a3a1d}
-.dot{width:8px;height:8px;border-radius:50%;background:currentColor}
-nav{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-nav a{color:var(--mut);text-decoration:none;padding:6px 12px;border-radius:6px;background:var(--panel2);border:1px solid var(--bd);font-size:12px}
-nav a.active{color:var(--ac);border-color:var(--ac)}
-main{padding:16px}
-.card{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:14px}
-.card h2{margin:0 0 12px;color:var(--ac);font-size:16px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){.grid2{grid-template-columns:1fr}}
-.field{margin-bottom:10px}
-.field label{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;margin-bottom:4px;letter-spacing:.5px}
-.field input,.field select,.field textarea{width:100%;background:var(--panel2);border:1px solid var(--bd);color:var(--tx);padding:10px 12px;border-radius:7px;font-size:14px;outline:none;font-family:inherit}
-.field input:focus{border-color:var(--ac)}
-.field input.placa{font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:2px}
-.btn{background:var(--ac);color:#07101f;border:0;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
-.btn.sec{background:var(--panel2);color:var(--tx);border:1px solid var(--bd)}
-.btn.ok{background:var(--ok);color:#07101f}
-.btn.warn{background:var(--warn);color:#07101f}
-.btn.bad{background:var(--bad);color:#fff}
-.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}
-.info-item{background:var(--panel2);padding:8px 10px;border-radius:6px;border-left:3px solid var(--ac)}
-.info-item .lbl{color:var(--mut);font-size:10px;text-transform:uppercase}
-.info-item .val{color:var(--tx);font-size:14px;font-weight:600;margin-top:2px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{background:#152041;color:#cfe0ff;text-align:left;padding:10px 8px;border-bottom:1px solid var(--bd);font-size:12px}
-tbody td{padding:9px 8px;border-bottom:1px solid #172238}
-tbody tr:hover{background:#142039}
-.serv-row{display:grid;grid-template-columns:2fr 100px 100px 40px;gap:8px;align-items:center;margin-bottom:8px}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--ok);color:#07101f;padding:12px 18px;border-radius:10px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:200;display:none}
-.toast.on{display:block}
-.toast.bad{background:var(--bad);color:#fff}
-.loading{position:fixed;inset:0;background:rgba(8,14,28,.75);display:none;align-items:center;justify-content:center;z-index:150;color:var(--ac);font-size:16px;font-weight:600}
-.loading.on{display:flex}
-.spin{width:22px;height:22px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:s 1s linear infinite;margin-right:10px}
-@keyframes s{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:20px;color:var(--mut);font-size:13px}
-.total-bar{background:linear-gradient(90deg,#0c2a17,#133a22);border:1px solid var(--ok);border-radius:10px;padding:14px;margin-top:12px;text-align:right}
-.total-bar .lbl{color:var(--mut);font-size:11px;text-transform:uppercase}
-.total-bar .val{color:var(--ok);font-size:24px;font-weight:800;margin-top:4px}
+:root{
+  --bg:#0b0f17;
+  --bg2:#111827;
+  --card:#161e2e;
+  --card2:#1e2a3f;
+  --border:#2a3850;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --accent:#f59e0b;
+  --accent2:#fbbf24;
+  --ok:#22c55e;
+  --warn:#ef4444;
+  --info:#3b82f6;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* ---------- LOGIN GATE ---------- */
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#0b0f17 0%,#1e2a3f 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.gate-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;width:100%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.gate-card h1{margin:0 0 4px;font-size:22px;color:var(--accent)}
+.gate-card .sub{color:var(--muted);font-size:12px;margin-bottom:24px}
+.gate-card .role-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.role-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:14px;border-radius:10px;font-weight:600;font-size:14px}
+.role-btn.active{background:var(--accent);color:#000;border-color:var(--accent)}
+.gate-card input{width:100%;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:16px;margin-bottom:12px}
+.gate-card .enter{width:100%;padding:14px;background:var(--accent);color:#000;border:none;border-radius:10px;font-weight:700;font-size:15px}
+.gate-msg{color:var(--warn);font-size:12px;text-align:center;min-height:16px;margin-top:8px}
+
+/* ---------- HEADER ---------- */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px}
+.header h1{margin:0;font-size:16px;color:var(--accent);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.role-pill{font-size:10px;padding:4px 8px;border-radius:20px;background:var(--card2);border:1px solid var(--border);color:var(--muted);font-weight:600}
+.role-pill.dueno{background:rgba(245,158,11,.15);color:var(--accent);border-color:var(--accent)}
+.logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:6px;font-size:11px}
+
+/* ---------- TABS ---------- */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:90px;padding:12px 8px;background:transparent;border:none;color:var(--muted);font-size:12px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ---------- VIEWS ---------- */
+.view{display:none;padding:16px;max-width:900px;margin:0 auto}
+.view.active{display:block}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2{margin:0 0 12px;font-size:14px;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:15px}
+.field textarea{min-height:60px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.btn{padding:12px 16px;background:var(--accent);color:#000;border:none;border-radius:8px;font-weight:700;font-size:14px;width:100%}
+.btn.sec{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn.danger{background:var(--warn);color:#fff}
+.btn.ok{background:var(--ok);color:#000}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.btn-row .btn{flex:1}
+
+/* ---------- SEARCH RESULT ---------- */
+.veh-info{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.veh-info .placa{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:2px}
+.veh-info .det{color:var(--muted);font-size:12px;margin-top:4px}
+
+/* ---------- HISTORIAL ---------- */
+.svc-list{display:flex;flex-direction:column;gap:8px}
+.svc-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px}
+.svc-item .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.svc-item .fecha{font-size:11px;color:var(--accent2);font-weight:700}
+.svc-item .km{font-size:11px;color:var(--muted)}
+.svc-item .desc{font-size:13px;line-height:1.4;margin-bottom:6px}
+.svc-item .codes{display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.svc-item .code-tag{background:var(--bg2);padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
+.svc-item .total{font-size:14px;font-weight:700;color:var(--ok);text-align:right;margin-top:6px}
+.svc-item .total.hidden{filter:blur(6px);user-select:none}
+
+.empty{text-align:center;color:var(--muted);padding:30px 16px;font-size:13px}
+.loading{text-align:center;color:var(--muted);padding:20px;font-size:12px}
+
+/* ---------- PROFORMA BUILDER ---------- */
+.line-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px}
+.line-item .li-top{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px}
+.line-item .li-desc{flex:1;font-size:13px;font-weight:600}
+.line-item .li-del{background:transparent;border:none;color:var(--warn);font-size:18px;padding:0 4px}
+.line-item .li-row{display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;font-size:11px}
+.line-item .li-row input{padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;text-align:right}
+.line-item .li-row label{color:var(--muted);font-size:9px;text-transform:uppercase}
+.line-item .li-codes{font-size:10px;color:var(--muted);margin-top:4px}
+
+.totals-box{background:var(--card2);border:1px solid var(--accent);border-radius:10px;padding:14px;margin-top:14px}
+.totals-box .tot-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.totals-box .tot-row.big{font-size:18px;font-weight:800;color:var(--accent);border-top:1px solid var(--border);margin-top:6px;padding-top:10px}
+
+/* ---------- PRINTABLE PROFORMA ---------- */
+#printArea{display:none}
+@media print{
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{display:block!important;position:absolute;left:0;top:0;width:210mm;background:#fff;color:#000}
+  @page{size:A4;margin:12mm}
+}
+#printArea{background:#fff;color:#000;padding:12mm;font-family:Arial,sans-serif;font-size:12px;position:relative;width:210mm;min-height:297mm;margin:20px auto;box-shadow:0 0 30px rgba(0,0,0,.5)}
+#printArea .wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:120px;color:rgba(220,40,40,.1);font-weight:900;letter-spacing:8px;pointer-events:none;z-index:0;white-space:nowrap}
+#printArea .pf-content{position:relative;z-index:1}
+#printArea .pf-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #f59e0b;padding-bottom:10px;margin-bottom:14px}
+#printArea .pf-head .biz h1{margin:0;font-size:22px;color:#b45309}
+#printArea .pf-head .biz .tag{font-size:10px;color:#666;margin-top:2px}
+#printArea .pf-head .biz .info{font-size:10px;line-height:1.5;margin-top:6px}
+#printArea .pf-head .pf-num{text-align:right;border:2px solid #f59e0b;padding:8px 12px;border-radius:4px}
+#printArea .pf-head .pf-num .lbl{font-size:9px;color:#666;text-transform:uppercase}
+#printArea .pf-head .pf-num .num{font-size:16px;font-weight:800;color:#b45309}
+#printArea .pf-head .pf-num .fch{font-size:10px;color:#666;margin-top:4px}
+
+#printArea .pf-cli{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;font-size:11px}
+#printArea .pf-cli .blk{border:1px solid #ddd;padding:8px;border-radius:4px}
+#printArea .pf-cli .blk h3{margin:0 0 6px;font-size:10px;color:#b45309;text-transform:uppercase;border-bottom:1px solid #eee;padding-bottom:3px}
+#printArea .pf-cli .blk div{margin:2px 0}
+
+#printArea table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11px}
+#printArea table th{background:#f59e0b;color:#000;padding:7px 6px;text-align:left;font-size:10px;text-transform:uppercase}
+#printArea table td{padding:6px;border-bottom:1px solid #eee;vertical-align:top}
+#printArea table .num-col{text-align:right;white-space:nowrap}
+#printArea table .center{text-align:center}
+
+#printArea .pf-tot{margin-left:auto;width:50%;font-size:12px}
+#printArea .pf-tot .row{display:flex;justify-content:space-between;padding:4px 8px}
+#printArea .pf-tot .row.big{background:#f59e0b;color:#000;font-weight:800;font-size:14px;padding:8px;border-radius:4px;margin-top:4px}
+
+#printArea .pf-notes{margin-top:14px;font-size:10px;color:#444;border-top:1px dashed #ccc;padding-top:8px}
+#printArea .pf-foot{position:absolute;bottom:12mm;left:12mm;right:12mm;border-top:2px solid #f59e0b;padding-top:8px;text-align:center;font-size:9px;color:#666;font-style:italic}
+
+.print-controls{position:sticky;bottom:0;background:var(--bg2);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;z-index:50}
+.print-controls .btn{flex:1}
+
+/* ---------- MOBILE iPhone 11 (414px) ---------- */
+@media (max-width:480px){
+  .row2{grid-template-columns:1fr}
+  .row3{grid-template-columns:1fr 1fr}
+  .header h1{font-size:14px}
+  .view{padding:12px}
+  .card{padding:12px}
+}
+
+@media (min-width:481px){
+  #printArea{display:block}
+}
 </style>
-</head><body>
-<header><div class="wrap">
-  <h1>🔧 Servicios - Taller Alianza
-    <span id="conState" class="status off"><span class="dot"></span><span id="conTxt">Sin conexión</span></span>
-  </h1>
-  <div class="sub">Registro de servicios, ficha técnica de vehículos y proformas</div>
-  <nav>
-    <a href="index.html">📦 Stock</a>
-    <a href="servicios.html" class="active">🔧 Servicios</a>
-  </nav>
-</div></header>
+</head>
+<body>
 
-<main class="wrap">
-  <div class="card">
-    <h2>🔍 Buscar vehículo por placa</h2>
-    <div class="field">
-      <label>Placa (escribe y se autocompleta)</label>
-      <input id="placaInput" class="placa" type="text" placeholder="ATI-745" autocomplete="off" list="placasList">
-      <datalist id="placasList"></datalist>
+<!-- ============ LOGIN GATE ============ -->
+<div id="gate">
+  <div class="gate-card">
+    <h1>🔧 Taller Alianza</h1>
+    <div class="sub">Sistema de Servicios · Chincha</div>
+    <div class="role-btns">
+      <button class="role-btn active" id="rDueno" onclick="selRole('dueno')">👑 Dueño</button>
+      <button class="role-btn" id="rAsist" onclick="selRole('asistente')">🔧 Asistente</button>
     </div>
-    <div id="vehInfo" style="display:none">
-      <div class="info-grid" id="vehData"></div>
-      <div class="btnrow">
-        <button class="btn sec" id="btnVerFicha">📋 Ver ficha técnica completa</button>
-        <button class="btn sec" id="btnVerHist">📜 Ver historial de servicios</button>
-      </div>
-    </div>
-    <div id="vehNotFound" style="display:none;color:var(--warn);padding:10px;background:#2a1c0a;border-radius:6px;margin-top:10px">
-      ⚠️ Esta placa no está registrada. Puedes continuar y registrar el servicio igual.
-    </div>
+    <input type="password" id="gatePass" placeholder="Contraseña" autocomplete="off">
+    <button class="enter" onclick="doLogin()">Ingresar</button>
+    <div class="gate-msg" id="gateMsg"></div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" style="display:none">
+  <div class="header">
+    <h1>🔧 Servicios Alianza</h1>
+    <span class="role-pill" id="rolePill">—</span>
+    <button class="logout-btn" onclick="logout()">Salir</button>
   </div>
 
-  <div class="card" id="fichaCard" style="display:none">
-    <h2>📋 Ficha técnica completa</h2>
-    <div class="info-grid" id="fichaData"></div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('tBuscar')">🔍 Buscar</button>
+    <button class="tab" onclick="showTab('tHist')">📋 Historial</button>
+    <button class="tab" onclick="showTab('tProf')">📄 Proforma</button>
+    <button class="tab" onclick="showTab('tConfig')">⚙️ Config</button>
   </div>
 
-  <div class="card" id="histCard" style="display:none">
-    <h2>📜 Historial de servicios</h2>
-    <div id="histList"></div>
-  </div>
-
-  <div class="card">
-    <h2>➕ Registrar nuevo servicio</h2>
-    <div class="grid2">
+  <!-- ===== BUSCAR ===== -->
+  <div class="view active" id="tBuscar">
+    <div class="card">
+      <h2>Buscar Vehículo</h2>
       <div class="field">
-        <label>Fecha</label>
-        <input id="srvFecha" type="date">
+        <label>Placa</label>
+        <input type="text" id="searchPlaca" placeholder="Ej: ABC-123" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
       </div>
-      <div class="field">
-        <label>Kilometraje (opcional)</label>
-        <input id="srvKm" type="number" placeholder="125000">
-      </div>
-    </div>
-    <div id="srvItems"></div>
-    <div class="btnrow">
-      <button class="btn sec" id="btnAddItem">➕ Agregar trabajo</button>
-    </div>
-    <div class="total-bar">
-      <div class="lbl">TOTAL</div>
-      <div class="val">S/. <span id="srvTotal">0.00</span></div>
-    </div>
-    <div class="btnrow" style="margin-top:14px">
-      <button class="btn ok" id="btnGuardar">💾 Guardar servicio</button>
-      <button class="btn warn" id="btnProforma">🖨 Generar proforma</button>
+      <button class="btn" onclick="buscarVehiculo()">Buscar</button>
+      <div id="vehResult" style="margin-top:14px"></div>
     </div>
   </div>
-</main>
 
-<div class="toast" id="toast"></div>
-<div class="loading" id="loading"><div class="spin"></div><span>Cargando...</span></div>
+  <!-- ===== HISTORIAL ===== -->
+  <div class="view" id="tHist">
+    <div class="card">
+      <h2>Historial de Servicios</h2>
+      <div id="histVehInfo" class="empty">Selecciona un vehículo en la pestaña Buscar</div>
+      <div id="histList" class="svc-list"></div>
+    </div>
+  </div>
+
+  <!-- ===== PROFORMA ===== -->
+  <div class="view" id="tProf">
+    <div class="card">
+      <h2>Datos del Cliente</h2>
+      <div class="field"><label>Nombre / Razón Social</label><input type="text" id="pfCliente"></div>
+      <div class="row2">
+        <div class="field"><label>DNI / RUC</label><input type="text" id="pfDoc"></div>
+        <div class="field"><label>Teléfono</label><input type="text" id="pfTel"></div>
+      </div>
+      <div class="field"><label>Dirección</label><input type="text" id="pfDir"></div>
+    </div>
+    <div class="card">
+      <h2>Vehículo</h2>
+      <div class="row2">
+        <div class="field"><label>Placa</label><input type="text" id="pfPlaca" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="field"><label>Kilometraje</label><input type="number" id="pfKm"></div>
+      </div>
+      <div class="field"><label>Marca / Modelo</label><input type="text" id="pfModelo"></div>
+    </div>
+    <div class="card">
+      <h2>Items / Servicios</h2>
+      <div id="lineItems"></div>
+      <button class="btn sec" onclick="addLine()">+ Agregar Item</button>
+      <div class="totals-box">
+        <div class="tot-row"><span>Subtotal:</span><span id="tSub">S/ 0.00</span></div>
+        <div class="tot-row"><span>IGV (18%):</span><span id="tIgv">S/ 0.00</span></div>
+        <div class="tot-row big"><span>TOTAL:</span><span id="tTot">S/ 0.00</span></div>
+      </div>
+      <div class="field" style="margin-top:14px"><label>Observaciones</label><textarea id="pfObs" placeholder="Notas adicionales..."></textarea></div>
+      <div class="btn-row">
+        <button class="btn ok" onclick="generarProforma()">Generar Proforma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONFIG ===== -->
+  <div class="view" id="tConfig">
+    <div class="card">
+      <h2>Configuración Apps Script</h2>
+      <div class="field"><label>URL del Web App</label><input type="text" id="cfgUrl" placeholder="https://script.google.com/.../exec"></div>
+      <div class="field"><label>SECRET</label><input type="password" id="cfgSecret"></div>
+      <button class="btn" onclick="saveCfg()">Guardar</button>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted)">Comparte la misma config que tu sistema de stock (clave: <code>stk_alianza_cfg_v3</code>)</div>
+    </div>
+    <div class="card">
+      <h2>Próximo Nº Proforma</h2>
+      <div class="field"><label>Contador actual</label><input type="number" id="cfgCounter" min="1"></div>
+      <button class="btn sec" onclick="saveCounter()">Actualizar contador</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ ÁREA DE IMPRESIÓN ============ -->
+<div id="printArea">
+  <div class="wm">ANTICOPIA</div>
+  <div class="pf-content">
+    <div class="pf-head">
+      <div class="biz">
+        <h1>TALLER ALIANZA</h1>
+        <div class="tag">Mecánica Automotriz · Diagnóstico Especializado</div>
+        <div class="info">
+          <div><b>Juan Barrios Pariona</b></div>
+          <div>RUC: 10434002597</div>
+          <div>Av. Oscar R. Benavides 1176 - Chincha</div>
+          <div>WhatsApp: 957 388 710</div>
+          <div>sgalianzaperu@gmail.com</div>
+        </div>
+      </div>
+      <div class="pf-num">
+        <div class="lbl">Proforma N°</div>
+        <div class="num" id="prnNum">PROF-2026-0001</div>
+        <div class="fch" id="prnFch">—</div>
+      </div>
+    </div>
+
+    <div class="pf-cli">
+      <div class="blk">
+        <h3>Cliente</h3>
+        <div><b id="prnCliente">—</b></div>
+        <div id="prnDoc">DNI/RUC: —</div>
+        <div id="prnTel">Tel: —</div>
+        <div id="prnDir">Dir: —</div>
+      </div>
+      <div class="blk">
+        <h3>Vehículo</h3>
+        <div><b id="prnPlaca">—</b></div>
+        <div id="prnModelo">—</div>
+        <div id="prnKm">Km: —</div>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr>
+        <th class="center" style="width:30px">#</th>
+        <th>Descripción</th>
+        <th style="width:60px">Cód. Int.</th>
+        <th style="width:70px">Cód. OEM</th>
+        <th class="num-col" style="width:35px">Cant</th>
+        <th class="num-col" style="width:60px">P. Unit</th>
+        <th class="num-col" style="width:65px">Total</th>
+      </tr></thead>
+      <tbody id="prnBody"></tbody>
+    </table>
+
+    <div class="pf-tot">
+      <div class="row"><span>Subtotal:</span><span id="prnSub">S/ 0.00</span></div>
+      <div class="row"><span>IGV (18%):</span><span id="prnIgv">S/ 0.00</span></div>
+      <div class="row big"><span>TOTAL S/:</span><span id="prnTot">0.00</span></div>
+    </div>
+
+    <div class="pf-notes" id="prnObsBox" style="display:none">
+      <b>Observaciones:</b> <span id="prnObs"></span>
+    </div>
+
+    <div class="pf-foot">
+      Cotización referencial sin valor fiscal · Validez 7 días · Precios sujetos a confirmación de stock<br>
+      Taller Alianza © 2026 · Generado el <span id="prnGen"></span>
+    </div>
+  </div>
+</div>
+
+<div class="print-controls" id="printCtrl" style="display:none">
+  <button class="btn sec" onclick="closePrint()">← Volver</button>
+  <button class="btn" onclick="window.print()">🖨 Imprimir / PDF</button>
+</div>
 
 <script>
-const LS_CFG = 'stk_alianza_cfg_v3';
-let cfg = {};
-try{ cfg = JSON.parse(localStorage.getItem(LS_CFG)||'{}') }catch(e){}
-let DATA = { veh: [], srv: [] };
-let currentVeh = null;
-const $ = s => document.querySelector(s);
+/* ============ ESTADO GLOBAL ============ */
+const CFG_KEY='stk_alianza_cfg_v3';
+const COUNTER_KEY='alianza_proforma_counter';
+const ROLE_KEY='alianza_role';
+const PASS_DUENO='2580';
+const PASS_ASIST='alianza';
+const SECRET_DEFAULT='123alianza';
 
-function toast(msg, bad){
-  const t=$('#toast'); t.textContent=msg; t.className='toast on'+(bad?' bad':'');
-  setTimeout(()=>t.className='toast',3500);
+let state={
+  role:null,
+  cfg:{url:'',secret:SECRET_DEFAULT},
+  vehiculo:null,
+  servicios:[],
+  lines:[],
+  proforma:null
+};
+
+/* ============ STORAGE ============ */
+function loadCfg(){
+  try{
+    const raw=localStorage.getItem(CFG_KEY);
+    if(raw){state.cfg=Object.assign(state.cfg,JSON.parse(raw))}
+  }catch(e){}
 }
-function showLoad(){ $('#loading').classList.add('on') }
-function hideLoad(){ $('#loading').classList.remove('on') }
+function saveCfgRaw(){localStorage.setItem(CFG_KEY,JSON.stringify(state.cfg))}
 
-async function api(action, payload){
-  if(!cfg.url || !cfg.key) throw new Error('No configurado - abre primero el sistema de Stock');
-  if(action==='get'){
-    const r = await fetch(cfg.url+'?token='+encodeURIComponent(cfg.key)+'&what='+(payload||'all'));
-    return r.json();
-  }
-  const r = await fetch(cfg.url, {method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body: JSON.stringify(Object.assign({token:cfg.key, action:action}, payload))});
-  return r.json();
+/* ============ LOGIN ============ */
+let pendingRole='dueno';
+function selRole(r){
+  pendingRole=r;
+  document.getElementById('rDueno').classList.toggle('active',r==='dueno');
+  document.getElementById('rAsist').classList.toggle('active',r==='asistente');
+  document.getElementById('gatePass').focus();
 }
-
-async function loadAll(){
-  if(!cfg.url||!cfg.key){
-    $('#conState').className='status off';
-    $('#conTxt').textContent='Configura el Stock primero';
-    toast('Abre el sistema de Stock primero para configurar la conexión',true);
+function doLogin(){
+  const p=document.getElementById('gatePass').value;
+  const msg=document.getElementById('gateMsg');
+  if(pendingRole==='dueno'&&p===PASS_DUENO){
+    state.role='dueno';
+  }else if(pendingRole==='asistente'&&(p===PASS_ASIST||p==='')){
+    state.role='asistente';
+  }else{
+    msg.textContent='Contraseña incorrecta';
     return;
   }
-  showLoad();
-  try{
-    const res = await api('get','all');
-    if(!res.ok) throw new Error(res.error);
-    DATA.veh = res.veh||[];
-    DATA.srv = res.srv||[];
-    $('#conState').className='status on';
-    $('#conTxt').textContent='Conectado';
-    // Poblar datalist con placas
-    const dl = $('#placasList');
-    dl.innerHTML = DATA.veh.map(v=>`<option value="${String(v.placa||'').replace(/"/g,'')}">`).join('');
-    toast('✓ '+DATA.veh.length+' vehículos · '+DATA.srv.length+' servicios cargados');
-  }catch(err){
-    $('#conState').className='status off';
-    toast('Error: '+err.message,true);
-  }finally{ hideLoad() }
+  sessionStorage.setItem(ROLE_KEY,state.role);
+  enterApp();
+}
+function logout(){
+  sessionStorage.removeItem(ROLE_KEY);
+  state.role=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('gate').style.display='flex';
+  document.getElementById('gatePass').value='';
+}
+function enterApp(){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').style.display='block';
+  const pill=document.getElementById('rolePill');
+  if(state.role==='dueno'){pill.textContent='👑 DUEÑO';pill.classList.add('dueno')}
+  else{pill.textContent='🔧 ASISTENTE';pill.classList.remove('dueno')}
+  // Cargar config en form
+  document.getElementById('cfgUrl').value=state.cfg.url||'';
+  document.getElementById('cfgSecret').value=state.cfg.secret||'';
+  document.getElementById('cfgCounter').value=getCounter();
 }
 
-function buscarPlaca(placa){
-  const p = String(placa||'').trim().toUpperCase();
-  if(!p){ $('#vehInfo').style.display='none'; $('#vehNotFound').style.display='none'; currentVeh=null; return }
-  const veh = DATA.veh.find(v=>String(v.placa||'').trim().toUpperCase()===p);
-  if(veh){
-    currentVeh = veh;
-    $('#vehInfo').style.display='block';
-    $('#vehNotFound').style.display='none';
-    const campos = [
-      ['Modelo', veh.modelo],
-      ['Año', veh.ano],
-      ['Combustible', veh.combustible],
-      ['Motor', veh.motor],
-      ['Cliente/Empresa', veh.chofer__empresa],
-      ['Teléfono', veh.telefono]
-    ];
-    $('#vehData').innerHTML = campos.filter(c=>c[1]).map(c=>
-      `<div class="info-item"><div class="lbl">${c[0]}</div><div class="val">${String(c[1]).replace(/[<>]/g,'')}</div></div>`
-    ).join('');
-  } else {
-    currentVeh = null;
-    $('#vehInfo').style.display='none';
-    $('#vehNotFound').style.display='block';
-  }
+/* ============ TABS ============ */
+function showTab(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
 }
 
-$('#placaInput').addEventListener('input', e=>buscarPlaca(e.target.value));
-
-$('#btnVerFicha').onclick = ()=>{
-  if(!currentVeh) return;
-  const v = currentVeh;
-  const todos = [
-    ['Placa',v.placa],['Modelo',v.modelo],['Año',v.ano],['Combustible',v.combustible],
-    ['Cliente',v.chofer__empresa],['RUC',v.ruc],['DNI',v.dni],['Teléfono',v.telefono],
-    ['Dirección',v.direccion],['Motor',v.motor],['Caja',v.caja],['Tipo Caja',v.tipo_de_caja],
-    ['Ruta Scanner',v.ruta_scanner],['CCA',v.cca],['VIN',v.vin],['Versión',v.version],
-    ['Ubicación OBD2',v.ubicacion_obd2],['Capac. Oil',v.capac_oil],['Temperatura',v.temperatura],
-    ['Batería',v.bateria],['F-Gasolina Ext',v.f_gasolina_ext],['Potencia',v.potencia],
-    ['Cilindrada',v.cilindrada],['Cilindros',v.cilindro]
-  ];
-  $('#fichaData').innerHTML = todos.filter(c=>c[1]).map(c=>
-    `<div class="info-item"><div class="lbl">${c[0]}</div><div class="val">${String(c[1]).replace(/[<>]/g,'')}</div></div>`
-  ).join('');
-  $('#fichaCard').style.display='block';
-  $('#fichaCard').scrollIntoView({behavior:'smooth'});
-};
-
-$('#btnVerHist').onclick = ()=>{
-  if(!currentVeh) return;
-  const placa = String(currentVeh.placa||'').trim().toUpperCase();
-  const hist = DATA.srv.filter(s=>String(s.placa||'').trim().toUpperCase()===placa);
-  hist.sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
-  if(!hist.length){
-    $('#histList').innerHTML = '<div class="empty">Sin servicios registrados para esta placa</div>';
-  } else {
-    $('#histList').innerHTML = '<table><thead><tr><th>Fecha</th><th>Descripción</th><th style="text-align:right">Total</th></tr></thead><tbody>'+
-      hist.map(s=>{
-        const f = s.fecha ? new Date(s.fecha).toLocaleDateString('es-PE') : '';
-        return `<tr><td>${f}</td><td>${String(s.descripcion||'').replace(/[<>]/g,'')}</td><td style="text-align:right">S/. ${Number(s.total)||0}</td></tr>`;
-      }).join('')+'</tbody></table>';
-  }
-  $('#histCard').style.display='block';
-  $('#histCard').scrollIntoView({behavior:'smooth'});
-};
-
-// Items de servicio
-let srvItems = [];
-function renderItems(){
-  const c = $('#srvItems');
-  c.innerHTML = srvItems.map((it,i)=>`
-    <div class="serv-row">
-      <input type="text" placeholder="Descripción del trabajo" value="${String(it.desc||'').replace(/"/g,'&quot;')}" data-i="${i}" data-f="desc">
-      <input type="number" placeholder="Cant" value="${it.cant||1}" data-i="${i}" data-f="cant">
-      <input type="number" placeholder="Precio" value="${it.precio||''}" data-i="${i}" data-f="precio">
-      <button class="btn bad" data-del="${i}" style="padding:8px 10px">🗑</button>
-    </div>`).join('');
-  c.querySelectorAll('input').forEach(inp=>{
-    inp.addEventListener('input',e=>{
-      const i = +e.target.dataset.i, f = e.target.dataset.f;
-      srvItems[i][f] = f==='desc' ? e.target.value : Number(e.target.value)||0;
-      calcTotal();
-    });
+/* ============ APPS SCRIPT ============ */
+async function callAS(action,params={}){
+  if(!state.cfg.url){throw new Error('Configura la URL en pestaña Config')}
+  const body=Object.assign({action,secret:state.cfg.secret},params);
+  const res=await fetch(state.cfg.url,{
+    method:'POST',
+    body:JSON.stringify(body),
+    headers:{'Content-Type':'text/plain;charset=utf-8'}
   });
-  c.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
-    srvItems.splice(+b.dataset.del,1); renderItems();
-  });
-  calcTotal();
+  const txt=await res.text();
+  try{return JSON.parse(txt)}catch(e){throw new Error('Respuesta inválida: '+txt.substring(0,100))}
 }
-function calcTotal(){
-  const t = srvItems.reduce((s,it)=>s+(Number(it.cant)||0)*(Number(it.precio)||0),0);
-  $('#srvTotal').textContent = t.toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
-  return t;
-}
-$('#btnAddItem').onclick = ()=>{ srvItems.push({desc:'',cant:1,precio:0}); renderItems() };
 
-$('#btnGuardar').onclick = async ()=>{
-  if(!currentVeh && !$('#placaInput').value.trim()){ toast('Ingresa una placa',true); return }
-  if(!srvItems.length){ toast('Agrega al menos un trabajo',true); return }
-  const placa = $('#placaInput').value.trim().toUpperCase();
-  const fecha = $('#srvFecha').value || new Date().toISOString().slice(0,10);
-  const km = $('#srvKm').value;
-  showLoad();
+/* ============ BUSCAR VEHÍCULO ============ */
+async function buscarVehiculo(){
+  const placa=document.getElementById('searchPlaca').value.trim().toUpperCase();
+  if(!placa){alert('Ingresa una placa');return}
+  const box=document.getElementById('vehResult');
+  box.innerHTML='<div class="loading">Buscando...</div>';
   try{
-    for(const it of srvItems){
-      if(!it.desc) continue;
-      await api('add',{
-        target:'srv',
-        row:{
-          fecha: fecha, placa: placa,
-          marca_modelo: currentVeh?currentVeh.modelo:'',
-          motor: currentVeh?currentVeh.motor:'',
-          kilometraje: km, cantidad: it.cant,
-          costo_unit: it.precio,
-          descripcion: it.desc,
-          total: (it.cant||1)*(it.precio||0)
-        }
-      });
+    const r=await callAS('list',{sheet:'Vehiculos'});
+    const rows=r.rows||r.data||[];
+    const veh=rows.find(v=>(v.Placa||v.placa||'').toString().toUpperCase().replace(/[-\s]/g,'')===placa.replace(/[-\s]/g,''));
+    if(!veh){
+      box.innerHTML='<div class="empty">⚠️ Vehículo no encontrado en la base de datos</div>';
+      state.vehiculo=null;
+      return;
     }
-    toast('✓ Servicio guardado');
-    srvItems = []; renderItems();
-    await loadAll();
-  }catch(err){ toast('Error: '+err.message,true) }
-  finally{ hideLoad() }
-};
+    state.vehiculo=veh;
+    box.innerHTML=`
+      <div class="veh-info">
+        <div class="placa">${veh.Placa||veh.placa||'—'}</div>
+        <div class="det">${veh.Marca||''} ${veh.Modelo||''} ${veh.Anio||veh.Año||''}</div>
+        <div class="det">Cliente: ${veh.Cliente||veh.Propietario||'—'}</div>
+        <div class="det">${veh.Telefono||veh.Tel||''}</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="cargarHistorial()">📋 Ver Historial</button>
+        <button class="btn sec" onclick="usarEnProforma()">📄 Usar en Proforma</button>
+      </div>
+    `;
+  }catch(e){
+    box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>';
+  }
+}
 
-$('#btnProforma').onclick = ()=>{
-  toast('La proforma estará lista en la próxima actualización del sistema',true);
-};
+/* ============ HISTORIAL ============ */
+async function cargarHistorial(){
+  if(!state.vehiculo){return}
+  showTab2('tHist');
+  const placa=(state.vehiculo.Placa||state.vehiculo.placa||'').toString().toUpperCase();
+  document.getElementById('histVehInfo').innerHTML=`
+    <div class="veh-info">
+      <div class="placa">${placa}</div>
+      <div class="det">${state.vehiculo.Marca||''} ${state.vehiculo.Modelo||''}</div>
+    </div>`;
+  const list=document.getElementById('histList');
+  list.innerHTML='<div class="loading">Cargando servicios...</div>';
+  try{
+    const r=await callAS('list',{sheet:'Servicios'});
+    const rows=r.rows||r.data||[];
+    const norm=s=>(s||'').toString().toUpperCase().replace(/[-\s]/g,'');
+    const filtered=rows.filter(s=>norm(s.Placa||s.placa)===norm(placa));
+    filtered.sort((a,b)=>{
+      const da=new Date(a.Fecha||a.fecha||0);
+      const db=new Date(b.Fecha||b.fecha||0);
+      return db-da;
+    });
+    if(filtered.length===0){
+      list.innerHTML='<div class="empty">Sin servicios registrados para este vehículo</div>';
+      return;
+    }
+    state.servicios=filtered;
+    renderHistorial();
+  }catch(e){
+    list.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>';
+  }
+}
 
-// Inicializar fecha hoy
-$('#srvFecha').value = new Date().toISOString().slice(0,10);
-srvItems.push({desc:'',cant:1,precio:0});
-renderItems();
-loadAll();
+function renderHistorial(){
+  const list=document.getElementById('histList');
+  const hideCost=state.role==='asistente';
+  list.innerHTML=state.servicios.map(s=>{
+    const fecha=fmtFecha(s.Fecha||s.fecha);
+    const desc=s.Descripcion||s.Descripción||s.Servicio||s.Detalle||'—';
+    const km=s.Km||s.Kilometraje||s.kilometraje||'—';
+    const cint=s.CodInterno||s.Codigo||s.CodigoInterno||'';
+    const coem=s.CodOEM||s.OEM||s.CodigoOEM||'';
+    const total=parseFloat(s.Total||s.Monto||0)||0;
+    return `<div class="svc-item">
+      <div class="top">
+        <span class="fecha">${fecha}</span>
+        <span class="km">📏 ${km} km</span>
+      </div>
+      <div class="desc">${desc}</div>
+      ${(cint||coem)?`<div class="codes">
+        ${cint?`<span class="code-tag">INT: ${cint}</span>`:''}
+        ${coem?`<span class="code-tag">OEM: ${coem}</span>`:''}
+      </div>`:''}
+      <div class="total ${hideCost?'hidden':''}">S/ ${total.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+}
+
+function fmtFecha(d){
+  if(!d)return '—';
+  try{
+    const dt=new Date(d);
+    if(isNaN(dt))return d;
+    return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'});
+  }catch(e){return d}
+}
+
+function showTab2(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const map={tBuscar:0,tHist:1,tProf:2,tConfig:3};
+  document.querySelectorAll('.tab')[map[id]].classList.add('active');
+}
+
+/* ============ PROFORMA ============ */
+function usarEnProforma(){
+  if(!state.vehiculo){return}
+  const v=state.vehiculo;
+  document.getElementById('pfCliente').value=v.Cliente||v.Propietario||'';
+  document.getElementById('pfDoc').value=v.DNI||v.RUC||v.Documento||'';
+  document.getElementById('pfTel').value=v.Telefono||v.Tel||'';
+  document.getElementById('pfDir').value=v.Direccion||v.Dirección||'';
+  document.getElementById('pfPlaca').value=v.Placa||v.placa||'';
+  document.getElementById('pfModelo').value=((v.Marca||'')+' '+(v.Modelo||'')+' '+(v.Anio||v.Año||'')).trim();
+  showTab2('tProf');
+}
+
+function addLine(){
+  state.lines.push({desc:'',cint:'',coem:'',cant:1,precio:0});
+  renderLines();
+}
+function delLine(i){state.lines.splice(i,1);renderLines()}
+function updLine(i,field,val){
+  state.lines[i][field]=field==='cant'||field==='precio'?parseFloat(val)||0:val;
+  calcTot();
+}
+function renderLines(){
+  const c=document.getElementById('lineItems');
+  if(state.lines.length===0){
+    c.innerHTML='<div class="empty">Sin items. Pulsa "Agregar Item"</div>';
+    calcTot();return;
+  }
+  c.innerHTML=state.lines.map((l,i)=>`
+    <div class="line-item">
+      <div class="li-top">
+        <input class="li-desc" style="flex:1;padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:13px"
+          value="${escapeHtml(l.desc)}" placeholder="Descripción" oninput="updLine(${i},'desc',this.value)">
+        <button class="li-del" onclick="delLine(${i})">✕</button>
+      </div>
+      <div class="li-row">
+        <div><label>Cant</label><input type="number" step="0.01" value="${l.cant}" oninput="updLine(${i},'cant',this.value)"></div>
+        <div><label>P. Unit S/</label><input type="number" step="0.01" value="${l.precio}" oninput="updLine(${i},'precio',this.value)"></div>
+        <div><label>Total S/</label><input type="text" value="${(l.cant*l.precio).toFixed(2)}" readonly></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+        <input style="padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px" placeholder="Cód. Interno" value="${escapeHtml(l.cint)}" oninput="updLine(${i},'cint',this.value)">
+        <input style="padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px" placeholder="Cód. OEM" value="${escapeHtml(l.coem)}" oninput="updLine(${i},'coem',this.value)">
+      </div>
+    </div>
+  `).join('');
+  calcTot();
+}
+function calcTot(){
+  const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
+  const igv=sub*0.18;
+  const tot=sub+igv;
+  document.getElementById('tSub').textContent='S/ '+sub.toFixed(2);
+  document.getElementById('tIgv').textContent='S/ '+igv.toFixed(2);
+  document.getElementById('tTot').textContent='S/ '+tot.toFixed(2);
+}
+function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+/* ============ CONTADOR PROFORMA ============ */
+function getCounter(){
+  const v=parseInt(localStorage.getItem(COUNTER_KEY)||'1',10);
+  return isNaN(v)?1:v;
+}
+function setCounter(n){localStorage.setItem(COUNTER_KEY,String(n))}
+function nextProformaNum(){
+  const n=getCounter();
+  const yr=new Date().getFullYear();
+  return `PROF-${yr}-${String(n).padStart(4,'0')}`;
+}
+
+/* ============ GENERAR PROFORMA ============ */
+function generarProforma(){
+  if(state.lines.length===0){alert('Agrega al menos un item');return}
+  const cliente=document.getElementById('pfCliente').value||'—';
+  const doc=document.getElementById('pfDoc').value||'—';
+  const tel=document.getElementById('pfTel').value||'—';
+  const dir=document.getElementById('pfDir').value||'—';
+  const placa=document.getElementById('pfPlaca').value||'—';
+  const km=document.getElementById('pfKm').value||'—';
+  const modelo=document.getElementById('pfModelo').value||'—';
+  const obs=document.getElementById('pfObs').value;
+
+  const num=nextProformaNum();
+  const ahora=new Date();
+  const fch=ahora.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  document.getElementById('prnNum').textContent=num;
+  document.getElementById('prnFch').textContent=fch;
+  document.getElementById('prnCliente').textContent=cliente;
+  document.getElementById('prnDoc').textContent='DNI/RUC: '+doc;
+  document.getElementById('prnTel').textContent='Tel: '+tel;
+  document.getElementById('prnDir').textContent='Dir: '+dir;
+  document.getElementById('prnPlaca').textContent=placa;
+  document.getElementById('prnModelo').textContent=modelo;
+  document.getElementById('prnKm').textContent='Km: '+km;
+
+  const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
+  const igv=sub*0.18;
+  const tot=sub+igv;
+
+  document.getElementById('prnBody').innerHTML=state.lines.map((l,i)=>`
+    <tr>
+      <td class="center">${i+1}</td>
+      <td>${escapeHtml(l.desc)}</td>
+      <td>${escapeHtml(l.cint)}</td>
+      <td>${escapeHtml(l.coem)}</td>
+      <td class="num-col">${l.cant}</td>
+      <td class="num-col">${l.precio.toFixed(2)}</td>
+      <td class="num-col">${(l.cant*l.precio).toFixed(2)}</td>
+    </tr>`).join('');
+
+  document.getElementById('prnSub').textContent='S/ '+sub.toFixed(2);
+  document.getElementById('prnIgv').textContent='S/ '+igv.toFixed(2);
+  document.getElementById('prnTot').textContent=tot.toFixed(2);
+
+  if(obs){
+    document.getElementById('prnObsBox').style.display='block';
+    document.getElementById('prnObs').textContent=obs;
+  }else{
+    document.getElementById('prnObsBox').style.display='none';
+  }
+  document.getElementById('prnGen').textContent=ahora.toLocaleString('es-PE');
+
+  // Mostrar área imprimible
+  document.getElementById('app').style.display='none';
+  document.getElementById('printArea').style.display='block';
+  document.getElementById('printCtrl').style.display='flex';
+  window.scrollTo(0,0);
+
+  // Incrementar contador (solo al generar)
+  setCounter(getCounter()+1);
+  document.getElementById('cfgCounter').value=getCounter();
+}
+
+function closePrint(){
+  document.getElementById('printArea').style.display='none';
+  document.getElementById('printCtrl').style.display='none';
+  document.getElementById('app').style.display='block';
+}
+
+/* ============ CONFIG ============ */
+function saveCfg(){
+  state.cfg.url=document.getElementById('cfgUrl').value.trim();
+  state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;
+  saveCfgRaw();
+  alert('Configuración guardada ✓');
+}
+function saveCounter(){
+  const n=parseInt(document.getElementById('cfgCounter').value,10);
+  if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado ✓')}
+}
+
+/* ============ INIT ============ */
+loadCfg();
+const savedRole=sessionStorage.getItem(ROLE_KEY);
+if(savedRole){state.role=savedRole;enterApp()}
+document.getElementById('gatePass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('searchPlaca')?.addEventListener('keydown',e=>{if(e.key==='Enter')buscarVehiculo()});
+addLine(); // primera línea vacía
 </script>
-</body></html>
+</body>
+</html>
