@@ -187,10 +187,10 @@ input,select,textarea{font-family:inherit}
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('tBuscar')">🔍 Buscar</button>
-    <button class="tab" onclick="showTab('tHist')">📋 Historial</button>
-    <button class="tab" onclick="showTab('tProf')">📄 Proforma</button>
-   <button class="tab" id="tabConfig" onclick="showTab(event,'tConfig')">⚙️ Config</button>
+    <button class="tab active" onclick="showTab(event,'tBuscar')">🔍 Buscar</button>
+    <button class="tab" onclick="showTab(event,'tHist')">📋 Historial</button>
+    <button class="tab" onclick="showTab(event,'tProf')">📄 Proforma</button>
+    <button class="tab" id="tabConfig" onclick="showTab(event,'tConfig')">⚙️ Config</button>
   </div>
 
   <!-- ===== BUSCAR ===== -->
@@ -421,11 +421,11 @@ if(state.role==='dueno'){
 }
 
 /* ============ TABS ============ */
-function showTab(id){
+function showTab(ev,id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+  ev.target.classList.add('active');
 }
 
 /* ============ APPS SCRIPT ============ */
@@ -573,7 +573,7 @@ function updLine(i,f,v){
   }
   calcTot();
 }
-}
+
 function renderLines(){
   const c=document.getElementById('lineItems');
   if(state.lines.length===0){
@@ -608,7 +608,7 @@ function calcTot(){
   document.getElementById('tSub').textContent='S/ '+sub.toFixed(2);
   document.getElementById('tTot').textContent='S/ '+tot.toFixed(2);
 }
-}
+
 function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 /* ============ CONTADOR PROFORMA ============ */
