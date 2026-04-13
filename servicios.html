@@ -240,7 +240,8 @@ input,select,textarea{font-family:inherit}
       <button class="btn sec" onclick="addLine()">+ Agregar Item</button>
       <div class="totals-box">
         <div class="tot-row"><span>Subtotal:</span><span id="tSub">S/ 0.00</span></div>
-        <div class="tot-row"><span>IGV (18%):</span><span id="tIgv">S/ 0.00</span></div>
+        <div class="tot-row" style="align-items:center"><span>A Cuenta 1:</span><input type="number" step="0.01" id="pfAc1" value="0" oninput="calcTot()" style="width:100px;padding:4px 6px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;text-align:right"></div>
+        <div class="tot-row" style="align-items:center"><span>A Cuenta 2:</span><input type="number" step="0.01" id="pfAc2" value="0" oninput="calcTot()" style="width:100px;padding:4px 6px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;text-align:right"></div>
         <div class="tot-row big"><span>TOTAL:</span><span id="tTot">S/ 0.00</span></div>
       </div>
       <div class="field" style="margin-top:14px"><label>Observaciones</label><textarea id="pfObs" placeholder="Notas adicionales..."></textarea></div>
@@ -277,8 +278,9 @@ input,select,textarea{font-family:inherit}
         <h1>TALLER ALIANZA</h1>
         <div class="tag">Mecánica Automotriz · Diagnóstico Especializado</div>
         <div class="info">
-          <div><b>Juan Barrios Pariona</b></div>
-          <div>RUC: 10434002597</div>
+          <div style="font-weight:700;color:#b45309">MANTENIMIENTO PREVENTIVO Y CORRECTIVO DE VEHÍCULOS</div>
+          <div style="font-weight:700;color:#b45309">VENTA DE REPUESTOS Y LUBRICANTES</div>
+          <div style="margin-top:4px">RUC: 10434002597</div>
           <div>Av. Oscar R. Benavides 1176 - Chincha</div>
           <div>WhatsApp: 957 388 710</div>
           <div>sgalianzaperu@gmail.com</div>
@@ -320,9 +322,10 @@ input,select,textarea{font-family:inherit}
       <tbody id="prnBody"></tbody>
     </table>
 
-    <div class="pf-tot">
+   <div class="pf-tot">
       <div class="row"><span>Subtotal:</span><span id="prnSub">S/ 0.00</span></div>
-      <div class="row"><span>IGV (18%):</span><span id="prnIgv">S/ 0.00</span></div>
+      <div class="row"><span>A Cuenta 1:</span><span id="prnAc1">S/ 0.00</span></div>
+      <div class="row"><span>A Cuenta 2:</span><span id="prnAc2">S/ 0.00</span></div>
       <div class="row big"><span>TOTAL S/:</span><span id="prnTot">0.00</span></div>
     </div>
 
@@ -593,11 +596,8 @@ function renderLines(){
 }
 function calcTot(){
   const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
-  const igv=sub*0.18;
-  const tot=sub+igv;
   document.getElementById('tSub').textContent='S/ '+sub.toFixed(2);
-  document.getElementById('tIgv').textContent='S/ '+igv.toFixed(2);
-  document.getElementById('tTot').textContent='S/ '+tot.toFixed(2);
+  document.getElementById('tTot').textContent='S/ '+sub.toFixed(2);
 }
 function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -640,8 +640,9 @@ function generarProforma(){
   document.getElementById('prnKm').textContent='Km: '+km;
 
   const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
-  const igv=sub*0.18;
-  const tot=sub+igv;
+  const ac1=parseFloat(document.getElementById('pfAc1').value)||0;
+  const ac2=parseFloat(document.getElementById('pfAc2').value)||0;
+  const tot=sub;
 
   document.getElementById('prnBody').innerHTML=state.lines.map((l,i)=>`
     <tr>
@@ -654,8 +655,9 @@ function generarProforma(){
       <td class="num-col">${(l.cant*l.precio).toFixed(2)}</td>
     </tr>`).join('');
 
-  document.getElementById('prnSub').textContent='S/ '+sub.toFixed(2);
-  document.getElementById('prnIgv').textContent='S/ '+igv.toFixed(2);
+document.getElementById('prnSub').textContent='S/ '+sub.toFixed(2);
+  document.getElementById('prnAc1').textContent='S/ '+ac1.toFixed(2);
+  document.getElementById('prnAc2').textContent='S/ '+ac2.toFixed(2);
   document.getElementById('prnTot').textContent=tot.toFixed(2);
 
   if(obs){
