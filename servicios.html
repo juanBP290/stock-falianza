@@ -94,7 +94,10 @@ input,select,textarea{font-family:inherit}
 .line-item .li-top{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px}
 .line-item .li-desc{flex:1;font-size:13px;font-weight:600}
 .line-item .li-del{background:transparent;border:none;color:var(--warn);font-size:18px;padding:0 4px}
-.line-item .li-row{display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;font-size:11px}
+.line-item .li-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:11px}
+.line-item .li-row > div{min-width:0}
+.line-item .li-row input{width:100%;box-sizing:border-box}
+.line-item .li-row label{display:block;margin-bottom:2px}
 .line-item .li-row input{padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;text-align:right}
 .line-item .li-row label{color:var(--muted);font-size:9px;text-transform:uppercase}
 .line-item .li-codes{font-size:10px;color:var(--muted);margin-top:4px}
@@ -187,7 +190,7 @@ input,select,textarea{font-family:inherit}
     <button class="tab active" onclick="showTab('tBuscar')">🔍 Buscar</button>
     <button class="tab" onclick="showTab('tHist')">📋 Historial</button>
     <button class="tab" onclick="showTab('tProf')">📄 Proforma</button>
-    <button class="tab" onclick="showTab('tConfig')">⚙️ Config</button>
+   <button class="tab" id="tabConfig" onclick="showTab(event,'tConfig')">⚙️ Config</button>
   </div>
 
   <!-- ===== BUSCAR ===== -->
@@ -399,8 +402,15 @@ function enterApp(){
   document.getElementById('gate').style.display='none';
   document.getElementById('app').style.display='block';
   const pill=document.getElementById('rolePill');
-  if(state.role==='dueno'){pill.textContent='👑 DUEÑO';pill.classList.add('dueno')}
-  else{pill.textContent='🔧 ASISTENTE';pill.classList.remove('dueno')}
+if(state.role==='dueno'){
+  pill.textContent='👑 DUEÑO';
+  pill.classList.add('dueno');
+  document.getElementById('tabConfig').style.display='';
+}else{
+  pill.textContent='🔧 ASISTENTE';
+  pill.classList.remove('dueno');
+  document.getElementById('tabConfig').style.display='none';
+}
   // Cargar config en form
   document.getElementById('cfgUrl').value=state.cfg.url||'';
   document.getElementById('cfgSecret').value=state.cfg.secret||'';
