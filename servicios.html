@@ -11,7 +11,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit}
 #gate{position:fixed;inset:0;background:linear-gradient(135deg,#0b0f17 0%,#1e2a3f 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
-.gate-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;width:100%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.gate-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;width:100%;max-width:340px}
 .gate-card h1{margin:0 0 4px;font-size:22px;color:var(--accent)}
 .gate-card .sub{color:var(--muted);font-size:12px;margin-bottom:24px}
 .gate-card .role-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
@@ -27,9 +27,9 @@ input,select,textarea{font-family:inherit}
 .logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:6px;font-size:11px}
 .tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:1;min-width:90px;padding:12px 8px;background:transparent;border:none;color:var(--muted);font-size:12px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap}
+.tab{flex:1;min-width:80px;padding:12px 6px;background:transparent;border:none;color:var(--muted);font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.view{display:none;padding:16px;max-width:900px;margin:0 auto}
+.view{display:none;padding:16px;max-width:1100px;margin:0 auto}
 .view.active{display:block}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
 .card h2{margin:0 0 12px;font-size:14px;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px}
@@ -43,13 +43,16 @@ input,select,textarea{font-family:inherit}
 .btn.ok{background:var(--ok);color:#000}
 .btn-row{display:flex;gap:8px;margin-top:8px}
 .btn-row .btn{flex:1}
-.veh-info{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.veh-info{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer}
 .veh-info .placa{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:2px}
 .veh-info .det{color:var(--muted);font-size:12px;margin-top:4px}
+.veh-info .hint{color:var(--accent2);font-size:11px;margin-top:8px;font-style:italic}
 .svc-list{display:flex;flex-direction:column;gap:8px}
-.svc-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px}
-.svc-item .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.svc-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer}
+.svc-item:hover{border-color:var(--accent)}
+.svc-item .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;flex-wrap:wrap}
 .svc-item .fecha{font-size:11px;color:var(--accent2);font-weight:700}
+.svc-item .placa-tag{font-size:11px;color:var(--accent);font-weight:700}
 .svc-item .km{font-size:11px;color:var(--muted)}
 .svc-item .desc{font-size:13px;line-height:1.4;margin-bottom:6px}
 .svc-item .codes{display:flex;gap:6px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
@@ -67,6 +70,12 @@ input,select,textarea{font-family:inherit}
 .totals-box{background:var(--card2);border:1px solid var(--accent);border-radius:10px;padding:14px;margin-top:14px}
 .totals-box .tot-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
 .totals-box .tot-row.big{font-size:18px;font-weight:800;color:var(--accent);border-top:1px solid var(--border);margin-top:6px;padding-top:10px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card2);border-radius:8px;overflow:hidden}
+.data-table th{background:var(--bg2);color:var(--accent);padding:8px 6px;text-align:left;font-size:10px;text-transform:uppercase;position:sticky;top:0;border-bottom:2px solid var(--border)}
+.data-table td{padding:7px 6px;border-bottom:1px solid var(--border);color:var(--text)}
+.data-table tr:hover td{background:rgba(245,158,11,.05)}
+.data-table .placa-cell{color:var(--accent);font-weight:700}
+.table-wrap{overflow-x:auto;max-height:70vh;border:1px solid var(--border);border-radius:8px}
 #printArea{display:none}
 @media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{display:block!important;position:absolute;left:0;top:0;width:210mm;background:#fff;color:#000}@page{size:A4;margin:12mm}}
 #printArea{background:#fff;color:#000;padding:12mm;font-family:Arial,sans-serif;font-size:12px;position:relative;width:210mm;min-height:297mm;margin:20px auto;box-shadow:0 0 30px rgba(0,0,0,.5)}
@@ -83,11 +92,11 @@ input,select,textarea{font-family:inherit}
 #printArea .pf-cli{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;font-size:11px}
 #printArea .pf-cli .blk{border:1px solid #ddd;padding:8px;border-radius:4px}
 #printArea .pf-cli .blk h3{margin:0 0 6px;font-size:10px;color:#b45309;text-transform:uppercase;border-bottom:1px solid #eee;padding-bottom:3px}
-#printArea table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11px}
-#printArea table th{background:#f59e0b;color:#000;padding:7px 6px;text-align:left;font-size:10px;text-transform:uppercase}
-#printArea table td{padding:6px;border-bottom:1px solid #eee;vertical-align:top}
-#printArea table .num-col{text-align:right;white-space:nowrap}
-#printArea table .center{text-align:center}
+#printArea table.pf-items{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11px}
+#printArea table.pf-items th{background:#f59e0b;color:#000;padding:7px 6px;text-align:left;font-size:10px;text-transform:uppercase}
+#printArea table.pf-items td{padding:6px;border-bottom:1px solid #eee;vertical-align:top}
+#printArea table.pf-items .num-col{text-align:right;white-space:nowrap}
+#printArea table.pf-items .center{text-align:center}
 #printArea .pf-tot{margin-left:auto;width:50%;font-size:12px}
 #printArea .pf-tot .row{display:flex;justify-content:space-between;padding:4px 8px}
 #printArea .pf-tot .row.big{background:#f59e0b;color:#000;font-weight:800;font-size:14px;padding:8px;border-radius:4px;margin-top:4px}
@@ -95,7 +104,7 @@ input,select,textarea{font-family:inherit}
 #printArea .pf-foot{position:absolute;bottom:12mm;left:12mm;right:12mm;border-top:2px solid #f59e0b;padding-top:8px;text-align:center;font-size:9px;color:#666;font-style:italic}
 .print-controls{position:sticky;bottom:0;background:var(--bg2);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;z-index:50}
 .print-controls .btn{flex:1}
-@media (max-width:480px){.row2{grid-template-columns:1fr}.header h1{font-size:14px}.view{padding:12px}.card{padding:12px}}
+@media (max-width:480px){.row2{grid-template-columns:1fr}.header h1{font-size:14px}.view{padding:12px}.card{padding:12px}.data-table{font-size:11px}.data-table th,.data-table td{padding:5px 4px}}
 @media (min-width:481px){#printArea{display:block}}
 </style>
 </head>
@@ -123,15 +132,25 @@ input,select,textarea{font-family:inherit}
   <div class="tabs">
     <button class="tab active" onclick="showTab(event,'tBuscar')">🔍 Buscar</button>
     <button class="tab" onclick="showTab(event,'tHist')">📋 Historial</button>
+    <button class="tab" id="tabVeh" onclick="showTab(event,'tVeh')">🚗 Vehículos</button>
     <button class="tab" onclick="showTab(event,'tProf')">📄 Proforma</button>
     <button class="tab" id="tabConfig" onclick="showTab(event,'tConfig')">⚙️ Config</button>
   </div>
 
   <div class="view active" id="tBuscar">
     <div class="card">
-      <h2>Buscar Vehículo</h2>
-      <div class="field"><label>Placa</label><input type="text" id="searchPlaca" placeholder="Ej: ATI-745" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
-      <button class="btn" onclick="buscarVehiculo()">Buscar</button>
+      <h2>🔎 Búsqueda General</h2>
+      <div class="field"><label>Buscar por cualquier palabra (placa, aceite, filtro, fecha, código, etc.)</label>
+        <input type="text" id="searchAny" placeholder="Ej: aceite, ATI-745, 376841, filtro..." oninput="buscarGeneral()">
+      </div>
+      <div id="genResult" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <h2>🚗 Buscar Vehículo por Placa</h2>
+      <div class="field"><label>Placa</label>
+        <input type="text" id="searchPlaca" placeholder="Ej: ATI-745" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <button class="btn" onclick="buscarVehiculo()">Buscar Vehículo</button>
       <div id="vehResult" style="margin-top:14px"></div>
     </div>
   </div>
@@ -141,6 +160,17 @@ input,select,textarea{font-family:inherit}
       <h2>Historial de Servicios</h2>
       <div id="histVehInfo" class="empty">Selecciona un vehículo en la pestaña Buscar</div>
       <div id="histList" class="svc-list"></div>
+    </div>
+  </div>
+
+  <div class="view" id="tVeh">
+    <div class="card">
+      <h2>🚗 Base de Datos de Vehículos</h2>
+      <div class="field"><label>Filtrar</label>
+        <input type="text" id="vehFilter" placeholder="Filtrar por placa, modelo, cliente, motor..." oninput="renderVehTable()">
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px"><span id="vehCount">0</span> vehículos · <button class="btn sec" style="display:inline-block;width:auto;padding:4px 10px;font-size:11px;margin-left:8px" onclick="cargarVehiculosTabla()">🔄 Recargar</button></div>
+      <div id="vehTableBox"><div class="empty">Cargando...</div></div>
     </div>
   </div>
 
@@ -179,7 +209,6 @@ input,select,textarea{font-family:inherit}
       <div class="field"><label>URL del Web App</label><input type="text" id="cfgUrl" placeholder="https://script.google.com/.../exec"></div>
       <div class="field"><label>SECRET (token)</label><input type="password" id="cfgSecret"></div>
       <button class="btn" onclick="saveCfg()">Guardar</button>
-      <div style="margin-top:10px;font-size:11px;color:var(--muted)">Comparte la misma config que tu sistema de stock (clave: <code>stk_alianza_cfg_v3</code>)</div>
     </div>
     <div class="card"><h2>Próximo Nº Proforma</h2>
       <div class="field"><label>Contador actual</label><input type="number" id="cfgCounter" min="1"></div>
@@ -223,16 +252,8 @@ input,select,textarea{font-family:inherit}
         <div id="prnKm">Km: —</div>
       </div>
     </div>
-    <table>
-      <thead><tr>
-        <th class="center" style="width:30px">#</th>
-        <th>Descripción</th>
-        <th style="width:60px">Cód. Int.</th>
-        <th style="width:70px">Cód. OEM</th>
-        <th class="num-col" style="width:35px">Cant</th>
-        <th class="num-col" style="width:60px">P. Unit</th>
-        <th class="num-col" style="width:65px">Total</th>
-      </tr></thead>
+    <table class="pf-items">
+      <thead><tr><th class="center" style="width:30px">#</th><th>Descripción</th><th style="width:60px">Cód. Int.</th><th style="width:70px">Cód. OEM</th><th class="num-col" style="width:35px">Cant</th><th class="num-col" style="width:60px">P. Unit</th><th class="num-col" style="width:65px">Total</th></tr></thead>
       <tbody id="prnBody"></tbody>
     </table>
     <div class="pf-tot">
@@ -252,28 +273,21 @@ input,select,textarea{font-family:inherit}
 </div>
 
 <script>
-const CFG_KEY='stk_alianza_cfg_v3';
-const COUNTER_KEY='alianza_proforma_counter';
-const ROLE_KEY='alianza_role';
-const PASS_DUENO='2580';
-const PASS_ASIST='alianza';
-const SECRET_DEFAULT='123alianza';
+const CFG_KEY='stk_alianza_cfg_v3',COUNTER_KEY='alianza_proforma_counter',ROLE_KEY='alianza_role';
+const PASS_DUENO='2580',PASS_ASIST='alianza',SECRET_DEFAULT='123alianza';
+let state={role:null,cfg:{url:'',secret:SECRET_DEFAULT},vehiculo:null,servicios:[],lines:[],vehAll:[],srvAll:[]};
 
-let state={role:null,cfg:{url:'',secret:SECRET_DEFAULT},vehiculo:null,servicios:[],lines:[]};
-
-function loadCfg(){try{const raw=localStorage.getItem(CFG_KEY);if(raw)state.cfg=Object.assign(state.cfg,JSON.parse(raw))}catch(e){}}
+function loadCfg(){try{const r=localStorage.getItem(CFG_KEY);if(r)state.cfg=Object.assign(state.cfg,JSON.parse(r))}catch(e){}}
 function saveCfgRaw(){localStorage.setItem(CFG_KEY,JSON.stringify(state.cfg))}
 
 let pendingRole='dueno';
 function selRole(r){pendingRole=r;document.getElementById('rDueno').classList.toggle('active',r==='dueno');document.getElementById('rAsist').classList.toggle('active',r==='asistente');document.getElementById('gatePass').focus()}
 function doLogin(){
-  const p=document.getElementById('gatePass').value;
-  const msg=document.getElementById('gateMsg');
+  const p=document.getElementById('gatePass').value,msg=document.getElementById('gateMsg');
   if(pendingRole==='dueno'&&p===PASS_DUENO)state.role='dueno';
   else if(pendingRole==='asistente'&&(p===PASS_ASIST||p===''))state.role='asistente';
   else{msg.textContent='Contraseña incorrecta';return}
-  sessionStorage.setItem(ROLE_KEY,state.role);
-  enterApp();
+  sessionStorage.setItem(ROLE_KEY,state.role);enterApp();
 }
 function logout(){sessionStorage.removeItem(ROLE_KEY);state.role=null;document.getElementById('app').style.display='none';document.getElementById('gate').style.display='flex';document.getElementById('gatePass').value=''}
 function enterApp(){
@@ -281,13 +295,13 @@ function enterApp(){
   document.getElementById('app').style.display='block';
   const pill=document.getElementById('rolePill');
   if(state.role==='dueno'){
-    pill.textContent='👑 DUEÑO';
-    pill.classList.add('dueno');
+    pill.textContent='👑 DUEÑO';pill.classList.add('dueno');
     document.getElementById('tabConfig').style.display='';
+    document.getElementById('tabVeh').style.display='';
   }else{
-    pill.textContent='🔧 ASISTENTE';
-    pill.classList.remove('dueno');
+    pill.textContent='🔧 ASISTENTE';pill.classList.remove('dueno');
     document.getElementById('tabConfig').style.display='none';
+    document.getElementById('tabVeh').style.display='none';
   }
   document.getElementById('cfgUrl').value=state.cfg.url||'';
   document.getElementById('cfgSecret').value=state.cfg.secret||'';
@@ -299,90 +313,119 @@ function showTab(ev,id){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   ev.target.classList.add('active');
+  if(id==='tVeh'&&state.vehAll.length===0)cargarVehiculosTabla();
 }
 function showTab2(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const map={tBuscar:0,tHist:1,tProf:2,tConfig:3};
+  const map={tBuscar:0,tHist:1,tVeh:2,tProf:3,tConfig:4};
   const tab=document.querySelectorAll('.tab')[map[id]];
   if(tab)tab.classList.add('active');
 }
 
 async function callAS(what){
-  if(!state.cfg.url)throw new Error('Configura la URL en pestaña Config');
+  if(!state.cfg.url)throw new Error('Configura la URL en Config');
   const url=state.cfg.url+'?token='+encodeURIComponent(state.cfg.secret)+'&what='+what;
   const res=await fetch(url);
   const data=await res.json();
   if(!data.ok)throw new Error(data.error||'Error');
   return data;
 }
-
 function normPlaca(s){return (s||'').toString().toUpperCase().replace(/[-\s]/g,'')}
+function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmtFecha(d){if(!d)return '—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return d}}
 
+/* === BÚSQUEDA GENERAL === */
+async function buscarGeneral(){
+  const q=document.getElementById('searchAny').value.trim().toLowerCase();
+  const box=document.getElementById('genResult');
+  if(q.length<2){box.innerHTML='';return}
+  try{
+    if(state.srvAll.length===0){
+      box.innerHTML='<div class="loading">Cargando base de datos...</div>';
+      const r=await callAS('srv');
+      state.srvAll=r.rows||[];
+    }
+    const filtered=state.srvAll.filter(s=>{
+      return Object.values(s).some(v=>(v||'').toString().toLowerCase().includes(q));
+    }).slice(0,50);
+    if(filtered.length===0){box.innerHTML='<div class="empty">Sin resultados para "'+escapeHtml(q)+'"</div>';return}
+    box.innerHTML='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">'+filtered.length+' resultado(s)'+(filtered.length===50?' (mostrando primeros 50)':'')+'</div><div class="svc-list">'+filtered.map(s=>`
+      <div class="svc-item" onclick="abrirVehiculoDesdeServicio('${escapeHtml(s.placa||'')}')">
+        <div class="top">
+          <span class="placa-tag">${escapeHtml(s.placa||'—')}</span>
+          <span class="fecha">${fmtFecha(s.fecha)}</span>
+          <span class="km">📏 ${s.kilometraje||'—'} km</span>
+        </div>
+        <div class="desc">${escapeHtml(s.descripcion||'—')}</div>
+        <div class="codes">
+          ${s.codigo_interno?`<span class="code-tag">INT: ${escapeHtml(s.codigo_interno)}</span>`:''}
+          ${s.cod_oem?`<span class="code-tag">OEM: ${escapeHtml(s.cod_oem)}</span>`:''}
+          ${s.cantidad?`<span class="code-tag">Cant: ${s.cantidad}</span>`:''}
+        </div>
+        <div class="total">S/ ${(parseFloat(s.total||0)||0).toFixed(2)}</div>
+      </div>`).join('')+'</div>';
+  }catch(e){box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
+}
+
+async function abrirVehiculoDesdeServicio(placa){
+  if(!placa)return;
+  document.getElementById('searchPlaca').value=placa;
+  await buscarVehiculo();
+  if(state.vehiculo)cargarHistorial();
+}
+
+/* === BUSCAR VEHÍCULO === */
 async function buscarVehiculo(){
   const placa=document.getElementById('searchPlaca').value.trim().toUpperCase();
   if(!placa){alert('Ingresa una placa');return}
   const box=document.getElementById('vehResult');
   box.innerHTML='<div class="loading">Buscando...</div>';
   try{
-    const r=await callAS('veh');
-    const rows=r.rows||[];
+    if(state.vehAll.length===0){const r=await callAS('veh');state.vehAll=r.rows||[]}
     const target=normPlaca(placa);
-    const veh=rows.find(v=>normPlaca(v.placa||v.Placa)===target);
+    const veh=state.vehAll.find(v=>normPlaca(v.placa)===target);
     if(!veh){box.innerHTML='<div class="empty">⚠️ Vehículo no encontrado</div>';state.vehiculo=null;return}
     state.vehiculo=veh;
     box.innerHTML=`
-      <div class="veh-info">
+      <div class="veh-info" onclick="cargarHistorial()">
         <div class="placa">${veh.placa||'—'}</div>
         <div class="det">${veh.modelo||''} ${veh.ano||''} · ${veh.combustible||''}</div>
         <div class="det">Cliente: ${veh.chofer__empresa||veh.chofer||'—'}</div>
         <div class="det">📞 ${veh.telefono||'—'} · DNI/RUC: ${veh.ruc||veh.dni||'—'}</div>
-      </div>
-      <div class="btn-row">
-        <button class="btn" onclick="cargarHistorial()">📋 Ver Historial</button>
-        <button class="btn sec" onclick="usarEnProforma()">📄 Usar en Proforma</button>
+        <div class="hint">👆 Toca aquí para ver historial · o ve a la pestaña Proforma</div>
       </div>`;
+    usarEnProforma();
   }catch(e){box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
 }
 
+/* === HISTORIAL === */
 async function cargarHistorial(){
-  if(!state.vehiculo)return;
+  if(!state.vehiculo){alert('Primero busca un vehículo');return}
   showTab2('tHist');
   const placa=(state.vehiculo.placa||'').toString().toUpperCase();
   document.getElementById('histVehInfo').innerHTML=`
-    <div class="veh-info">
-      <div class="placa">${placa}</div>
-      <div class="det">${state.vehiculo.modelo||''} ${state.vehiculo.ano||''}</div>
-    </div>`;
+    <div class="veh-info"><div class="placa">${placa}</div><div class="det">${state.vehiculo.modelo||''} ${state.vehiculo.ano||''}</div></div>`;
   const list=document.getElementById('histList');
   list.innerHTML='<div class="loading">Cargando servicios...</div>';
   try{
-    const r=await callAS('srv');
-    const rows=r.rows||[];
+    if(state.srvAll.length===0){const r=await callAS('srv');state.srvAll=r.rows||[]}
     const target=normPlaca(placa);
-    const filtered=rows.filter(s=>normPlaca(s.placa)===target);
+    const filtered=state.srvAll.filter(s=>normPlaca(s.placa)===target);
     filtered.sort((a,b)=>new Date(b.fecha||0)-new Date(a.fecha||0));
-    if(filtered.length===0){list.innerHTML='<div class="empty">Sin servicios registrados para este vehículo</div>';return}
-    state.servicios=filtered;
-    renderHistorial();
+    if(filtered.length===0){list.innerHTML='<div class="empty">Sin servicios registrados</div>';return}
+    state.servicios=filtered;renderHistorial();
   }catch(e){list.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
 }
-
 function renderHistorial(){
   const list=document.getElementById('histList');
   list.innerHTML=state.servicios.map(s=>{
-    const fecha=fmtFecha(s.fecha);
-    const desc=s.descripcion||'—';
-    const km=s.kilometraje||'—';
-    const cint=s.codigo_interno||'';
-    const coem=s.cod_oem||'';
-    const cant=s.cantidad||'';
-    const cu=parseFloat(s.costo_unit||0)||0;
-    const total=parseFloat(s.total||0)||0;
+    const cint=s.codigo_interno||'',coem=s.cod_oem||'',cant=s.cantidad||'';
+    const cu=parseFloat(s.costo_unit||0)||0,total=parseFloat(s.total||0)||0;
     return `<div class="svc-item">
-      <div class="top"><span class="fecha">${fecha}</span><span class="km">📏 ${km} km</span></div>
-      <div class="desc">${escapeHtml(desc)}</div>
+      <div class="top"><span class="fecha">${fmtFecha(s.fecha)}</span><span class="km">📏 ${s.kilometraje||'—'} km</span></div>
+      <div class="desc">${escapeHtml(s.descripcion||'—')}</div>
       <div class="codes">
         ${cint?`<span class="code-tag">INT: ${escapeHtml(cint)}</span>`:''}
         ${coem?`<span class="code-tag">OEM: ${escapeHtml(coem)}</span>`:''}
@@ -394,8 +437,40 @@ function renderHistorial(){
   }).join('');
 }
 
-function fmtFecha(d){if(!d)return '—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return d}}
+/* === TABLA VEHÍCULOS (solo dueño) === */
+async function cargarVehiculosTabla(){
+  const box=document.getElementById('vehTableBox');
+  box.innerHTML='<div class="loading">Cargando vehículos...</div>';
+  try{
+    const r=await callAS('veh');
+    state.vehAll=r.rows||[];
+    renderVehTable();
+  }catch(e){box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
+}
+function renderVehTable(){
+  const q=(document.getElementById('vehFilter').value||'').trim().toLowerCase();
+  let rows=state.vehAll;
+  if(q)rows=rows.filter(v=>Object.values(v).some(x=>(x||'').toString().toLowerCase().includes(q)));
+  document.getElementById('vehCount').textContent=rows.length;
+  if(rows.length===0){document.getElementById('vehTableBox').innerHTML='<div class="empty">Sin resultados</div>';return}
+  const cols=['placa','modelo','ano','combustible','chofer__empresa','ruc','telefono','dni','motor','direccion'];
+  const headers=['Placa','Modelo','Año','Comb.','Cliente','RUC','Teléfono','DNI','Motor','Dirección'];
+  let html='<div class="table-wrap"><table class="data-table"><thead><tr>';
+  headers.forEach(h=>html+='<th>'+h+'</th>');
+  html+='</tr></thead><tbody>';
+  rows.forEach(v=>{
+    html+='<tr>';
+    cols.forEach((c,i)=>{
+      const val=escapeHtml(v[c]||'');
+      html+='<td'+(i===0?' class="placa-cell"':'')+'>'+val+'</td>';
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table></div>';
+  document.getElementById('vehTableBox').innerHTML=html;
+}
 
+/* === PROFORMA === */
 function usarEnProforma(){
   if(!state.vehiculo)return;
   const v=state.vehiculo;
@@ -405,23 +480,20 @@ function usarEnProforma(){
   document.getElementById('pfDir').value=v.direccion||'';
   document.getElementById('pfPlaca').value=v.placa||'';
   document.getElementById('pfModelo').value=((v.modelo||'')+' '+(v.ano||'')).trim();
-  showTab2('tProf');
 }
-
 function addLine(){state.lines.push({desc:'',cint:'',coem:'',cant:1,precio:0});renderLines()}
 function delLine(i){state.lines.splice(i,1);renderLines()}
 function updLine(i,f,v){
   state.lines[i][f]=(f==='cant'||f==='precio')?(parseFloat(v)||0):v;
   if(f==='cant'||f==='precio'){
-    const l=state.lines[i];
-    const el=document.getElementById('lineTot'+i);
+    const l=state.lines[i],el=document.getElementById('lineTot'+i);
     if(el)el.value=(l.cant*l.precio).toFixed(2);
   }
   calcTot();
 }
 function renderLines(){
   const c=document.getElementById('lineItems');
-  if(state.lines.length===0){c.innerHTML='<div class="empty">Sin items. Pulsa "Agregar Item"</div>';calcTot();return}
+  if(state.lines.length===0){c.innerHTML='<div class="empty">Sin items</div>';calcTot();return}
   c.innerHTML=state.lines.map((l,i)=>`
     <div class="line-item">
       <div class="li-top">
@@ -444,15 +516,13 @@ function calcTot(){
   const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
   const ac1=parseFloat((document.getElementById('pfAc1')||{}).value)||0;
   const ac2=parseFloat((document.getElementById('pfAc2')||{}).value)||0;
-  const tot=sub-ac1-ac2;
   document.getElementById('tSub').textContent='S/ '+sub.toFixed(2);
-  document.getElementById('tTot').textContent='S/ '+tot.toFixed(2);
+  document.getElementById('tTot').textContent='S/ '+(sub-ac1-ac2).toFixed(2);
 }
-function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 function getCounter(){const v=parseInt(localStorage.getItem(COUNTER_KEY)||'1',10);return isNaN(v)?1:v}
 function setCounter(n){localStorage.setItem(COUNTER_KEY,String(n))}
-function nextProformaNum(){const n=getCounter();const yr=new Date().getFullYear();return `PROF-${yr}-${String(n).padStart(4,'0')}`}
+function nextProformaNum(){return 'PROF-'+new Date().getFullYear()+'-'+String(getCounter()).padStart(4,'0')}
 
 function generarProforma(){
   if(state.lines.length===0){alert('Agrega al menos un item');return}
@@ -464,9 +534,8 @@ function generarProforma(){
   const km=document.getElementById('pfKm').value||'—';
   const modelo=document.getElementById('pfModelo').value||'—';
   const obs=document.getElementById('pfObs').value;
-  const num=nextProformaNum();
   const ahora=new Date();
-  document.getElementById('prnNum').textContent=num;
+  document.getElementById('prnNum').textContent=nextProformaNum();
   document.getElementById('prnFch').textContent=ahora.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
   document.getElementById('prnCliente').textContent=cliente;
   document.getElementById('prnDoc').textContent='DNI/RUC: '+doc;
@@ -493,46 +562,28 @@ function generarProforma(){
   window.scrollTo(0,0);
   setCounter(getCounter()+1);
   document.getElementById('cfgCounter').value=getCounter();
-
   setTimeout(()=>{
-    if(confirm('¿Deseas guardar esta proforma en el historial de Google Sheets?\n\nSe agregará '+state.lines.length+' fila(s) a la hoja Servicios.')){
+    if(confirm('¿Deseas guardar esta proforma en Google Sheets?\n\nSe agregarán '+state.lines.length+' fila(s) a la hoja Servicios.'))
       guardarProformaEnSheets(placa,modelo,km);
-    }
   },500);
 }
 
 async function guardarProformaEnSheets(placa,modelo,km){
-  if(!state.cfg.url){alert('⚠️ Configura primero la URL del Apps Script');return}
+  if(!state.cfg.url){alert('⚠️ Configura la URL');return}
   try{
-    const fecha=new Date().toISOString();
-    let guardadas=0;
+    const fecha=new Date().toISOString();let guardadas=0;
     for(const l of state.lines){
-      const row={
-        fecha:fecha,
-        placa:placa,
-        marca_modelo:modelo,
-        kilometraje:km,
-        cod_oem:l.coem||'',
-        codigo_interno:l.cint||'',
-        cantidad:l.cant,
-        costo_unit:l.precio,
-        descripcion:l.desc,
-        total:(l.cant*l.precio)
-      };
-      const res=await fetch(state.cfg.url,{
-        method:'POST',
-        body:JSON.stringify({token:state.cfg.secret,action:'add',target:'srv',row:row}),
-        headers:{'Content-Type':'text/plain;charset=utf-8'}
-      });
+      const row={fecha:fecha,placa:placa,marca_modelo:modelo,kilometraje:km,cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:(l.cant*l.precio)};
+      const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'add',target:'srv',row:row}),headers:{'Content-Type':'text/plain;charset=utf-8'}});
       const data=await res.json();
       if(data.ok)guardadas++;
     }
-    alert('✓ '+guardadas+' de '+state.lines.length+' filas guardadas en Servicios');
-  }catch(e){alert('Error al guardar: '+e.message)}
+    alert('✓ '+guardadas+' de '+state.lines.length+' filas guardadas');
+    state.srvAll=[];
+  }catch(e){alert('Error: '+e.message)}
 }
 
 function closePrint(){document.getElementById('printArea').style.display='none';document.getElementById('printCtrl').style.display='none';document.getElementById('app').style.display='block'}
-
 function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;saveCfgRaw();alert('Configuración guardada ✓')}
 function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').value,10);if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado ✓')}}
 
