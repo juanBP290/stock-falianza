@@ -72,7 +72,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .line-item .li-top{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px}
 .line-item .li-del{background:transparent;border:none;color:var(--warn);font-size:18px;padding:0 4px}
 .line-item .li-desc-label{display:block;color:var(--accent2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
-.line-item .li-desc-input{flex:1;padding:9px 10px;background:rgba(245,158,11,.08);border:2px solid var(--accent);border-radius:7px;color:var(--text);font-size:13px;text-transform:uppercase;box-shadow:0 0 0 1px rgba(245,158,11,.15) inset}
+.line-item .li-desc-input{flex:1;width:100%;box-sizing:border-box;padding:9px 10px;background:rgba(245,158,11,.08);border:2px solid var(--accent);border-radius:7px;color:var(--text);font-size:13px;text-transform:uppercase;box-shadow:0 0 0 1px rgba(245,158,11,.15) inset}
 .line-item .li-desc-input:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 2px rgba(245,158,11,.18)}
 .uppercase-input{text-transform:uppercase}
 .line-item .li-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:11px}
@@ -1083,6 +1083,43 @@ function reserveNextProformaNumber(fechaInput){
   return num;
 }
 
+
+async function shouldProceedWithDuplicateSave(proforma){
+  const warnings=[];
+
+  if(isProformaSaved(proforma.num)){
+    warnings.push('La proforma '+proforma.num+' ya fue guardada antes en este navegador.');
+  }
+
+  try{
+    if(state.srvAll.length===0 && state.cfg.url){
+      const r=await callAS('srv');
+      state.srvAll=r.rows||[];
+    }
+  }catch(e){
+    console.warn('No se pudo revisar duplicados en BD:',e.message);
+  }
+
+  const rows=Array.isArray(state.srvAll)?state.srvAll:[];
+  const sameNum=rows.filter(r=>String(r.proforma_num||'').trim().toUpperCase()===String(proforma.num||'').trim().toUpperCase());
+  if(sameNum.length){
+    warnings.push('En la base de datos ya existen '+sameNum.length+' fila(s) con el número '+proforma.num+'.');
+  }
+
+  const samePlateDate=rows.filter(r=>{
+    const placaOk=String(r.placa||'').trim().toUpperCase()===String(proforma.placa||'').trim().toUpperCase();
+    const fechaOk=(String(r.fecha||'').slice(0,10)===String(proforma.fechaIso||'').slice(0,10));
+    return placaOk && fechaOk;
+  });
+  if(samePlateDate.length){
+    warnings.push('La placa '+proforma.placa+' ya tiene '+samePlateDate.length+' fila(s) registradas en esa misma fecha.');
+  }
+
+  if(!warnings.length) return true;
+
+  return confirm('⚠️ POSIBLE DUPLICADO\n\n'+warnings.join('\n')+'\n\n¿Desea duplicar la proforma de todas maneras?');
+}
+
 function generarProforma(){
   if(state.lines.length===0){alert('Agrega al menos un item');return}
   const wasEditing=!!state.editingProformaNum;
@@ -1106,10 +1143,8 @@ async function guardarProformaEnSheets(proforma){
   if(state.role!=='dueno'){alert('Solo el dueño puede guardar cambios en la base de datos.');return}
   if(!state.cfg.url){alert('⚠️ Configura la URL');return}
   if(!proforma||!proforma.num){alert('No hay documento listo para guardar');return}
-  if(isProformaSaved(proforma.num)){
-    alert('⚠️ La proforma '+proforma.num+' ya fue guardada una vez en esta base local. No se volverá a guardar para evitar duplicados.');
-    return;
-  }
+  const proceed=await shouldProceedWithDuplicateSave(proforma);
+  if(!proceed) return;
   try{
     const fecha=proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString();let guardadas=0;
     for(const l of (proforma.lines||[])){
