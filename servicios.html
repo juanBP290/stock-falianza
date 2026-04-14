@@ -10,6 +10,8 @@
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
 #gate{position:fixed;inset:0;background:linear-gradient(135deg,#0b0f17 0%,#1e2a3f 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
 .gate-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;width:100%;max-width:340px}
 .gate-card h1{margin:0 0 4px;font-size:22px;color:var(--accent)}
@@ -230,7 +232,7 @@ input,select,textarea{font-family:inherit}
           <div style="margin-top:4px">RUC: 10434002597</div>
           <div>Av. Oscar R. Benavides 1176 - Chincha</div>
           <div>WhatsApp: 957 388 710</div>
-          <div>sgalianzaperu@gmail.com</div>
+          <div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="017266606d68606f7b607164737441666c60686d2f626e6c">[email&#160;protected]</a></div>
         </div>
       </div>
       <div class="pf-num">
@@ -272,7 +274,7 @@ input,select,textarea{font-family:inherit}
   <button class="btn" onclick="window.print()">🖨 Imprimir / PDF</button>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const CFG_KEY='stk_alianza_cfg_v3',COUNTER_KEY='alianza_proforma_counter',ROLE_KEY='alianza_role';
 const PASS_DUENO='2580',PASS_ASIST='alianza',SECRET_DEFAULT='123alianza';
 let state={role:null,cfg:{url:'',secret:SECRET_DEFAULT},vehiculo:null,servicios:[],lines:[],vehAll:[],srvAll:[]};
@@ -306,6 +308,17 @@ function enterApp(){
   document.getElementById('cfgUrl').value=state.cfg.url||'';
   document.getElementById('cfgSecret').value=state.cfg.secret||'';
   document.getElementById('cfgCounter').value=getCounter();
+  precargarDatos();
+}
+
+async function precargarDatos(){
+  if(!state.cfg.url)return;
+  try{
+    const [rv,rs]=await Promise.all([callAS('veh'),callAS('srv')]);
+    state.vehAll=rv.rows||[];
+    state.srvAll=rs.rows||[];
+    console.log('✓ Precarga:',state.vehAll.length,'veh y',state.srvAll.length,'srv');
+  }catch(e){console.warn('Precarga fallo:',e.message)}
 }
 
 function showTab(ev,id){
@@ -347,8 +360,10 @@ async function buscarGeneral(){
       const r=await callAS('srv');
       state.srvAll=r.rows||[];
     }
+    const palabras=q.split(/\s+/).filter(Boolean);
     const filtered=state.srvAll.filter(s=>{
-      return Object.values(s).some(v=>(v||'').toString().toLowerCase().includes(q));
+      const blob=Object.values(s).map(v=>(v||'').toString().toLowerCase()).join(' ');
+      return palabras.every(p=>blob.includes(p));
     }).slice(0,50);
     if(filtered.length===0){box.innerHTML='<div class="empty">Sin resultados para "'+escapeHtml(q)+'"</div>';return}
     box.innerHTML='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">'+filtered.length+' resultado(s)'+(filtered.length===50?' (mostrando primeros 50)':'')+'</div><div class="svc-list">'+filtered.map(s=>`
@@ -389,14 +404,14 @@ async function buscarVehiculo(){
     if(!veh){box.innerHTML='<div class="empty">⚠️ Vehículo no encontrado</div>';state.vehiculo=null;return}
     state.vehiculo=veh;
     box.innerHTML=`
-      <div class="veh-info" onclick="cargarHistorial()">
+      <div class="veh-info">
         <div class="placa">${veh.placa||'—'}</div>
         <div class="det">${veh.modelo||''} ${veh.ano||''} · ${veh.combustible||''}</div>
         <div class="det">Cliente: ${veh.chofer__empresa||veh.chofer||'—'}</div>
         <div class="det">📞 ${veh.telefono||'—'} · DNI/RUC: ${veh.ruc||veh.dni||'—'}</div>
-        <div class="hint">👆 Toca aquí para ver historial · o ve a la pestaña Proforma</div>
       </div>`;
     usarEnProforma();
+    await cargarHistorialSilencioso();
   }catch(e){box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
 }
 
@@ -417,6 +432,21 @@ async function cargarHistorial(){
     if(filtered.length===0){list.innerHTML='<div class="empty">Sin servicios registrados</div>';return}
     state.servicios=filtered;renderHistorial();
   }catch(e){list.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
+}
+async function cargarHistorialSilencioso(){
+  if(!state.vehiculo)return;
+  const placa=(state.vehiculo.placa||'').toString().toUpperCase();
+  document.getElementById('histVehInfo').innerHTML=`
+    <div class="veh-info"><div class="placa">${placa}</div><div class="det">${state.vehiculo.modelo||''} ${state.vehiculo.ano||''}</div></div>`;
+  try{
+    if(state.srvAll.length===0){const r=await callAS('srv');state.srvAll=r.rows||[]}
+    const target=normPlaca(placa);
+    const filtered=state.srvAll.filter(s=>normPlaca(s.placa)===target);
+    filtered.sort((a,b)=>new Date(b.fecha||0)-new Date(a.fecha||0));
+    state.servicios=filtered;
+    if(filtered.length===0)document.getElementById('histList').innerHTML='<div class="empty">Sin servicios registrados</div>';
+    else renderHistorial();
+  }catch(e){}
 }
 function renderHistorial(){
   const list=document.getElementById('histList');
@@ -563,7 +593,7 @@ function generarProforma(){
   setCounter(getCounter()+1);
   document.getElementById('cfgCounter').value=getCounter();
   setTimeout(()=>{
-    if(confirm('¿Deseas guardar esta proforma en Google Sheets?\n\nSe agregarán '+state.lines.length+' fila(s) a la hoja Servicios.'))
+    if(confirm('¿Desea guardar esta proforma en la base de datos?\n\nSe registrarán '+state.lines.length+' item(s) en el historial del vehículo.'))
       guardarProformaEnSheets(placa,modelo,km);
   },500);
 }
@@ -580,6 +610,7 @@ async function guardarProformaEnSheets(placa,modelo,km){
     }
     alert('✓ '+guardadas+' de '+state.lines.length+' filas guardadas');
     state.srvAll=[];
+    precargarDatos();
   }catch(e){alert('Error: '+e.message)}
 }
 
@@ -590,9 +621,4 @@ function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').va
 loadCfg();
 const savedRole=sessionStorage.getItem(ROLE_KEY);
 if(savedRole){state.role=savedRole;enterApp()}
-document.getElementById('gatePass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
-document.getElementById('searchPlaca').addEventListener('keydown',e=>{if(e.key==='Enter')buscarVehiculo()});
-addLine();
-</script>
-</body>
-</html>
+document.ge
