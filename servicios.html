@@ -60,6 +60,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .svc-item .codes{display:flex;gap:6px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
 .svc-item .code-tag{background:var(--bg2);padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
 .svc-item .total{font-size:14px;font-weight:700;color:var(--ok);text-align:right;margin-top:6px}
+
+.proforma-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.badge{font-size:10px;padding:2px 6px;border-radius:999px;border:1px solid var(--border);background:var(--bg2);color:var(--muted)}
+.badge.ok{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:var(--ok)}
+.badge.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:var(--accent)}
+.svc-item .cli{font-size:12px;color:var(--text);margin-top:4px}
 .empty{text-align:center;color:var(--muted);padding:30px 16px;font-size:13px}
 .loading{text-align:center;color:var(--muted);padding:20px;font-size:12px}
 .line-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px}
@@ -136,6 +142,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <button class="tab" onclick="showTab(event,'tHist')">📋 Historial</button>
     <button class="tab" id="tabVeh" onclick="showTab(event,'tVeh')">🚗 Vehículos</button>
     <button class="tab" onclick="showTab(event,'tProf')">📄 Proforma</button>
+    <button class="tab" onclick="showTab(event,'tProfs')">🧾 Proformas</button>
     <button class="tab" id="tabConfig" onclick="showTab(event,'tConfig')">⚙️ Config</button>
   </div>
 
@@ -209,6 +216,18 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     </div>
   </div>
 
+
+  <div class="view" id="tProfs">
+    <div class="card">
+      <h2>🧾 Proformas Generadas</h2>
+      <div class="field"><label>Buscar proforma</label>
+        <input type="text" id="pfHistFilter" placeholder="Buscar por número, placa, cliente..." oninput="renderProformasList()">
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px"><span id="pfHistCount">0</span> proforma(s)</div>
+      <div id="pfHistList" class="svc-list"></div>
+    </div>
+  </div>
+
   <div class="view" id="tConfig">
     <div class="card"><h2>Configuración Apps Script</h2>
       <div class="field"><label>URL del Web App</label><input type="text" id="cfgUrl" placeholder="https://script.google.com/.../exec"></div>
@@ -279,9 +298,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 </div>
 
 <script>
-const CFG_KEY='stk_alianza_cfg_v3',COUNTER_KEY='alianza_proforma_counter',ROLE_KEY='alianza_role';
+const CFG_KEY='stk_alianza_cfg_v3',COUNTER_KEY='alianza_proforma_counter',ROLE_KEY='alianza_role',PROFORMAS_KEY='alianza_proformas_v1',PROFORMAS_SAVED_KEY='alianza_proformas_saved_v1';
 const PASS_DUENO='2580',PASS_ASIST='alianza',SECRET_DEFAULT='123alianza';
-let state={role:null,cfg:{url:'',secret:SECRET_DEFAULT},vehiculo:null,servicios:[],lines:[],vehAll:[],srvAll:[]};
+let state={role:null,cfg:{url:'',secret:SECRET_DEFAULT},vehiculo:null,servicios:[],lines:[],vehAll:[],srvAll:[],proformas:[],currentProforma:null};
 
 function loadCfg(){try{const r=localStorage.getItem(CFG_KEY);if(r)state.cfg=Object.assign(state.cfg,JSON.parse(r))}catch(e){}}
 function saveCfgRaw(){localStorage.setItem(CFG_KEY,JSON.stringify(state.cfg))}
@@ -312,6 +331,8 @@ function enterApp(){
   document.getElementById('cfgUrl').value=state.cfg.url||'';
   document.getElementById('cfgSecret').value=state.cfg.secret||'';
   document.getElementById('cfgCounter').value=getCounter();
+  loadProformasLocal();
+  renderProformasList();
   precargarDatos();
 }
 
@@ -336,7 +357,7 @@ function showTab2(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const map={tBuscar:0,tHist:1,tVeh:2,tProf:3,tConfig:4};
+  const map={tBuscar:0,tHist:1,tVeh:2,tProf:3,tProfs:4,tConfig:5};
   const tab=document.querySelectorAll('.tab')[map[id]];
   if(tab)tab.classList.add('active');
 }
@@ -481,9 +502,37 @@ async function cargarVehiculosTabla(){
     renderVehTable();
   }catch(e){box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
 }
+function normalizeKeyName(k){
+  return String(k||'')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase()
+    .replace(/\s+/g,'')
+    .replace(/[^a-z0-9_]/g,'');
+}
 function pickVehValue(v, keys){
+  if(!v) return '';
   for(const k of keys){
-    const val = v && Object.prototype.hasOwnProperty.call(v, k) ? v[k] : '';
+    if(Object.prototype.hasOwnProperty.call(v, k)){
+      const val=v[k];
+      if(val !== undefined && val !== null && String(val).trim() !== '') return val;
+    }
+  }
+  const map={};
+  Object.keys(v).forEach(key=>{
+    map[normalizeKeyName(key)] = v[key];
+  });
+  for(const k of keys){
+    const val = map[normalizeKeyName(k)];
+    if(val !== undefined && val !== null && String(val).trim() !== '') return val;
+  }
+  return '';
+}
+function getVehValueByPosition(v, index){
+  if(!v) return '';
+  const vals = Object.values(v);
+  if(index >= 0 && index < vals.length){
+    const val = vals[index];
     if(val !== undefined && val !== null && String(val).trim() !== '') return val;
   }
   return '';
@@ -550,6 +599,130 @@ function renderVehTable(){
   document.getElementById('vehTableBox').innerHTML=html;
 }
 
+
+/* === PROFORMAS LOCALES === */
+function loadProformasLocal(){
+  try{
+    const data=JSON.parse(localStorage.getItem(PROFORMAS_KEY)||'[]');
+    state.proformas=Array.isArray(data)?data:[];
+  }catch(e){state.proformas=[]}
+}
+function saveProformasLocal(){
+  localStorage.setItem(PROFORMAS_KEY,JSON.stringify(state.proformas));
+}
+function getSavedProformasMap(){
+  try{return JSON.parse(localStorage.getItem(PROFORMAS_SAVED_KEY)||'{}')||{}}catch(e){return {}}
+}
+function markProformaSaved(num, meta){
+  const data=getSavedProformasMap();
+  data[num]=Object.assign({savedAt:new Date().toISOString()},meta||{});
+  localStorage.setItem(PROFORMAS_SAVED_KEY,JSON.stringify(data));
+  const idx=state.proformas.findIndex(p=>p.num===num);
+  if(idx>=0){
+    state.proformas[idx].savedToDb=true;
+    state.proformas[idx].savedAt=data[num].savedAt;
+    saveProformasLocal();
+  }
+}
+function isProformaSaved(num){
+  const data=getSavedProformasMap();
+  return !!data[num];
+}
+function upsertProformaLocal(pf){
+  const idx=state.proformas.findIndex(p=>p.num===pf.num);
+  if(idx>=0) state.proformas[idx]=pf;
+  else state.proformas.unshift(pf);
+  state.proformas.sort((a,b)=>new Date(b.generatedAt||0)-new Date(a.generatedAt||0));
+  saveProformasLocal();
+}
+function buildCurrentProforma(){
+  const cliente=document.getElementById('pfCliente').value||'—';
+  const doc=document.getElementById('pfDoc').value||'—';
+  const tel=document.getElementById('pfTel').value||'—';
+  const dir=document.getElementById('pfDir').value||'—';
+  const placa=document.getElementById('pfPlaca').value||'—';
+  const km=document.getElementById('pfKm').value||'—';
+  const ano=document.getElementById('pfAno').value||'—';
+  const modelo=document.getElementById('pfModelo').value||'—';
+  const obs=document.getElementById('pfObs').value||'';
+  const now=new Date();
+  const num=nextProformaNum();
+  const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
+  const ac1=parseFloat(document.getElementById('pfAc1').value)||0;
+  const ac2=parseFloat(document.getElementById('pfAc2').value)||0;
+  return {
+    num,
+    generatedAt: now.toISOString(),
+    fechaTexto: now.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    generadoTexto: now.toLocaleString('es-PE'),
+    cliente, doc, tel, dir, placa, km, ano, modelo, obs,
+    lines: state.lines.map(l=>({desc:l.desc||'', cint:l.cint||'', coem:l.coem||'', cant:parseFloat(l.cant)||0, precio:parseFloat(l.precio)||0})),
+    sub, ac1, ac2, tot: sub-ac1-ac2,
+    savedToDb: isProformaSaved(num)
+  };
+}
+function renderPrintFromProforma(pf){
+  document.getElementById('prnNum').textContent=pf.num;
+  document.getElementById('prnFch').textContent=pf.fechaTexto||'—';
+  document.getElementById('prnCliente').textContent=pf.cliente||'—';
+  document.getElementById('prnDoc').textContent='DNI/RUC: '+(pf.doc||'—');
+  document.getElementById('prnTel').textContent='Tel: '+(pf.tel||'—');
+  document.getElementById('prnDir').textContent='Dir: '+(pf.dir||'—');
+  document.getElementById('prnPlaca').textContent=pf.placa||'—';
+  document.getElementById('prnAno').textContent='Año: '+(pf.ano||'—');
+  document.getElementById('prnModelo').textContent=pf.modelo||'—';
+  document.getElementById('prnKm').textContent='Km: '+(pf.km||'—');
+  document.getElementById('prnBody').innerHTML=(pf.lines||[]).map((l,i)=>`<tr><td class="center">${i+1}</td><td>${escapeHtml(l.desc)}</td><td class="num-col">${l.cant}</td><td class="num-col">${(parseFloat(l.precio)||0).toFixed(2)}</td><td class="num-col">${((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0)).toFixed(2)}</td></tr>`).join('');
+  document.getElementById('prnSub').textContent='S/ '+(parseFloat(pf.sub)||0).toFixed(2);
+  document.getElementById('prnAc1').textContent='S/ '+(parseFloat(pf.ac1)||0).toFixed(2);
+  document.getElementById('prnAc2').textContent='S/ '+(parseFloat(pf.ac2)||0).toFixed(2);
+  document.getElementById('prnTot').textContent=(parseFloat(pf.tot)||0).toFixed(2);
+  if(pf.obs){document.getElementById('prnObsBox').style.display='block';document.getElementById('prnObs').textContent=pf.obs}
+  else document.getElementById('prnObsBox').style.display='none';
+  document.getElementById('prnGen').textContent=pf.generadoTexto||'—';
+}
+function openStoredProforma(num){
+  const pf=state.proformas.find(p=>p.num===num);
+  if(!pf)return;
+  state.currentProforma=pf;
+  renderPrintFromProforma(pf);
+  document.getElementById('app').style.display='none';
+  document.getElementById('printArea').style.display='block';
+  document.getElementById('printCtrl').style.display='flex';
+  window.scrollTo(0,0);
+}
+function renderProformasList(){
+  const box=document.getElementById('pfHistList');
+  const counter=document.getElementById('pfHistCount');
+  if(!box||!counter)return;
+  const q=(document.getElementById('pfHistFilter')?.value||'').trim().toLowerCase();
+  const rows=state.proformas.filter(p=>{
+    if(!q)return true;
+    const blob=[p.num,p.cliente,p.placa,p.modelo,p.doc,p.fechaTexto].join(' ').toLowerCase();
+    return blob.includes(q);
+  });
+  counter.textContent=rows.length;
+  if(rows.length===0){
+    box.innerHTML='<div class="empty">Aún no hay proformas guardadas en este navegador</div>';
+    return;
+  }
+  box.innerHTML=rows.map(p=>`
+    <div class="svc-item" onclick="openStoredProforma('${escapeHtml(p.num)}')">
+      <div class="top">
+        <span class="placa-tag">${escapeHtml(p.num)}</span>
+        <span class="fecha">${escapeHtml(p.fechaTexto||'—')}</span>
+        <span class="km">📏 ${escapeHtml(p.placa||'—')}</span>
+      </div>
+      <div class="cli"><b>${escapeHtml(p.cliente||'—')}</b></div>
+      <div class="desc">${escapeHtml(p.modelo||'—')}</div>
+      <div class="proforma-badges">
+        <span class="badge">${(p.lines||[]).length} item(s)</span>
+        <span class="badge ${p.savedToDb?'ok':'warn'}">${p.savedToDb?'Guardada en BD':'Pendiente de guardar'}</span>
+      </div>
+      <div class="total">S/ ${(parseFloat(p.tot)||0).toFixed(2)}</div>
+    </div>`).join('');
+}
+
 /* === PROFORMA === */
 function getVehClienteNombre(v){
   return pickVehValue(v,['chofer__empresa','chofer_empresa','chofer','cliente','nombre'])||'';
@@ -558,12 +731,15 @@ function getVehDoc(v){
   return pickVehValue(v,['ruc','dni'])||'';
 }
 function getVehModeloTexto(v){
-  const modelo = pickVehValue(v,['modelo_base','modelo','modelo_detalle','modelo_2','modelo2'])||'';
-  const version = pickVehValue(v,['version_base','version','version_detalle','version_2','version2'])||'';
+  const modelo =
+    pickVehValue(v,['modelo','modelo_base','marca_modelo','modelo_detalle','modelo_2','modelo2']) ||
+    getVehValueByPosition(v,1) ||
+    '';
+  const version = pickVehValue(v,['version','version_base','version_detalle','version_2','version2'])||'';
   return [modelo,version].filter(Boolean).join(' ').trim();
 }
 function getVehAno(v){
-  return pickVehValue(v,['ano'])||'';
+  return pickVehValue(v,['ano','año']) || getVehValueByPosition(v,2) || '';
 }
 function aplicarVehiculoAProforma(v){
   if(!v)return;
@@ -645,62 +821,63 @@ function nextProformaNum(){return 'PROF-'+new Date().getFullYear()+'-'+String(ge
 
 function generarProforma(){
   if(state.lines.length===0){alert('Agrega al menos un item');return}
-  const cliente=document.getElementById('pfCliente').value||'—';
-  const doc=document.getElementById('pfDoc').value||'—';
-  const tel=document.getElementById('pfTel').value||'—';
-  const dir=document.getElementById('pfDir').value||'—';
-  const placa=document.getElementById('pfPlaca').value||'—';
-  const km=document.getElementById('pfKm').value||'—';
-  const ano=document.getElementById('pfAno').value||'—';
-  const modelo=document.getElementById('pfModelo').value||'—';
-  const obs=document.getElementById('pfObs').value;
-  const ahora=new Date();
-  document.getElementById('prnNum').textContent=nextProformaNum();
-  document.getElementById('prnFch').textContent=ahora.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
-  document.getElementById('prnCliente').textContent=cliente;
-  document.getElementById('prnDoc').textContent='DNI/RUC: '+doc;
-  document.getElementById('prnTel').textContent='Tel: '+tel;
-  document.getElementById('prnDir').textContent='Dir: '+dir;
-  document.getElementById('prnPlaca').textContent=placa;
-  document.getElementById('prnAno').textContent='Año: '+ano;
-  document.getElementById('prnModelo').textContent=modelo;
-  document.getElementById('prnKm').textContent='Km: '+km;
-  const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
-  const ac1=parseFloat(document.getElementById('pfAc1').value)||0;
-  const ac2=parseFloat(document.getElementById('pfAc2').value)||0;
-  const tot=sub-ac1-ac2;
-  document.getElementById('prnBody').innerHTML=state.lines.map((l,i)=>`<tr><td class="center">${i+1}</td><td>${escapeHtml(l.desc)}</td><td class="num-col">${l.cant}</td><td class="num-col">${l.precio.toFixed(2)}</td><td class="num-col">${(l.cant*l.precio).toFixed(2)}</td></tr>`).join('');
-  document.getElementById('prnSub').textContent='S/ '+sub.toFixed(2);
-  document.getElementById('prnAc1').textContent='S/ '+ac1.toFixed(2);
-  document.getElementById('prnAc2').textContent='S/ '+ac2.toFixed(2);
-  document.getElementById('prnTot').textContent=tot.toFixed(2);
-  if(obs){document.getElementById('prnObsBox').style.display='block';document.getElementById('prnObs').textContent=obs}
-  else document.getElementById('prnObsBox').style.display='none';
-  document.getElementById('prnGen').textContent=ahora.toLocaleString('es-PE');
+  const pf=buildCurrentProforma();
+  state.currentProforma=pf;
+  renderPrintFromProforma(pf);
+  upsertProformaLocal(pf);
+  renderProformasList();
   document.getElementById('app').style.display='none';
   document.getElementById('printArea').style.display='block';
   document.getElementById('printCtrl').style.display='flex';
   window.scrollTo(0,0);
   setCounter(getCounter()+1);
   document.getElementById('cfgCounter').value=getCounter();
-  setTimeout(()=>{
-    if(confirm('¿Desea guardar esta proforma en la base de datos?\n\nSe registrarán '+state.lines.length+' item(s) en el historial del vehículo.'))
-      guardarProformaEnSheets(placa,modelo,km);
+  setTimeout(async ()=>{
+    if(confirm('¿Desea guardar esta proforma en la base de datos?
+
+Se registrarán '+state.lines.length+' item(s) en el historial del vehículo.')){
+      await guardarProformaEnSheets(state.currentProforma);
+    }
   },500);
 }
 
-async function guardarProformaEnSheets(placa,modelo,km){
+async function guardarProformaEnSheets(proforma){
   if(!state.cfg.url){alert('⚠️ Configura la URL');return}
+  if(!proforma||!proforma.num){alert('No hay proforma lista para guardar');return}
+  if(isProformaSaved(proforma.num)){
+    alert('⚠️ La proforma '+proforma.num+' ya fue guardada una vez en esta base local. No se volverá a guardar para evitar duplicados.');
+    return;
+  }
   try{
     const fecha=new Date().toISOString();let guardadas=0;
-    for(const l of state.lines){
-      const row={fecha:fecha,placa:placa,marca_modelo:modelo,kilometraje:km,cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:(l.cant*l.precio)};
+    for(const l of (proforma.lines||[])){
+      const row={
+        fecha:fecha,
+        proforma_num:proforma.num,
+        cliente:proforma.cliente,
+        doc:proforma.doc,
+        telefono:proforma.tel,
+        direccion:proforma.dir,
+        placa:proforma.placa,
+        marca_modelo:proforma.modelo,
+        ano:proforma.ano,
+        kilometraje:proforma.km,
+        cod_oem:l.coem||'',
+        codigo_interno:l.cint||'',
+        cantidad:l.cant,
+        costo_unit:l.precio,
+        descripcion:l.desc,
+        total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))
+      };
       const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'add',target:'srv',row:row}),headers:{'Content-Type':'text/plain;charset=utf-8'}});
       const data=await res.json();
       if(data.ok)guardadas++;
     }
-    alert('✓ '+guardadas+' de '+state.lines.length+' filas guardadas');
+    markProformaSaved(proforma.num,{guardadas:guardadas});
+    alert('✓ '+guardadas+' de '+(proforma.lines||[]).length+' filas guardadas con la proforma '+proforma.num);
     state.srvAll=[];
+    upsertProformaLocal(Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString()}));
+    renderProformasList();
     precargarDatos();
   }catch(e){alert('Error: '+e.message)}
 }
