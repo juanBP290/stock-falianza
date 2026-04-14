@@ -345,13 +345,13 @@ function enterApp(){
     document.getElementById('tabConfig').style.display='none';
     document.getElementById('tabVeh').style.display='none';
   }
+  loadProformasLocal();
   updateFormModeUI();
   document.getElementById('cfgUrl').value=state.cfg.url||'';
   document.getElementById('cfgSecret').value=state.cfg.secret||'';
   document.getElementById('cfgCounter').value=getCounter();
   if(document.getElementById('pfFecha') && !document.getElementById('pfFecha').value) document.getElementById('pfFecha').value=todayInputValue();
   if(document.getElementById('pfPreviewNum')) document.getElementById('pfPreviewNum').value=state.editingProformaNum||nextProformaNum();
-  loadProformasLocal();
   renderProformasList();
   precargarDatos();
 }
@@ -774,7 +774,7 @@ function buildCurrentProforma(){
   const obs=document.getElementById('pfObs').value||'';
   const now=new Date();
   const existing=state.editingProformaNum ? state.proformas.find(p=>p.num===state.editingProformaNum) : null;
-  const num=existing?.num || nextProformaNum();
+  const num=existing?.num || reserveNextProformaNumber(fechaInput);
   const generatedAt=existing?.generatedAt || now.toISOString();
   const fechaInput=(document.getElementById('pfFecha').value||existing?.fechaInput||todayInputValue());
   const fechaTexto=inputDateToText(fechaInput);
@@ -958,7 +958,45 @@ function calcTot(){
 
 function getCounter(){const v=parseInt(localStorage.getItem(COUNTER_KEY)||'1',10);return isNaN(v)?1:v}
 function setCounter(n){localStorage.setItem(COUNTER_KEY,String(n))}
-function nextProformaNum(){return 'PROF-'+new Date().getFullYear()+'-'+String(getCounter()).padStart(4,'0')}
+function getProformaYear(fechaInput){
+  const src=fechaInput || document.getElementById('pfFecha')?.value || '';
+  if(src && /^\d{4}-\d{2}-\d{2}$/.test(src)) return parseInt(src.slice(0,4),10);
+  return new Date().getFullYear();
+}
+function parseProformaNum(num){
+  const m=String(num||'').match(/^PROF-(\d{4})-(\d{4,})$/i);
+  if(!m) return null;
+  return {year:parseInt(m[1],10), seq:parseInt(m[2],10)};
+}
+function getMaxLocalProformaSeq(year){
+  let maxSeq=0;
+  for(const p of (state.proformas||[])){
+    const parsed=parseProformaNum(p.num);
+    if(parsed && parsed.year===year && parsed.seq>maxSeq) maxSeq=parsed.seq;
+  }
+  return maxSeq;
+}
+function ensureCounterAheadForYear(year){
+  const localMax=getMaxLocalProformaSeq(year);
+  if(year===new Date().getFullYear()){
+    const desired=Math.max(getCounter(), localMax+1);
+    if(desired!==getCounter()) setCounter(desired);
+    return desired;
+  }
+  return localMax+1;
+}
+function nextProformaNum(fechaInput){
+  const year=getProformaYear(fechaInput);
+  const nextSeq=ensureCounterAheadForYear(year);
+  return 'PROF-'+year+'-'+String(nextSeq).padStart(4,'0');
+}
+function reserveNextProformaNumber(fechaInput){
+  const year=getProformaYear(fechaInput);
+  const nextSeq=ensureCounterAheadForYear(year);
+  const num='PROF-'+year+'-'+String(nextSeq).padStart(4,'0');
+  if(year===new Date().getFullYear()) setCounter(nextSeq+1);
+  return num;
+}
 
 function generarProforma(){
   if(state.lines.length===0){alert('Agrega al menos un item');return}
@@ -973,7 +1011,6 @@ function generarProforma(){
   renderPrintControls();
   window.scrollTo(0,0);
   if(!wasEditing){
-    setCounter(getCounter()+1);
     document.getElementById('cfgCounter').value=getCounter();
   }
   state.editingProformaNum=pf.num;
