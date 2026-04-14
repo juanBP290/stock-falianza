@@ -477,25 +477,71 @@ async function cargarVehiculosTabla(){
     renderVehTable();
   }catch(e){box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>'}
 }
+function pickVehValue(v, keys){
+  for(const k of keys){
+    const val = v && Object.prototype.hasOwnProperty.call(v, k) ? v[k] : '';
+    if(val !== undefined && val !== null && String(val).trim() !== '') return val;
+  }
+  return '';
+}
+
 function renderVehTable(){
   const q=(document.getElementById('vehFilter').value||'').trim().toLowerCase();
   let rows=state.vehAll;
-  if(q)rows=rows.filter(v=>Object.values(v).some(x=>(x||'').toString().toLowerCase().includes(q)));
+
+  if(q){
+    rows=rows.filter(v=>Object.values(v).some(x=>(x||'').toString().toLowerCase().includes(q)));
+  }
+
   document.getElementById('vehCount').textContent=rows.length;
-  if(rows.length===0){document.getElementById('vehTableBox').innerHTML='<div class="empty">Sin resultados</div>';return}
-  const cols=['placa','modelo','ano','combustible','chofer__empresa','ruc','telefono','dni','motor','direccion'];
-  const headers=['Placa','Modelo','Año','Comb.','Cliente','RUC','Teléfono','DNI','Motor','Dirección'];
+
+  if(rows.length===0){
+    document.getElementById('vehTableBox').innerHTML='<div class="empty">Sin resultados</div>';
+    return;
+  }
+
+  const columns = [
+    {label:'Placa', keys:['placa']},
+    {label:'Modelo', keys:['modelo_base','modelo']},
+    {label:'Año', keys:['ano']},
+    {label:'Combustible', keys:['combustible']},
+    {label:'Chofer / Empresa', keys:['chofer__empresa','chofer_empresa','cliente']},
+    {label:'RUC', keys:['ruc']},
+    {label:'Dirección', keys:['direccion']},
+    {label:'Teléfono', keys:['telefono']},
+    {label:'DNI', keys:['dni']},
+    {label:'Motor', keys:['motor']},
+    {label:'Caja', keys:['caja']},
+    {label:'Ruta Scanner', keys:['ruta_scanner']},
+    {label:'CCA', keys:['cca']},
+    {label:'VIN', keys:['vin']},
+    {label:'Versión Base', keys:['version_base','version']},
+    {label:'Ubicación OBD2', keys:['ubicacion_obd2']},
+    {label:'Capac. Oil', keys:['capac_oil']},
+    {label:'Temperatura', keys:['temperatura']},
+    {label:'Batería', keys:['bateria']},
+    {label:'Tipo de Caja', keys:['tipo_de_caja']},
+    {label:'F. Gasolina Ext', keys:['f_gasolina_ext']},
+    {label:'Modelo Detalle', keys:['modelo_detalle','modelo_2','modelo2','modelo_secundario']},
+    {label:'Potencia', keys:['potencia']},
+    {label:'Versión Detalle', keys:['version_detalle','version_2','version2','version_secundaria']},
+    {label:'Cilindrada', keys:['cilindrada']},
+    {label:'Cilindro', keys:['cilindro']}
+  ];
+
   let html='<div class="table-wrap"><table class="data-table"><thead><tr>';
-  headers.forEach(h=>html+='<th>'+h+'</th>');
+  columns.forEach(col=>html+='<th>'+col.label+'</th>');
   html+='</tr></thead><tbody>';
+
   rows.forEach(v=>{
     html+='<tr>';
-    cols.forEach((c,i)=>{
-      const val=escapeHtml(v[c]||'');
+    columns.forEach((col,i)=>{
+      const val=escapeHtml(pickVehValue(v,col.keys)||'');
       html+='<td'+(i===0?' class="placa-cell"':'')+'>'+val+'</td>';
     });
     html+='</tr>';
   });
+
   html+='</tbody></table></div>';
   document.getElementById('vehTableBox').innerHTML=html;
 }
