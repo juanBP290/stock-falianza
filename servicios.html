@@ -190,7 +190,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div class="field"><label>Placa</label><input type="text" id="pfPlaca" style="text-transform:uppercase" autocomplete="off"></div>
         <div class="field"><label>Kilometraje</label><input type="number" id="pfKm"></div>
       </div>
-      <div class="field"><label>Marca / Modelo</label><input type="text" id="pfModelo"></div>
+      <div class="row2">
+        <div class="field"><label>Año</label><input type="text" id="pfAno"></div>
+        <div class="field"><label>Marca / Modelo</label><input type="text" id="pfModelo"></div>
+      </div>
     </div>
     <div class="card"><h2>Items / Servicios</h2>
       <div id="lineItems"></div>
@@ -250,6 +253,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       </div>
       <div class="blk"><h3>Vehículo</h3>
         <div><b id="prnPlaca">—</b></div>
+        <div id="prnAno">Año: —</div>
         <div id="prnModelo">—</div>
         <div id="prnKm">Km: —</div>
       </div>
@@ -556,8 +560,10 @@ function getVehDoc(v){
 function getVehModeloTexto(v){
   const modelo = pickVehValue(v,['modelo_base','modelo','modelo_detalle','modelo_2','modelo2'])||'';
   const version = pickVehValue(v,['version_base','version','version_detalle','version_2','version2'])||'';
-  const ano = pickVehValue(v,['ano'])||'';
-  return [modelo,version,ano].filter(Boolean).join(' ').trim();
+  return [modelo,version].filter(Boolean).join(' ').trim();
+}
+function getVehAno(v){
+  return pickVehValue(v,['ano'])||'';
 }
 function aplicarVehiculoAProforma(v){
   if(!v)return;
@@ -566,6 +572,7 @@ function aplicarVehiculoAProforma(v){
   document.getElementById('pfTel').value=pickVehValue(v,['telefono'])||'';
   document.getElementById('pfDir').value=pickVehValue(v,['direccion'])||'';
   document.getElementById('pfPlaca').value=pickVehValue(v,['placa'])||'';
+  document.getElementById('pfAno').value=getVehAno(v);
   document.getElementById('pfModelo').value=getVehModeloTexto(v);
 }
 async function autocompletarProformaPorPlaca(){
@@ -644,6 +651,7 @@ function generarProforma(){
   const dir=document.getElementById('pfDir').value||'—';
   const placa=document.getElementById('pfPlaca').value||'—';
   const km=document.getElementById('pfKm').value||'—';
+  const ano=document.getElementById('pfAno').value||'—';
   const modelo=document.getElementById('pfModelo').value||'—';
   const obs=document.getElementById('pfObs').value;
   const ahora=new Date();
@@ -654,6 +662,7 @@ function generarProforma(){
   document.getElementById('prnTel').textContent='Tel: '+tel;
   document.getElementById('prnDir').textContent='Dir: '+dir;
   document.getElementById('prnPlaca').textContent=placa;
+  document.getElementById('prnAno').textContent='Año: '+ano;
   document.getElementById('prnModelo').textContent=modelo;
   document.getElementById('prnKm').textContent='Km: '+km;
   const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
