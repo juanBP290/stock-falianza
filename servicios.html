@@ -619,6 +619,17 @@ function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();
 function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').value,10);if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado ✓')}}
 
 loadCfg();
-const savedRole=sessionStorage.getItem(ROLE_KEY);
-if(savedRole){state.role=savedRole;enterApp()}
-document.ge
+const savedRole = sessionStorage.getItem(ROLE_KEY);
+if (savedRole) {
+  state.role = savedRole;
+  enterApp();
+}
+
+document.getElementById('gatePass').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') doLogin();
+});
+
+if (state.lines.length === 0) addLine();
+</script>
+</body>
+</html>
