@@ -833,9 +833,7 @@ function generarProforma(){
   setCounter(getCounter()+1);
   document.getElementById('cfgCounter').value=getCounter();
   setTimeout(async ()=>{
-    if(confirm('¿Desea guardar esta proforma en la base de datos?
-
-Se registrarán '+state.lines.length+' item(s) en el historial del vehículo.')){
+    if(confirm('¿Desea guardar esta proforma en la base de datos?\n\nSe registrarán '+state.lines.length+' item(s) en el historial del vehículo.')){
       await guardarProformaEnSheets(state.currentProforma);
     }
   },500);
