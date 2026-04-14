@@ -191,6 +191,10 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <div class="card">
       <h2 id="docFormTitle">Nuevo documento</h2>
       <div class="proforma-status" id="editModeInfo">Modo nuevo</div>
+      <div class="row2" style="margin-top:12px">
+        <div class="field"><label>Fecha del documento</label><input type="date" id="pfFecha"></div>
+        <div class="field"><label>Número</label><input type="text" id="pfPreviewNum" readonly placeholder="Se asigna al generar"></div>
+      </div>
       <div class="btn-row" style="margin-top:12px">
         <button class="btn sec" type="button" onclick="resetProformaForm()">+ Nuevo documento</button>
       </div>
@@ -345,6 +349,8 @@ function enterApp(){
   document.getElementById('cfgUrl').value=state.cfg.url||'';
   document.getElementById('cfgSecret').value=state.cfg.secret||'';
   document.getElementById('cfgCounter').value=getCounter();
+  if(document.getElementById('pfFecha') && !document.getElementById('pfFecha').value) document.getElementById('pfFecha').value=todayInputValue();
+  if(document.getElementById('pfPreviewNum')) document.getElementById('pfPreviewNum').value=state.editingProformaNum||nextProformaNum();
   loadProformasLocal();
   renderProformasList();
   precargarDatos();
@@ -387,6 +393,24 @@ async function callAS(what){
 function normPlaca(s){return (s||'').toString().toUpperCase().replace(/[-\s]/g,'')}
 function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmtFecha(d){if(!d)return '—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return d}}
+function todayInputValue(){
+  const now=new Date();
+  const y=now.getFullYear();
+  const m=String(now.getMonth()+1).padStart(2,'0');
+  const d=String(now.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function inputDateToText(v){
+  if(!v)return '—';
+  const parts=String(v).split('-');
+  if(parts.length!==3)return v;
+  const [y,m,d]=parts;
+  return `${d}/${m}/${y}`;
+}
+function inputDateToIso(v){
+  if(!v)return new Date().toISOString();
+  return `${v}T12:00:00`;
+}
 
 /* === BÚSQUEDA GENERAL === */
 async function buscarGeneral(){
@@ -635,15 +659,18 @@ function updateFormModeUI(){
   const title=document.getElementById('docFormTitle');
   const info=document.getElementById('editModeInfo');
   const btn=document.getElementById('btnGenerarDoc');
+  const preview=document.getElementById('pfPreviewNum');
   if(!title||!info||!btn)return;
   if(state.editingProformaNum){
     title.textContent='Editar documento';
     info.textContent='Editando: '+state.editingProformaNum;
     btn.textContent='Guardar cambios';
+    if(preview) preview.value=state.editingProformaNum;
   }else{
     title.textContent='Nuevo documento';
     info.textContent='Modo nuevo';
     btn.textContent='Generar documento';
+    if(preview) preview.value=nextProformaNum();
   }
 }
 function resetProformaForm(){
@@ -660,6 +687,8 @@ function resetProformaForm(){
   document.getElementById('pfObs').value='';
   document.getElementById('pfAc1').value='0';
   document.getElementById('pfAc2').value='0';
+  document.getElementById('pfFecha').value=todayInputValue();
+  document.getElementById('pfPreviewNum').value=nextProformaNum();
   state.lines=[];
   renderLines();
   updateFormModeUI();
@@ -685,6 +714,8 @@ function loadProformaIntoForm(num){
   document.getElementById('pfObs').value=pf.obs||'';
   document.getElementById('pfAc1').value=(parseFloat(pf.ac1)||0);
   document.getElementById('pfAc2').value=(parseFloat(pf.ac2)||0);
+  document.getElementById('pfFecha').value=pf.fechaInput||todayInputValue();
+  document.getElementById('pfPreviewNum').value=pf.num||'';
   state.lines=(pf.lines||[]).map(l=>({desc:l.desc||'',cint:l.cint||'',coem:l.coem||'',cant:parseFloat(l.cant)||0,precio:parseFloat(l.precio)||0}));
   renderLines();
   updateFormModeUI();
@@ -728,7 +759,7 @@ function upsertProformaLocal(pf){
   const idx=state.proformas.findIndex(p=>p.num===pf.num);
   if(idx>=0) state.proformas[idx]=pf;
   else state.proformas.unshift(pf);
-  state.proformas.sort((a,b)=>new Date(b.generatedAt||0)-new Date(a.generatedAt||0));
+  state.proformas.sort((a,b)=>new Date(b.fechaIso||b.generatedAt||0)-new Date(a.fechaIso||a.generatedAt||0));
   saveProformasLocal();
 }
 function buildCurrentProforma(){
@@ -745,7 +776,9 @@ function buildCurrentProforma(){
   const existing=state.editingProformaNum ? state.proformas.find(p=>p.num===state.editingProformaNum) : null;
   const num=existing?.num || nextProformaNum();
   const generatedAt=existing?.generatedAt || now.toISOString();
-  const fechaTexto=existing?.fechaTexto || now.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const fechaInput=(document.getElementById('pfFecha').value||existing?.fechaInput||todayInputValue());
+  const fechaTexto=inputDateToText(fechaInput);
+  const fechaIso=inputDateToIso(fechaInput);
   const generadoTexto=existing?.generadoTexto || now.toLocaleString('es-PE');
   const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);
   const ac1=parseFloat(document.getElementById('pfAc1').value)||0;
@@ -753,6 +786,8 @@ function buildCurrentProforma(){
   return {
     num,
     generatedAt,
+    fechaInput,
+    fechaIso,
     fechaTexto,
     generadoTexto,
     updatedAt: now.toISOString(),
@@ -954,7 +989,7 @@ async function guardarProformaEnSheets(proforma){
     return;
   }
   try{
-    const fecha=new Date().toISOString();let guardadas=0;
+    const fecha=proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString();let guardadas=0;
     for(const l of (proforma.lines||[])){
       const row={
         fecha:fecha,
@@ -1019,6 +1054,8 @@ if (pfPlacaEl) {
   });
 }
 
+if (document.getElementById('pfFecha') && !document.getElementById('pfFecha').value) document.getElementById('pfFecha').value=todayInputValue();
+if (document.getElementById('pfPreviewNum')) document.getElementById('pfPreviewNum').value=nextProformaNum();
 if (state.lines.length === 0) addLine();
 </script>
 </body>
