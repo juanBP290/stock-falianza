@@ -159,19 +159,19 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   <div class="view active" id="tBuscar">
     <div class="card">
-      <h2>🔎 Búsqueda General</h2>
-      <div class="field"><label>Buscar por cualquier palabra (placa, aceite, filtro, fecha, código, etc.)</label>
-        <input type="text" id="searchAny" class="uppercase-input" placeholder="Ej: aceite, ATI-745, 376841, filtro..." oninput="buscarGeneral()">
-      </div>
-      <div id="genResult" style="margin-top:8px"></div>
-    </div>
-    <div class="card">
       <h2>🚗 Buscar Vehículo por Placa</h2>
       <div class="field"><label>Placa</label>
         <input type="text" id="searchPlaca" class="uppercase-input" placeholder="Ej: ATI-745" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
       </div>
       <button class="btn" onclick="buscarVehiculo()">Buscar Vehículo</button>
       <div id="vehResult" style="margin-top:14px"></div>
+    </div>
+    <div class="card">
+      <h2>🔎 Búsqueda General</h2>
+      <div class="field"><label>Buscar por cualquier palabra (placa, aceite, filtro, fecha, código, etc.)</label>
+        <input type="text" id="searchAny" class="uppercase-input" placeholder="Ej: aceite, ATI-745, 376841, filtro..." oninput="buscarGeneral()">
+      </div>
+      <div id="genResult" style="margin-top:8px"></div>
     </div>
   </div>
 
@@ -932,6 +932,11 @@ function markProformaSaved(num, meta){
     saveProformasLocal();
   }
 }
+function removeSavedProformaMark(num){
+  const data=getSavedProformasMap();
+  delete data[num];
+  localStorage.setItem(PROFORMAS_SAVED_KEY,JSON.stringify(data));
+}
 function isProformaSaved(num){
   const data=getSavedProformasMap();
   return !!data[num];
@@ -1011,6 +1016,39 @@ function openStoredProforma(num){
   renderPrintControls();
   window.scrollTo(0,0);
 }
+async function eliminarProformaEnSheets(num){
+  if(!state.cfg.url){alert('⚠️ Configura la URL');return false}
+  try{
+    const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'delete_proforma',target:'srv',proforma_num:num}),headers:{'Content-Type':'text/plain;charset=utf-8'}});
+    const data=await res.json();
+    if(!data.ok) throw new Error(data.error||'No se pudo eliminar en Google Sheets');
+    state.srvAll=[];
+    await precargarDatos();
+    return true;
+  }catch(e){
+    alert('Error al eliminar en Google Sheets: '+e.message);
+    return false;
+  }
+}
+async function deleteStoredProforma(num){
+  if(state.role!=='dueno'){alert('Solo el dueño puede eliminar documentos.');return}
+  const idx=state.proformas.findIndex(p=>p.num===num);
+  if(idx<0){alert('No se encontró la proforma.');return}
+  const pf=state.proformas[idx];
+  let msg='¿Desea eliminar la proforma '+pf.num+'?';
+  if(pf.savedToDb){ msg+='\n\nTambién se intentará eliminar de Google Sheets.'; }
+  if(!confirm(msg)) return;
+  if(pf.savedToDb){
+    const ok=await eliminarProformaEnSheets(pf.num);
+    if(!ok) return;
+  }
+  state.proformas.splice(idx,1);
+  saveProformasLocal();
+  removeSavedProformaMark(pf.num);
+  if(state.currentProforma && state.currentProforma.num===pf.num){ state.currentProforma=null; closePrint(); }
+  renderProformasList();
+  alert('✓ Proforma eliminada: '+pf.num);
+}
 function renderProformasList(){
   const box=document.getElementById('pfHistList');
   const counter=document.getElementById('pfHistCount');
@@ -1044,6 +1082,7 @@ function renderProformasList(){
         ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();loadProformaIntoForm('${escapeHtml(p.num)}')">✏️ Editar</button>`:''}
         <button class="btn sec" onclick="event.stopPropagation();openStoredProforma('${escapeHtml(p.num)}')">👁 Ver</button>
         ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();toggleAnularProforma('${escapeHtml(p.num)}')">${p.cancelled?'↩ Reactivar':'🚫 Anular'}</button>`:''}
+        ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();deleteStoredProforma('${escapeHtml(p.num)}')">🗑 Eliminar</button>`:''}
         ${canEditStoredProformas() && !p.savedToDb && !p.cancelled ? `<button class="btn ok" onclick="event.stopPropagation();guardarProformaEnSheets(state.proformas.find(x=>x.num==='${escapeHtml(p.num)}'))">💾 Guardar BD</button>`:''}
       </div>
       <div class="total">S/ ${(parseFloat(p.tot)||0).toFixed(2)}</div>
@@ -1152,9 +1191,6 @@ function aplicarVehiculoAProforma(v){
   document.getElementById('pfPlaca').value=(pickVehValue(v,['placa'])||'').toUpperCase();
   document.getElementById('pfAno').value=ano;
   document.getElementById('pfModelo').value=modelo;
-  if(!ano || !modelo){
-    console.warn('Faltó completar año/modelo para placa', pickVehValue(v,['placa']), v);
-  }
 }
 async function autocompletarProformaPorPlaca(){
   const input=document.getElementById('pfPlaca');
@@ -1362,11 +1398,6 @@ async function guardarProformaEnSheets(proforma){
   }catch(e){alert('Error: '+e.message)}
 }
 
-function closePrint(){document.getElementById('printArea').style.display='none';document.getElementById('printCtrl').style.display='none';document.getElementById('app').style.display='block'}
-function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;saveCfgRaw();alert('Configuración guardada ✓')}
-function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').value,10);if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado ✓')}}
-
-
 function forceUpperValue(el){
   if(!el) return;
   const tag=(el.tagName||'').toUpperCase();
@@ -1388,6 +1419,10 @@ function attachUppercaseBehavior(){
   });
   document.querySelectorAll('.uppercase-input').forEach(forceUpperValue);
 }
+
+function closePrint(){document.getElementById('printArea').style.display='none';document.getElementById('printCtrl').style.display='none';document.getElementById('app').style.display='block'}
+function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;saveCfgRaw();alert('Configuración guardada ✓')}
+function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').value,10);if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado ✓')}}
 
 loadCfg();
 attachUppercaseBehavior();
