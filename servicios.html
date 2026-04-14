@@ -875,26 +875,104 @@ function getVehClienteNombre(v){
 function getVehDoc(v){
   return pickVehValue(v,['ruc','dni'])||'';
 }
+function cleanVehText(val){
+  if(val===undefined || val===null) return '';
+  return String(val).replace(/\s+/g,' ').trim();
+}
+function looksLikeYear(val){
+  const s=cleanVehText(val);
+  if(!s) return false;
+  const n=parseInt(s,10);
+  return /^\d{4}(\.0+)?$/.test(s) && n>=1950 && n<=2100;
+}
+function normalizeYearValue(val){
+  const s=cleanVehText(val);
+  if(!s) return '';
+  if(looksLikeYear(s)) return String(parseInt(s,10));
+  return s;
+}
+function looksLikeVehicleModel(val){
+  const s=cleanVehText(val);
+  if(!s) return false;
+  if(looksLikeYear(s)) return false;
+  if(/^[A-Z0-9-]{6,}$/.test(s)) return false;
+  if(/^[0-9.@\/-]+$/.test(s)) return false;
+  return /[A-ZÁÉÍÓÚÑ]/i.test(s);
+}
+function getVehModeloDirect(v){
+  return cleanVehText(
+    pickVehValue(v,['modelo','modelo_base','marca_modelo','marca__modelo','modelo_detalle','modelo_2','modelo2','marca_modelo_vehiculo'])
+  );
+}
+function getVehVersionDirect(v){
+  return cleanVehText(
+    pickVehValue(v,['version','version_base','version_detalle','version_2','version2'])
+  );
+}
 function getVehModeloTexto(v){
-  const modelo =
-    pickVehValue(v,['modelo','modelo_base','marca_modelo','modelo_detalle','modelo_2','modelo2']) ||
-    getVehValueByPosition(v,1) ||
-    '';
-  const version = pickVehValue(v,['version','version_base','version_detalle','version_2','version2'])||'';
-  return [modelo,version].filter(Boolean).join(' ').trim();
+  const directModelo=getVehModeloDirect(v);
+  const directVersion=getVehVersionDirect(v);
+  if(directModelo) return [directModelo,directVersion].filter(Boolean).join(' ').trim();
+
+  const posModelo=cleanVehText(getVehValueByPosition(v,1));
+  if(looksLikeVehicleModel(posModelo)) return [posModelo,directVersion].filter(Boolean).join(' ').trim();
+
+  const excludedKeys=['placa','chofer__empresa','chofer_empresa','chofer','cliente','nombre','ruc','dni','direccion','telefono','motor','caja','ruta_scanner','cca','vin','bateria','temperatura','tipo_de_caja','f_gasolina_ext','potencia','cilindrada','cilindro','combustible','ano','año','anio','version','version_base','version_detalle'];
+  const entries=Object.entries(v||{});
+
+  for(const [k,val] of entries){
+    const nk=normalizeKeyName(k);
+    const s=cleanVehText(val);
+    if(!s) continue;
+    if(nk.includes('modelo') || nk.includes('marca_modelo') || nk==='marca'){
+      if(looksLikeVehicleModel(s)) return [s,directVersion].filter(Boolean).join(' ').trim();
+    }
+  }
+
+  for(const [k,val] of entries){
+    const nk=normalizeKeyName(k);
+    const s=cleanVehText(val);
+    if(!s || excludedKeys.includes(nk)) continue;
+    if(looksLikeVehicleModel(s)) return [s,directVersion].filter(Boolean).join(' ').trim();
+  }
+
+  return '';
 }
 function getVehAno(v){
-  return pickVehValue(v,['ano','año']) || getVehValueByPosition(v,2) || '';
+  const direct=normalizeYearValue(pickVehValue(v,['ano','año','anio','year']));
+  if(direct) return direct;
+
+  const pos=normalizeYearValue(getVehValueByPosition(v,2));
+  if(pos && looksLikeYear(pos)) return pos;
+
+  for(const [k,val] of Object.entries(v||{})){
+    const nk=normalizeKeyName(k);
+    const s=normalizeYearValue(val);
+    if(!s) continue;
+    if(nk==='ano' || nk==='año' || nk==='anio' || nk==='year') return s;
+  }
+
+  for(const val of Object.values(v||{})){
+    const s=normalizeYearValue(val);
+    if(looksLikeYear(s)) return s;
+  }
+
+  return '';
 }
 function aplicarVehiculoAProforma(v){
   if(!v)return;
+  const ano=(getVehAno(v)||'').toUpperCase();
+  const modelo=(getVehModeloTexto(v)||'').toUpperCase();
   document.getElementById('pfCliente').value=(getVehClienteNombre(v)||'').toUpperCase();
   document.getElementById('pfDoc').value=(getVehDoc(v)||'').toUpperCase();
   document.getElementById('pfTel').value=(pickVehValue(v,['telefono'])||'').toUpperCase();
   document.getElementById('pfDir').value=(pickVehValue(v,['direccion'])||'').toUpperCase();
   document.getElementById('pfPlaca').value=(pickVehValue(v,['placa'])||'').toUpperCase();
-  document.getElementById('pfAno').value=(getVehAno(v)||'').toUpperCase();
-  document.getElementById('pfModelo').value=(getVehModeloTexto(v)||'').toUpperCase();
+  document.getElementById('pfAno').value=ano;
+  document.getElementById('pfModelo').value=modelo;
+  if(!ano || !modelo){
+    console.warn('Faltó completar año/modelo para placa', pickVehValue(v,['placa']), v);
+  }
 }
 async function autocompletarProformaPorPlaca(){
   const input=document.getElementById('pfPlaca');
