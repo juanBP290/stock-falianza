@@ -187,7 +187,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     </div>
     <div class="card"><h2>Vehículo</h2>
       <div class="row2">
-        <div class="field"><label>Placa</label><input type="text" id="pfPlaca" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="field"><label>Placa</label><input type="text" id="pfPlaca" style="text-transform:uppercase" autocomplete="off"></div>
         <div class="field"><label>Kilometraje</label><input type="number" id="pfKm"></div>
       </div>
       <div class="field"><label>Marca / Modelo</label><input type="text" id="pfModelo"></div>
@@ -547,15 +547,51 @@ function renderVehTable(){
 }
 
 /* === PROFORMA === */
+function getVehClienteNombre(v){
+  return pickVehValue(v,['chofer__empresa','chofer_empresa','chofer','cliente','nombre'])||'';
+}
+function getVehDoc(v){
+  return pickVehValue(v,['ruc','dni'])||'';
+}
+function getVehModeloTexto(v){
+  const modelo = pickVehValue(v,['modelo_base','modelo','modelo_detalle','modelo_2','modelo2'])||'';
+  const version = pickVehValue(v,['version_base','version','version_detalle','version_2','version2'])||'';
+  const ano = pickVehValue(v,['ano'])||'';
+  return [modelo,version,ano].filter(Boolean).join(' ').trim();
+}
+function aplicarVehiculoAProforma(v){
+  if(!v)return;
+  document.getElementById('pfCliente').value=getVehClienteNombre(v);
+  document.getElementById('pfDoc').value=getVehDoc(v);
+  document.getElementById('pfTel').value=pickVehValue(v,['telefono'])||'';
+  document.getElementById('pfDir').value=pickVehValue(v,['direccion'])||'';
+  document.getElementById('pfPlaca').value=pickVehValue(v,['placa'])||'';
+  document.getElementById('pfModelo').value=getVehModeloTexto(v);
+}
+async function autocompletarProformaPorPlaca(){
+  const input=document.getElementById('pfPlaca');
+  if(!input)return;
+  const placa=(input.value||'').trim().toUpperCase();
+  input.value=placa;
+  if(!placa)return;
+
+  try{
+    if(state.vehAll.length===0 && state.cfg.url){
+      const r=await callAS('veh');
+      state.vehAll=r.rows||[];
+    }
+    const target=normPlaca(placa);
+    const veh=state.vehAll.find(v=>normPlaca(v.placa)===target);
+    if(!veh)return;
+    state.vehiculo=veh;
+    aplicarVehiculoAProforma(veh);
+  }catch(e){
+    console.warn('Autocompletar proforma falló:',e.message);
+  }
+}
 function usarEnProforma(){
   if(!state.vehiculo)return;
-  const v=state.vehiculo;
-  document.getElementById('pfCliente').value=v.chofer__empresa||v.chofer||'';
-  document.getElementById('pfDoc').value=v.ruc||v.dni||'';
-  document.getElementById('pfTel').value=v.telefono||'';
-  document.getElementById('pfDir').value=v.direccion||'';
-  document.getElementById('pfPlaca').value=v.placa||'';
-  document.getElementById('pfModelo').value=((v.modelo||'')+' '+(v.ano||'')).trim();
+  aplicarVehiculoAProforma(state.vehiculo);
 }
 function addLine(){state.lines.push({desc:'',cint:'',coem:'',cant:1,precio:0});renderLines()}
 function delLine(i){state.lines.splice(i,1);renderLines()}
@@ -674,6 +710,23 @@ if (savedRole) {
 document.getElementById('gatePass').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') doLogin();
 });
+
+const pfPlacaEl = document.getElementById('pfPlaca');
+if (pfPlacaEl) {
+  pfPlacaEl.addEventListener('input', function () {
+    this.value = this.value.toUpperCase();
+    autocompletarProformaPorPlaca();
+  });
+  pfPlacaEl.addEventListener('blur', function () {
+    autocompletarProformaPorPlaca();
+  });
+  pfPlacaEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      autocompletarProformaPorPlaca();
+    }
+  });
+}
 
 if (state.lines.length === 0) addLine();
 </script>
