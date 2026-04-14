@@ -103,7 +103,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 #printArea .pf-tot .row{display:flex;justify-content:space-between;padding:4px 8px}
 #printArea .pf-tot .row.big{background:#f59e0b;color:#000;font-weight:800;font-size:14px;padding:8px;border-radius:4px;margin-top:4px}
 #printArea .pf-notes{margin-top:14px;font-size:10px;color:#444;border-top:1px dashed #ccc;padding-top:8px}
-#printArea .pf-foot{position:absolute;bottom:12mm;left:12mm;right:12mm;border-top:2px solid #f59e0b;padding-top:8px;text-align:center;font-size:9px;color:#666;font-style:italic}
+#printArea .pf-foot{margin-top:18px;border-top:2px solid #f59e0b;padding-top:8px;text-align:center;font-size:9px;color:#666;font-style:italic}
 .print-controls{position:sticky;bottom:0;background:var(--bg2);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;z-index:50}
 .print-controls .btn{flex:1}
 @media (max-width:480px){.row2{grid-template-columns:1fr}.header h1{font-size:14px}.view{padding:12px}.card{padding:12px}.data-table{font-size:11px}.data-table th,.data-table td{padding:5px 4px}}
@@ -255,7 +255,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       </div>
     </div>
     <table class="pf-items">
-      <thead><tr><th class="center" style="width:30px">#</th><th>Descripción</th><th style="width:60px">Cód. Int.</th><th style="width:70px">Cód. OEM</th><th class="num-col" style="width:35px">Cant</th><th class="num-col" style="width:60px">P. Unit</th><th class="num-col" style="width:65px">Total</th></tr></thead>
+      <thead><tr><th class="center" style="width:30px">#</th><th>Descripción</th><th class="num-col" style="width:35px">Cant</th><th class="num-col" style="width:60px">P. Unit</th><th class="num-col" style="width:65px">Total</th></tr></thead>
       <tbody id="prnBody"></tbody>
     </table>
     <div class="pf-tot">
@@ -624,7 +624,7 @@ function generarProforma(){
   const ac1=parseFloat(document.getElementById('pfAc1').value)||0;
   const ac2=parseFloat(document.getElementById('pfAc2').value)||0;
   const tot=sub-ac1-ac2;
-  document.getElementById('prnBody').innerHTML=state.lines.map((l,i)=>`<tr><td class="center">${i+1}</td><td>${escapeHtml(l.desc)}</td><td>${escapeHtml(l.cint)}</td><td>${escapeHtml(l.coem)}</td><td class="num-col">${l.cant}</td><td class="num-col">${l.precio.toFixed(2)}</td><td class="num-col">${(l.cant*l.precio).toFixed(2)}</td></tr>`).join('');
+  document.getElementById('prnBody').innerHTML=state.lines.map((l,i)=>`<tr><td class="center">${i+1}</td><td>${escapeHtml(l.desc)}</td><td class="num-col">${l.cant}</td><td class="num-col">${l.precio.toFixed(2)}</td><td class="num-col">${(l.cant*l.precio).toFixed(2)}</td></tr>`).join('');
   document.getElementById('prnSub').textContent='S/ '+sub.toFixed(2);
   document.getElementById('prnAc1').textContent='S/ '+ac1.toFixed(2);
   document.getElementById('prnAc2').textContent='S/ '+ac2.toFixed(2);
