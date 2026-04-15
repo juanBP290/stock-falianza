@@ -425,6 +425,15 @@ async function callAS(what){
   if(!data.ok)throw new Error(data.error||'Error');
   return data;
 }
+
+function notify(msg,type='info',duration=2200){
+  if(typeof window.showToast==='function'){
+    window.showToast(String(msg||''),type,duration);
+  }else{
+    alert(String(msg||''));
+  }
+}
+
 function normPlaca(s){return (s||'').toString().toUpperCase().replace(/[-\s]/g,'')}
 function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmtFecha(d){if(!d)return '';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return d}}
@@ -900,8 +909,61 @@ function upsertProformaLocal(pf){const idx=state.proformas.findIndex(p=>p.num===
 function buildCurrentProforma(){const cliente=(document.getElementById('pfCliente').value||'').toUpperCase();const doc=(document.getElementById('pfDoc').value||'').toUpperCase();const tel=(document.getElementById('pfTel').value||'').toUpperCase();const dir=(document.getElementById('pfDir').value||'').toUpperCase();const placa=(document.getElementById('pfPlaca').value||'').toUpperCase();const km=document.getElementById('pfKm').value||'';const ano=(document.getElementById('pfAno').value||'').toUpperCase();const modelo=(document.getElementById('pfModelo').value||'').toUpperCase();const obs=(document.getElementById('pfObs').value||'').toUpperCase();const now=new Date();const existing=state.editingProformaNum ? state.proformas.find(p=>p.num===state.editingProformaNum) : null;const fechaInput=(document.getElementById('pfFecha').value||existing?.fechaInput||todayInputValue());const num=existing?.num || reserveNextProformaNumber(fechaInput);const generatedAt=existing?.generatedAt || now.toISOString();const fechaTexto=inputDateToText(fechaInput);const fechaIso=inputDateToIso(fechaInput);const generadoTexto=existing?.generadoTexto || now.toLocaleString('es-PE');const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);const ac1=parseFloat(document.getElementById('pfAc1').value)||0;const ac2=parseFloat(document.getElementById('pfAc2').value)||0;return {num,generatedAt,fechaInput,fechaIso,fechaTexto,generadoTexto,updatedAt: now.toISOString(),cliente, doc, tel, dir, placa, km, ano, modelo, obs,lines: state.lines.map(l=>({desc:(l.desc||'').toUpperCase(),cint:(l.cint||'').toUpperCase(),coem:(l.coem||'').toUpperCase(),cant:parseFloat(l.cant)||0,precio:parseFloat(l.precio)||0})),sub, ac1, ac2, tot: sub-ac1-ac2,savedToDb: existing?.savedToDb || isProformaSaved(num),cancelled: existing?.cancelled || false,cancelledAt: existing?.cancelledAt || ''};}
 function renderPrintFromProforma(pf){const wm=document.querySelector('#printArea .wm'); if(wm) wm.textContent=pf.cancelled ? 'ANULADA' : 'ANTICOPIA';document.getElementById('prnNum').textContent=pf.num;document.getElementById('prnFch').textContent=pf.fechaTexto||'';document.getElementById('prnCliente').textContent=pf.cliente||'';document.getElementById('prnDoc').textContent='DNI/RUC: '+(pf.doc||'');document.getElementById('prnTel').textContent='Tel: '+(pf.tel||'');document.getElementById('prnDir').textContent='Dir: '+(pf.dir||'');document.getElementById('prnPlaca').textContent=pf.placa||'';document.getElementById('prnAno').textContent='Año: '+(pf.ano||'');document.getElementById('prnModelo').textContent=pf.modelo||'';document.getElementById('prnKm').textContent='Km: '+(pf.km||'');document.getElementById('prnBody').innerHTML=(pf.lines||[]).map((l,i)=>`<tr><td class="center">${i+1}</td><td>${escapeHtml(l.desc)}</td><td class="num-col">${l.cant}</td><td class="num-col">${(parseFloat(l.precio)||0).toFixed(2)}</td><td class="num-col">${((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0)).toFixed(2)}</td></tr>`).join('');document.getElementById('prnSub').textContent='S/ '+(parseFloat(pf.sub)||0).toFixed(2);document.getElementById('prnAc1').textContent='S/ '+(parseFloat(pf.ac1)||0).toFixed(2);document.getElementById('prnAc2').textContent='S/ '+(parseFloat(pf.ac2)||0).toFixed(2);document.getElementById('prnTot').textContent=(parseFloat(pf.tot)||0).toFixed(2);if(pf.obs){document.getElementById('prnObsBox').style.display='block';document.getElementById('prnObs').textContent=pf.obs}else document.getElementById('prnObsBox').style.display='none';document.getElementById('prnGen').textContent=pf.generadoTexto||'';}
 function openStoredProforma(num){const pf=state.proformas.find(p=>p.num===num);if(!pf)return;state.currentProforma=pf;renderPrintFromProforma(pf);document.getElementById('app').style.display='none';document.getElementById('printArea').style.display='block';renderPrintControls();window.scrollTo(0,0)}
-async function eliminarProformaEnSheets(proforma){if(!state.cfg.url){alert('️ Configura la URL');return false}try{const sheetRows=await collectSheetRowsForStoredProforma(proforma);const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'delete_proforma',target:'srv',proforma_num:proforma.num,row_numbers:sheetRows}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo eliminar en Google Sheets');if(!(data.deleted>0)) throw new Error('No se encontro ninguna fila para eliminar en Google Sheets');state.srvAll=[];await precargarDatos();return true;}catch(e){alert('Error al eliminar en Google Sheets: '+e.message);return false}}
-async function deleteStoredProforma(num){if(state.role!=='dueno'){alert('Solo el dueño puede eliminar documentos.');return}const idx=state.proformas.findIndex(p=>p.num===num);if(idx<0){alert('No se encontró la proforma.');return}const pf=state.proformas[idx];let msg='¿Desea eliminar la proforma '+pf.num+'?';if(pf.savedToDb){ msg+='\n\nTambién se intentará eliminar de Google Sheets.'; }if(!confirm(msg)) return;if(pf.savedToDb){const ok=await eliminarProformaEnSheets(pf);if(!ok) return;}state.proformas.splice(idx,1);saveProformasLocal();removeSavedProformaMark(pf.num);if(state.currentProforma && state.currentProforma.num===pf.num){ state.currentProforma=null; closePrint(); }renderProformasList();alert(' Proforma eliminada: '+pf.num)}
+async function eliminarProformaEnSheets(proforma){
+  if(!state.cfg.url){notify('Configura la URL','warn',2600);return false}
+  try{
+    const sheetRows=await collectSheetRowsForStoredProforma(proforma);
+    const res=await fetch(state.cfg.url,{
+      method:'POST',
+      body:JSON.stringify({
+        token:state.cfg.secret,
+        action:'delete_proforma',
+        target:'srv',
+        proforma_num:proforma.num,
+        row_numbers:sheetRows
+      }),
+      headers:{'Content-Type':'text/plain;charset=utf-8'}
+    });
+    const data=await res.json();
+    if(!data.ok) throw new Error(data.error||'No se pudo eliminar en Google Sheets');
+    if(!(data.deleted>0)) throw new Error('No se encontró ninguna fila para eliminar en Google Sheets');
+
+    const targetNum=normalizeTextKey(proforma.num);
+    state.srvAll=(state.srvAll||[]).filter(r=>normalizeTextKey(r.proforma_num)!==targetNum);
+    return true;
+  }catch(e){
+    notify('Error al eliminar en Google Sheets: '+e.message,'warn',4200);
+    return false;
+  }
+}
+async function deleteStoredProforma(num){
+  if(state.role!=='dueno'){notify('Solo el dueño puede eliminar documentos.','warn',2600);return}
+  const idx=state.proformas.findIndex(p=>p.num===num);
+  if(idx<0){notify('No se encontró la proforma.','warn',2600);return}
+  const pf=state.proformas[idx];
+  let msg='¿Desea eliminar la proforma '+pf.num+'?';
+  if(pf.savedToDb){ msg+='
+
+También se intentará eliminar de Google Sheets.'; }
+  if(!confirm(msg)) return;
+
+  if(pf.savedToDb){
+    const ok=await eliminarProformaEnSheets(pf);
+    if(!ok) return;
+  }
+
+  state.proformas.splice(idx,1);
+  saveProformasLocal();
+  removeSavedProformaMark(pf.num);
+
+  if(state.currentProforma && state.currentProforma.num===pf.num){
+    state.currentProforma=null;
+    closePrint();
+  }
+
+  renderProformasList();
+  notify('Proforma eliminada: '+pf.num,'ok',2200);
+}
 function renderProformasList(){const box=document.getElementById('pfHistList');const counter=document.getElementById('pfHistCount');if(!box||!counter)return;const q=(document.getElementById('pfHistFilter')?.value||'').trim().toLowerCase();const rows=state.proformas.filter(p=>{if(!q)return true;const blob=[p.num,p.cliente,p.placa,p.modelo,p.doc,p.fechaTexto].join(' ').toLowerCase();return blob.includes(q);});counter.textContent=rows.length;if(rows.length===0){box.innerHTML='<div class="empty">Aún no hay proformas guardadas en este navegador</div>';return;}box.innerHTML=rows.map(p=>`
     <div class="svc-item" onclick="openStoredProforma('${escapeHtml(p.num)}')">
       <div class="top">
