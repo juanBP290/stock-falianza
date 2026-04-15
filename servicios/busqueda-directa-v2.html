@@ -737,7 +737,7 @@ async function buscarGeneral(){
   }
 }
 
-async function abrirVehiculoDesdeServicioasync function abrirVehiculoDesdeServicio(placa){
+async function abrirVehiculoDesdeServicio(placa){
   if(!placa)return;
   document.getElementById('searchPlaca').value=placa;
   await buscarVehiculo();
