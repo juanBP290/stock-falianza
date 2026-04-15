@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios Alianza Â· Compatibilidad</title>
+<style>
+body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif;display:grid;place-items:center;min-height:100vh}
+.box{max-width:520px;padding:24px;border:1px solid #2a3850;border-radius:16px;background:#161e2e;box-shadow:0 20px 50px rgba(0,0,0,.28)}
+.box h1{margin:0 0 10px;font-size:22px;color:#f59e0b}
+.box p{margin:0;color:#94a3b8;line-height:1.5}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>Servicios Alianza</h1>
+    <p>Cargando la versiÃ³n con compatibilidad para borrar registros heredadosâ€¦</p>
+  </div>
+<script>
+(async function () {
+  function renderError(message) {
+    document.body.innerHTML = '<div class="box"><h1>Error</h1><p>' + String(message || 'No se pudo cargar la pÃ¡gina') + '</p></div>';
+  }
+
+  try {
+    const response = await fetch('../servicios.html', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('No se pudo abrir servicios.html');
+    }
+
+    let html = await response.text();
+
+    const patch = String.raw`<script>
+(function () {
+  function normalizeLooseTextKey(v){
+    return String(v||'')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g,' ')
+      .trim();
+  }
+
+  function almostEqual(a,b){
+    return Math.abs((parseFloat(a)||0)-(parseFloat(b)||0))<0.0001;
+  }
+
+  function getLineTotalValue(item){
+    if(!item) return 0;
+    const total=parseFloat(item.total);
+    if(!isNaN(total) && total!==0) return total;
+    return (parseFloat(item.cant ?? item.cantidad)||0)*(parseFloat(item.precio ?? item.costo_unit)||0);
+  }
+
+  function getLineMatchScore(line,row){
+    const descLine=normalizeLooseTextKey(line && line.desc);
+    const descRow=normalizeLooseTextKey(row && row.descripcion);
+    const sameDesc=!!descLine && !!descRow && descLine===descRow;
+    const partialDesc=!!descLine && !!descRow && (descLine.includes(descRow) || descRow.includes(descLine));
+    const sameCant=almostEqual(line && line.cant,row && row.cantidad);
+    const samePrecio=almostEqual(line && line.precio,row && row.costo_unit);
+    const sameTotal=almostEqual(getLineTotalValue(line),getLineTotalValue(row));
+
+    let score=0;
+    if(sameDesc) score+=8;
+    else if(partialDesc) score+=5;
+    if(sameCant) score+=3;
+    if(samePrecio) score+=3;
+    if(sameTotal) score+=4;
+    if(!descLine && (sameCant || samePrecio || sameTotal)) score+=2;
+    return score;
+  }
+
+  window.lineMatchesSheetRow=function(line,row){
+    const score=getLineMatchScore(line,row);
+    return score>=12 || (score>=9 && almostEqual(getLineTotalValue(line),getLineTotalValue(row)));
+  };
+
+  function getLegacyCandidatesForStoredProforma(rows,pf){
+    const targetPlaca=window.normalizeTextKey ? window.normalizeTextKey(pf && pf.placa) : String(pf && pf.placa || '').trim().toUpperCase();
+    const targetDate=window.normalizeDateKey ? window.normalizeDateKey(pf && (pf.fechaIso||pf.fechaInput||pf.fecha)) : '';
+    const samePlate=(rows||[]).filter(function(r){
+      return (window.normalizeTextKey ? window.normalizeTextKey(r.placa) : String(r.placa || '').trim().toUpperCase())===targetPlaca;
+    });
+    if(!samePlate.length) return [];
+
+    const samePlateAndDate=samePlate.filter(function(r){
+      return (window.normalizeDateKey ? window.normalizeDateKey(r.fecha) : String(r.fecha || '').slice(0,10))===targetDate;
+    });
+    if(samePlateAndDate.length) return samePlateAndDate;
+
+    const lineTotals=(Array.isArray(pf && pf.lines)?pf.lines:[]).map(getLineTotalValue).filter(function(x){ return x>0; });
+    if(lineTotals.length){
+      const totalMatches=samePlate.filter(function(r){
+        const rowTotal=getLineTotalValue(r);
+        return lineTotals.some(function(total){ return almostEqual(total,rowTotal); });
+      });
+      if(totalMatches.length) return totalMatches;
+    }
+
+    if(samePlate.length===1){
+      return samePlate;
+    }
+
+    return [];
+  }
+
+  function matchStoredLinesToSheetRows(lines,candidates){
+    const safeLines=Array.isArray(lines)?lines:[];
+    const safeCandidates=Array.isArray(candidates)?candidates:[];
+    if(!safeLines.length || !safeCandidates.length) return [];
+
+    const used=new Set();
+    const matched=[];
+
+    for(const line of safeLines){
+      let bestIdx=-1;
+      let bestScore=-1;
+
+      for(let i=0;i<safeCandidates.length;i++){
+        if(used.has(i)) continue;
+        const score=getLineMatchScore(line,safeCandidates[i]);
+        if(score>bestScore){
+          bestScore=score;
+          bestIdx=i;
+        }
+      }
+
+      if(bestIdx===-1 || bestScore<7){
+        return [];
+      }
+
+      used.add(bestIdx);
+      matched.push(safeCandidates[bestIdx]._sheet_row);
+    }
+
+    return window.dedupeSheetRows ? window.dedupeSheetRows(matched) : matched;
+  }
+
+  window.collectSheetRowsForStoredProforma=async function(pf){
+    if(!pf) return [];
+    if(Array.isArray(pf.sheetRows) && pf.sheetRows.length){
+      return window.dedupeSheetRows ? window.dedupeSheetRows(pf.sheetRows) : pf.sheetRows;
+    }
+
+    const rows=window.ensureSrvRowsLoaded ? await window.ensureSrvRowsLoaded() : [];
+    const targetNum=window.normalizeTextKey ? window.normalizeTextKey(pf.num) : String(pf.num || '').trim().toUpperCase();
+    const byNum=rows.filter(function(r){
+      return (window.normalizeTextKey ? window.normalizeTextKey(r.proforma_num) : String(r.proforma_num || '').trim().toUpperCase())===targetNum;
+    }).map(function(r){ return r._sheet_row; });
+
+    if(byNum.length){
+      const unique=window.dedupeSheetRows ? window.dedupeSheetRows(byNum) : byNum;
+      pf.sheetRows=unique;
+      if(window.upsertProformaLocal) window.upsertProformaLocal(pf);
+      return unique;
+    }
+
+    const candidates=getLegacyCandidatesForStoredProforma(rows,pf);
+    if(!candidates.length || !Array.isArray(pf.lines) || !pf.lines.length){
+      return [];
+    }
+
+    let unique=matchStoredLinesToSheetRows(pf.lines,candidates);
+    if(!unique.length && pf.lines.length===1 && candidates.length===1){
+      const lineTotal=getLineTotalValue(pf.lines[0]);
+      const rowTotal=getLineTotalValue(candidates[0]);
+      if(almostEqual(lineTotal,rowTotal) || almostEqual(pf.tot,rowTotal)){
+        unique=window.dedupeSheetRows ? window.dedupeSheetRows([candidates[0]._sheet_row]) : [candidates[0]._sheet_row];
+      }
+    }
+
+    if(!unique.length && pf.lines.length===candidates.length){
+      const linesTotal=(pf.lines||[]).reduce(function(acc,line){ return acc+getLineTotalValue(line); },0);
+      const rowsTotal=(candidates||[]).reduce(function(acc,row){ return acc+getLineTotalValue(row); },0);
+      if(almostEqual(linesTotal,rowsTotal)){
+        unique=window.dedupeSheetRows ? window.dedupeSheetRows(candidates.map(function(row){ return row._sheet_row; })) : candidates.map(function(row){ return row._sheet_row; });
+      }
+    }
+
+    if(unique.length){
+      pf.sheetRows=unique;
+      if(window.upsertProformaLocal) window.upsertProformaLocal(pf);
+    }
+
+    return unique;
+  };
+
+  function showCompatBadge(){
+    const header=document.querySelector('.header');
+    if(!header || document.getElementById('legacyCompatBadge')) return;
+    const badge=document.createElement('span');
+    badge.id='legacyCompatBadge';
+    badge.textContent='Compatibilidad legado';
+    badge.style.fontSize='10px';
+    badge.style.padding='4px 8px';
+    badge.style.border='1px solid #2a3850';
+    badge.style.borderRadius='999px';
+    badge.style.color='#fbbf24';
+    badge.style.background='rgba(245,158,11,.1)';
+    header.insertBefore(badge, header.lastElementChild);
+  }
+
+  const originalEnterApp=window.enterApp;
+  if(typeof originalEnterApp==='function'){
+    window.enterApp=function(){
+      const result=originalEnterApp.apply(this,arguments);
+      setTimeout(showCompatBadge,0);
+      return result;
+    };
+  }else{
+    setTimeout(showCompatBadge,0);
+  }
+})();
+<\/script>`;
+
+    html = html.replace('</body>', patch + '\n</body>');
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (error) {
+    renderError(error && error.message ? error.message : error);
+  }
+})();
+</script>
+</body>
+</html>
