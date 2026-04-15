@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios Alianza Â· Compatibilidad</title>
+<style>
+body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif;display:grid;place-items:center;min-height:100vh}
+.box{max-width:520px;padding:24px;border:1px solid #2a3850;border-radius:16px;background:#161e2e;box-shadow:0 20px 50px rgba(0,0,0,.28)}
+.box h1{margin:0 0 10px;font-size:22px;color:#f59e0b}
+.box p{margin:0;color:#94a3b8;line-height:1.5}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>Servicios Alianza</h1>
+    <p>Cargando la versiÃ³n con compatibilidad para borrar registros heredadosâ€¦</p>
+  </div>
+<script>
+(async function () {
+  function renderError(message) {
+    document.body.innerHTML = '<div class="box"><h1>Error</h1><p>' + String(message || 'No se pudo cargar la pÃ¡gina') + '</p></div>';
+  }
+
+  try {
+    const response = await fetch('../servicios.html', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('No se pudo abrir servicios.html');
+    }
+
+    let html = await response.text();
+
+    const patch = `<script>
+(function () {
+  function normalizeLooseTextKey(v){
+    return String(v||'')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g,' ')
+      .trim();
+  }
+
+  function almostEqual(a,b){
+    return Math.abs((parseFloat(a)||0)-(parseFloat(b)||0))<0.0001;
+  }
+
+  function getLineTotalValue(item){
+    if(!item) return 0;
+    const total=parseFloat(item.total);
+    if(!isNaN(total) && total!==0) return total;
+    return (parseFloat(item.cant ?? item.cantidad)||0)*(parseFloat(item.precio ?? item.costo_unit)||0);
+  }
+
+  function getLineMatchScore(line,row){
+    const descLine=normalizeLooseTextKey(line && line.desc);
+    const descRow=normalizeLooseTextKey(row && row.descripcion);
+    const sameDesc=!!descLine && !!descRow && descLine===descRow;
+    const partialDesc=!!descLine && !!descRow && (descLine.includes(descRow) || descRow.includes(descLine));
+    const sameCant=almostEqual(line && line.cant,row && row.cantidad);
+    const samePrecio=almostEqual(line && line.precio,row && row.costo_unit);
+    const sameTotal=almostEqual(getLineTotalValue(line),getLineTotalValue(row));
+
+    let score=0;
+    if(sameDesc) score+=8;
+    else if(partialDesc) score+=5;
+    if(sameCant) score+=3;
+    if(samePrecio) score+=3;
+    if(sameTotal) score+=4;
+    if(!descLine && (sameCant || samePrecio || sameTotal)) score+=2;
+    return score;
+  }
+
+  window.lineMatchesSheetRow=function(line,row){
+    const score=getLineMatchScore(line,row);
+    return score>=12 || (score>=9 && almostEqual(getLineTotalValue(line),getLineTotalValue(row)));
+  };
+
+  function getLegacyCandidatesForStoredProforma(rows,pf){
+    const targetPlaca=window.normalizeTextKey ? window.normalizeTextKey(pf && pf.placa) : String(pf && pf.placa || '').trim().toUpperCase();
+    const targetDate=window.normalizeDateKey ? window.normalizeDateKey(pf && (pf.fechaIso||pf.fechaInput||pf.fecha)) : '';
+    const samePlate=(rows||[]).filter(function(r){
+      return (window.normalizeTextKey ? window.normalizeTextKey(r.placa) : String(r.placa || '').trim().toUpperCase())===targetPlaca;
+    });
+    if(!samePlate.length) return [];
+
+    const samePlateAndDate=samePlate.filter(function(r){
+      return (window.normalizeDateKey ? window.normalizeDateKey(r.fecha) : String(r.fecha || '').slice(0,10))===targetDate;
+    });
+    if(samePlateAndDate.length) return samePlateAndDate;
+
+    const lineTotals=(Array.isArray(pf && pf.lines)?pf.lines:[]).map(getLineTotalValue).filter(function(x){ return x>0; });
+    if(lineTotals.length){
+      const totalMatches=samePlate.filter(function(r){
+        const rowTotal=getLineTotalValue(r);
+        return lineTotals.some(function(total){ return almostEqual(total,rowTotal); });
+      });
+      if(totalMatches.length) return totalMatches;
+    }
+
+    if(samePlate.length===1){
+      return samePlate;
+    }
+
+    return [];
+  }
+
+  function matchStoredLinesToSheetRows(lines,candidates){
+    const safeLines=Array.isArray(lines)?lines:[];
+    const safeCandidates=Array.isArray(candidates)?candidates:[];
+    if(!safeLines.length || !safeCandidates.length) return [];
+
+    const used=new Set();
+    const matched=[];
+
+    for(const line of safeLines){
+      let bestIdx=-1;
+      let bestScore=-1;
+
+      for(let i=0;i<safeCandidates.length;i++){
+        if(used.has(i)) continue;
+        const score=getLineMatchScore(line,safeCandidates[i]);
+        if(score>bestScore){
+          bestScore=score;
+          bestIdx=i;
+        }
+      }
+
+      if(bestIdx===-1 || bestScore<7){
+        return [];
+      }
+
+      used.add(bestIdx);
+      matched.push(safeCandidates[bestIdx]._sheet_row);
+    }
+
+    return window.dedupeSheetRows ? window.dedupeSheetRows(matched) : matched;
+  }
+
+  window.collectSheetRowsForStoredProforma=async function(pf){
+    if(!pf) return [];
+    if(Array.isArray(pf.sheetRows) && pf.sheetRows.length){
+      return window.dedupeSheetRows ? window.dedupeSheetRows(pf.sheetRows) : pf.sheetRows;
+    }
+
+    const rows=window.ensureSrvRowsLoaded ? await window.ensureSrvRowsLoaded() : [];
+    const targetNum=window.normalizeTextKey ? window.normalizeTextKey(pf.num) : String(pf.num || '').trim().toUpperCase();
+    const byNum=rows.filter(function(r){
+      return (window.normalizeTextKey ? window.normalizeTextKey(r.proforma_num) : String(r.proforma_num || '').trim().toUpperCase())===targetNum;
+    }).map(function(r){ return r._sheet_row; });
+
+    if(byNum.length){
+      const unique=window.dedupeSheetRows ? window.dedupeSheetRows(byNum) : byNum;
+      pf.sheetRows=unique;
+      if(window.upsertProformaLocal) window.upsertProformaLocal(pf);
+      return unique;
+    }
+
+    const candidates=getLegacyCandidatesForStoredProforma(rows,pf);
+    if(!candidates.length || !Array.isArray(pf.lines) || !pf.lines.length){
+      return [];
+    }
+
+    let unique=matchStoredLinesToSheetRows(pf.lines,candidates);
+    if(!unique.length && pf.lines.length===1 && candidates.length===1){
+      const lineTotal=getLineTotalValue(pf.lines[0]);
+      const rowTotal=getLineTotalValue(candidates[0]);
+      if(almostEqual(lineTotal,rowTotal) || almostEqual(pf.tot,rowTotal)){
+        unique=window.dedupeSheetRows ? window.dedupeSheetRows([candidates[0]._sheet_row]) : [candidates[0]._sheet_row];
+      }
+    }
+
+    if(!unique.length && pf.lines.length===candidates.length){
+      const linesTotal=(pf.lines||[]).reduce(function(acc,line){ return acc+getLineTotalValue(line); },0);
+      const rowsTotal=(candidates||[]).reduce(function(acc,row){ return acc+getLineTotalValue(row); },0);
+      if(almostEqual(linesTotal,rowsTotal)){
+        unique=window.dedupeSheetRows ? window.dedupeSheetRows(candidates.map(function(row){ return row._sheet_row; })) : candidates.map(function(row){ return row._sheet_row; });
+      }
+    }
+
+    if(unique.length){
+      pf.sheetRows=unique;
+      if(window.upsertProformaLocal) window.upsertProformaLocal(pf);
+    }
+
+    return unique;
+  };
+
+  async function ensureVehRowsLoaded(){
+    if(window.state && Array.isArray(window.state.vehAll) && window.state.vehAll.length){
+      return window.state.vehAll;
+    }
+    if(window.callAS && window.state && window.state.cfg && window.state.cfg.url){
+      const res=await window.callAS('veh');
+      window.state.vehAll=res.rows||[];
+      return window.state.vehAll;
+    }
+    return [];
+  }
+
+  function getVehFieldValue(v, keys){
+    if(window.pickVehValue){
+      return window.pickVehValue(v, keys) || '';
+    }
+    for(const key of keys){
+      if(v && Object.prototype.hasOwnProperty.call(v,key) && v[key]) return v[key];
+    }
+    return '';
+  }
+
+  function getVehicleSearchText(v){
+    const model=window.getVehModeloTexto ? window.getVehModeloTexto(v) : '';
+    const client=window.getVehClienteNombre ? window.getVehClienteNombre(v) : getVehFieldValue(v,['chofer__empresa','chofer_empresa','chofer','cliente','nombre']);
+    const year=window.getVehAno ? window.getVehAno(v) : getVehFieldValue(v,['ano','aÃ±o','anio']);
+    return [
+      getVehFieldValue(v,['placa']),
+      model,
+      getVehFieldValue(v,['modelo','modelo_base','marca_modelo','modelo_detalle']),
+      client,
+      getVehFieldValue(v,['motor','vin','caja','combustible','ruc','dni','telefono'])
+    ].join(' ') + ' ' + year;
+  }
+
+  function getVehicleResultLabel(v){
+    const placa=String(getVehFieldValue(v,['placa'])||'â€”').toUpperCase();
+    const model=String(window.getVehModeloTexto ? window.getVehModeloTexto(v) : getVehFieldValue(v,['modelo','modelo_base','marca_modelo']) || 'â€”').toUpperCase();
+    const client=String(window.getVehClienteNombre ? window.getVehClienteNombre(v) : getVehFieldValue(v,['chofer__empresa','chofer_empresa','chofer','cliente','nombre']) || 'â€”').toUpperCase();
+    const year=String(window.getVehAno ? window.getVehAno(v) : getVehFieldValue(v,['ano','aÃ±o','anio']) || '').toUpperCase();
+    return { placa, model, client, year };
+  }
+
+  window.selectVehicleForNueva=function(index){
+    const rows=window.state && Array.isArray(window.state.vehAll) ? window.state.vehAll : [];
+    const veh=rows[parseInt(index,10)];
+    if(!veh) return;
+    if(window.state) window.state.vehiculo=veh;
+    if(window.aplicarVehiculoAProforma) window.aplicarVehiculoAProforma(veh);
+    const input=document.getElementById('pfVehLookup');
+    const results=document.getElementById('pfVehLookupResults');
+    const meta=getVehicleResultLabel(veh);
+    if(input) input.value=meta.placa + ' ' + meta.model;
+    if(results){
+      results.innerHTML='<div style="font-size:12px;color:#22c55e;padding:6px 2px">VehÃ­culo cargado: <b>'+meta.placa+'</b> Â· '+meta.model+'</div>';
+    }
+  };
+
+  window.renderNuevaVehicleLookupResults=async function(){
+    const input=document.getElementById('pfVehLookup');
+    const results=document.getElementById('pfVehLookupResults');
+    if(!input || !results) return;
+
+    const query=String(input.value||'').trim();
+    if(query.length<2){
+      results.innerHTML='';
+      return;
+    }
+
+    results.innerHTML='<div style="font-size:11px;color:#94a3b8;padding:6px 2px">Buscando vehÃ­culos...</div>';
+    const rows=await ensureVehRowsLoaded();
+    const terms=normalizeLooseTextKey(query).split(/\s+/).filter(Boolean);
+
+    const matches=rows
+      .map(function(v, index){
+        return { index:index, veh:v, blob:normalizeLooseTextKey(getVehicleSearchText(v)) };
+      })
+      .filter(function(item){
+        return terms.every(function(term){ return item.blob.includes(term); });
+      })
+      .slice(0,12);
+
+    if(!matches.length){
+      results.innerHTML='<div style="font-size:11px;color:#94a3b8;padding:6px 2px">Sin coincidencias.</div>';
+      return;
+    }
+
+    results.innerHTML=matches.map(function(item){
+      const meta=getVehicleResultLabel(item.veh);
+      return '<button type="button" onclick="selectVehicleForNueva('+item.index+')" style="width:100%;text-align:left;background:#1e2a3f;color:#e5e7eb;border:1px solid #2a3850;border-radius:10px;padding:10px 12px;margin-top:6px;cursor:pointer">'
+        + '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">'
+        + '<span style="font-weight:800;color:#f59e0b;letter-spacing:1px">'+meta.placa+'</span>'
+        + '<span style="font-size:11px;color:#94a3b8">'+meta.year+'</span>'
+        + '</div>'
+        + '<div style="font-size:13px;margin-top:4px">'+meta.model+'</div>'
+        + '<div style="font-size:11px;color:#94a3b8;margin-top:4px">'+meta.client+'</div>'
+        + '</button>';
+    }).join('');
+  };
+
+  function ensureNuevaVehicleLookupUI(){
+    const profTab=document.getElementById('tProf');
+    if(!profTab || document.getElementById('pfVehLookup')) return;
+
+    const cards=Array.from(profTab.querySelectorAll('.card'));
+    const vehicleCard=cards.find(function(card){
+      const h2=card.querySelector('h2');
+      return h2 && /veh/i.test(h2.textContent || '');
+    });
+    if(!vehicleCard) return;
+
+    const wrap=document.createElement('div');
+    wrap.className='field';
+    wrap.innerHTML=''
+      + '<label>Buscar vehÃ­culo por modelo o placa</label>'
+      + '<input type="text" id="pfVehLookup" class="uppercase-input" placeholder="Ej: YARIS, CHANGAN, PERCY, U1D-272">'
+      + '<div style="font-size:11px;color:#94a3b8;margin-top:6px">Escribe modelo, placa, cliente, motor o VIN. Toca una coincidencia para cargar la placa y los datos.</div>'
+      + '<div id="pfVehLookupResults" style="margin-top:8px"></div>';
+
+    vehicleCard.insertBefore(wrap, vehicleCard.firstElementChild.nextElementSibling || vehicleCard.firstChild);
+
+    const input=wrap.querySelector('#pfVehLookup');
+    if(input){
+      input.addEventListener('input', function(){
+        this.value=this.value.toUpperCase();
+        window.renderNuevaVehicleLookupResults();
+      });
+      input.addEventListener('focus', function(){
+        if((this.value||'').trim().length>=2){
+          window.renderNuevaVehicleLookupResults();
+        }
+      });
+    }
+  }
+
+  function showCompatBadge(){
+    const header=document.querySelector('.header');
+    if(!header || document.getElementById('legacyCompatBadge')) return;
+    const badge=document.createElement('span');
+    badge.id='legacyCompatBadge';
+    badge.textContent='Compatibilidad legado';
+    badge.style.fontSize='10px';
+    badge.style.padding='4px 8px';
+    badge.style.border='1px solid #2a3850';
+    badge.style.borderRadius='999px';
+    badge.style.color='#fbbf24';
+    badge.style.background='rgba(245,158,11,.1)';
+    header.insertBefore(badge, header.lastElementChild);
+  }
+
+  function mountEnhancements(){
+    showCompatBadge();
+    ensureNuevaVehicleLookupUI();
+  }
+
+  mountEnhancements();
+  setTimeout(mountEnhancements, 400);
+  setTimeout(mountEnhancements, 1200);
+  setTimeout(mountEnhancements, 2500);
+
+  const observer=new MutationObserver(function(){
+    mountEnhancements();
+  });
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+})();
+<\/script>`;
+
+    html = html.replace('</body>', patch + '\n</body>');
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (error) {
+    renderError(error && error.message ? error.message : error);
+  }
+})();
+</script>
+</body>
+</html>
