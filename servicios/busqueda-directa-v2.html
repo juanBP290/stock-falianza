@@ -166,9 +166,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <div class="card">
       <h2>ðŸ”Ž BÃºsqueda General</h2>
       <div class="field"><label>Buscar por cualquier palabra (placa, aceite, filtro, fecha, cÃ³digo, etc.)</label>
-        <input type="text" id="searchAny" class="uppercase-input" placeholder="Ej: aceite, ATI-745, 376841, filtro..." oninput="buscarGeneral()">
+        <input type="text" id="searchAny_old" class="uppercase-input" placeholder="Ej: aceite, ATI-745, 376841, filtro...">
       </div>
-      <div id="genResult" style="margin-top:8px"></div>
+      <div id="genResult_old" style="margin-top:8px"></div>
     </div>
   </div>
 
@@ -685,8 +685,10 @@ function abrirDocumentoDesdeBusqueda(num, placa){
 }
 
 async function buscarGeneral(){
-  const q=document.getElementById('searchAny').value.trim().toLowerCase();
-  const box=document.getElementById('genResult');
+  const input=document.querySelector('#tHist #searchAny') || document.getElementById('searchAny');
+  const box=document.querySelector('#tHist #genResult') || document.getElementById('genResult');
+  if(!input || !box) return;
+  const q=(input.value||'').trim().toLowerCase();
   if(q.length<2){
     state.searchDocs=[];
     box.innerHTML='';
@@ -718,12 +720,12 @@ async function buscarGeneral(){
       const badgeCancel=d.cancelled?'<span class="badge cancel">ANULADA</span>':'';
       return `<div class="svc-item" onclick="openGeneralSearchDoc(${i})">
         <div class="top">
-          <span class="placa-tag">${escapeHtml(d.num||d.placa||'â€”')}</span>
-          <span class="fecha">${escapeHtml(d.fechaTexto||fmtFecha(d.fecha)||'â€”')}</span>
-          <span class="km">ðŸ“ ${escapeHtml(d.placa||'â€”')}</span>
+          <span class="placa-tag">${escapeHtml(d.num||d.placa||'—')}</span>
+          <span class="fecha">${escapeHtml(d.fechaTexto||fmtFecha(d.fecha)||'—')}</span>
+          <span class="km">📏 ${escapeHtml(d.placa||'—')}</span>
         </div>
-        <div class="cli"><b>${escapeHtml(d.cliente||'â€”')}</b></div>
-        <div class="desc">${escapeHtml(d.modelo||'â€”')}</div>
+        <div class="cli"><b>${escapeHtml(d.cliente||'—')}</b></div>
+        <div class="desc">${escapeHtml(d.modelo||'—')}</div>
         <div class="proforma-badges">
           <span class="badge">${itemCount} item(s)</span>
           ${d.savedToDb?'<span class="badge ok">Guardada en BD</span>':'<span class="badge warn">Pendiente</span>'}
