@@ -14,12 +14,15 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
 <body>
   <div class="box">
     <h1>Servicios Alianza</h1>
-    <p>Cargando la version corregida...</p>
+    <p>Cargando corrección de textos...</p>
   </div>
 <script>
 (async function () {
   function renderError(message) {
-    document.body.innerHTML = '<div class="box"><h1>Error</h1><p>' + String(message || 'No se pudo cargar la pagina') + '</p></div>';
+    document.body.innerHTML =
+      '<div class="box"><h1>Error</h1><p>' +
+      String(message || 'No se pudo cargar la página') +
+      '</p></div>';
   }
 
   try {
@@ -32,51 +35,22 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
 
     const patch = `<script>
 (function () {
-  function ensureToastUi(){
-    if(document.getElementById('toastWrap')) return;
-    const style=document.createElement('style');
-    style.textContent='.toast-wrap{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:12000;pointer-events:none}.toast{min-width:240px;max-width:360px;padding:12px 14px;border-radius:10px;border:1px solid #2a3850;background:#1e2a3f;color:#e5e7eb;box-shadow:0 12px 30px rgba(0,0,0,.28);font-size:13px;line-height:1.35;opacity:0;transform:translateY(-8px);transition:opacity .18s ease,transform .18s ease}.toast.show{opacity:1;transform:translateY(0)}.toast.ok{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.12)}.toast.warn{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.12)}.toast.info{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.12)}';
-    document.head.appendChild(style);
-    const wrap=document.createElement('div');
-    wrap.className='toast-wrap';
-    wrap.id='toastWrap';
-    document.body.appendChild(wrap);
+  function repairEncoding(text){
+    let s = String(text == null ? '' : text);
+    for (let i = 0; i < 4; i++) {
+      if (!/[ÃÂâ]/.test(s)) break;
+      try {
+        const decoded = decodeURIComponent(escape(s));
+        if (decoded && decoded !== s) s = decoded;
+        else break;
+      } catch (e) {
+        break;
+      }
+    }
+    return s;
   }
 
-  function showToast(message,type,duration){
-    ensureToastUi();
-    const wrap=document.getElementById('toastWrap');
-    if(!wrap) return;
-    const toast=document.createElement('div');
-    toast.className='toast '+(type||'info');
-    toast.textContent=String(message||'');
-    wrap.appendChild(toast);
-    requestAnimationFrame(function(){ toast.classList.add('show'); });
-    window.setTimeout(function(){
-      toast.classList.remove('show');
-      window.setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); },220);
-    }, typeof duration==='number' ? duration : 2600);
-  }
-
-  function cleanLines(lines){
-    return (lines||[]).map(function(l){
-      return {
-        desc:String((l&&l.desc)||'').trim().toUpperCase(),
-        cint:String((l&&l.cint)||'').trim().toUpperCase(),
-        coem:String((l&&l.coem)||'').trim().toUpperCase(),
-        cant:parseFloat(l&&l.cant)||0,
-        precio:parseFloat(l&&l.precio)||0
-      };
-    }).filter(function(l){ return l.desc; });
-  }
-
-  function cleanDisplayValue(value){
-    const text=fixTextString(String(value==null ? '' : value)).trim();
-    if(!text || text==='-' || text==='â€”' || text==='Ã¢â‚¬â€') return '-';
-    return text;
-  }
-
-  const textReplacements = [
+  const replacements = [
     ['Ã°Å¸â€Â§ ', ''],
     ['Ã°Å¸â€Â ', ''],
     ['Ã°Å¸â€œâ€¹ ', ''],
@@ -95,40 +69,60 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     ['Ã¢â€ Â© ', ''],
     ['Ã¢Å“â€œ ', ''],
     ['Ã°Å¸â€œÂ ', ''],
-    ['Ã‚Â·', ' - '],
-    ['Ã¢â‚¬â€', '-'],
+    ['Ã‚Â·', ' · '],
+    ['Ã¢â‚¬â€', '—'],
     ['Ã‚Â¿', ''],
-    ['NÃ‚Â°', 'Nro.'],
-    ['MecÃƒÂ¡nica', 'Mecanica'],
-    ['DiagnÃƒÂ³stico', 'Diagnostico'],
-    ['VehÃƒÂ­culo', 'Vehiculo'],
-    ['VehÃƒÂ­culos', 'Vehiculos'],
-    ['vehÃƒÂ­culo', 'vehiculo'],
-    ['vehÃƒÂ­culos', 'vehiculos'],
-    ['BÃƒÂºsqueda', 'Busqueda'],
-    ['bÃƒÂºsqueda', 'busqueda'],
-    ['ContraseÃƒÂ±a', 'Contrasena'],
-    ['DescripciÃƒÂ³n', 'Descripcion'],
-    ['descripciÃƒÂ³n', 'descripcion'],
-    ['CÃƒÂ³digo', 'Codigo'],
-    ['CÃƒÂ³d.', 'Cod.'],
-    ['AÃƒÂ±o', 'Ano'],
-    ['aÃƒÂ±o', 'ano'],
-    ['TambiÃƒÂ©n', 'Tambien'],
-    ['nÃƒÂºmero', 'numero'],
-    ['No se encontrÃƒÂ³', 'No se encontro'],
-    ['MÃƒÂ¡s', 'Mas'],
-    ['DirecciÃƒÂ³n', 'Direccion'],
-    ['TelÃƒÂ©fono', 'Telefono'],
-    ['MecÃƒÂ¡nica Automotriz Ã‚Â· DiagnÃƒÂ³stico Especializado', 'Mecanica Automotriz - Diagnostico Especializado']
+    ['â€”', '—'],
+    ['â€“', '–'],
+    ['â€œ', '"'],
+    ['â€', '"'],
+    ['â€˜', "'"],
+    ['â€™', "'"],
+    ['â€¢', '•'],
+    ['Â°', '°'],
+    ['NÃ‚Â°', 'NRO.'],
+    ['AÃºn', 'Aún'],
+    ['aÃºn', 'aún'],
+    ['vehÃ­culos', 'vehículos'],
+    ['VehÃ­culos', 'Vehículos'],
+    ['vehÃ­culo', 'vehículo'],
+    ['VehÃ­culo', 'Vehículo'],
+    ['MecÃ¡nica', 'Mecánica'],
+    ['DiagnÃ³stico', 'Diagnóstico'],
+    ['DirecciÃ³n', 'Dirección'],
+    ['TelÃ©fono', 'Teléfono'],
+    ['DescripciÃ³n', 'Descripción'],
+    ['CÃ³digo', 'Código'],
+    ['CÃ³d.', 'Cód.'],
+    ['ContraseÃ±a', 'Contraseña'],
+    ['BÃºsqueda', 'Búsqueda'],
+    ['ConfiguraciÃ³n', 'Configuración'],
+    ['RazÃ³n', 'Razón'],
+    ['NÃºmero', 'Número'],
+    ['MÃ¡s', 'Más'],
+    ['TambiÃ©n', 'También'],
+    ['No se encontrÃ³', 'No se encontró'],
+    ['AÃ±o', 'Año'],
+    ['aÃ±o', 'año'],
+    ['pÃ¡gina', 'página'],
+    ['versiÃ³n', 'versión']
   ];
 
   function fixTextString(value){
-    let text=String(value||'');
-    textReplacements.forEach(function(pair){
-      text=text.split(pair[0]).join(pair[1]);
+    let text = repairEncoding(String(value == null ? '' : value));
+    replacements.forEach(function(pair){
+      text = text.split(pair[0]).join(pair[1]);
     });
     return text;
+  }
+
+  function cleanBrokenValue(value){
+    const fixed = fixTextString(value).trim();
+    if (!fixed) return '—';
+    const weirdOnly = fixed.replace(/[—\-]/g,'').replace(/[A-ZÁÉÍÓÚÑa-záéíóúñ0-9/.: ]/g,'').trim();
+    if (fixed === 'â€' || fixed === 'â€"' || fixed === 'â€™' || weirdOnly === fixed) return '—';
+    if (/^[âÃÂ€�œ”‘’]+$/.test(fixed)) return '—';
+    return fixed;
   }
 
   function cleanseNodeText(root){
@@ -156,89 +150,107 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     });
 
     root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(function(el){
-      const fixed=fixTextString(el.getAttribute('placeholder'));
-      if(fixed!==el.getAttribute('placeholder')){
-        el.setAttribute('placeholder', fixed);
+      const oldPh = el.getAttribute('placeholder');
+      const ph = fixTextString(oldPh);
+      if(ph !== oldPh){
+        el.setAttribute('placeholder', ph);
       }
     });
   }
 
-  function moveGeneralSearchToHistorial(){
-    const searchInput=document.getElementById('searchAny');
-    const hist=document.getElementById('tHist');
-    if(!searchInput || !hist) return;
-    const card=searchInput.closest('.card');
-    if(!card || card.dataset.movedToHistorial==='1') return;
-    card.dataset.movedToHistorial='1';
-    const title=card.querySelector('h2');
-    if(title) title.textContent='Busqueda general';
-    hist.insertBefore(card, hist.firstChild);
+  function setFieldValue(id, prefix){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const raw = el.textContent || '';
+    let value = fixTextString(raw);
+    if(prefix){
+      if(value.startsWith(prefix)){
+        value = value.slice(prefix.length);
+      }else if(value.indexOf(':') !== -1){
+        value = value.split(':').slice(1).join(':');
+      }
+      el.textContent = prefix + cleanBrokenValue(value);
+    }else{
+      el.textContent = cleanBrokenValue(value);
+    }
+  }
+
+  function fixPrintOutput(){
+    setFieldValue('prnCliente', '');
+    setFieldValue('prnDoc', 'DNI/RUC: ');
+    setFieldValue('prnTel', 'Tel: ');
+    setFieldValue('prnDir', 'Dir: ');
+    setFieldValue('prnPlaca', '');
+    setFieldValue('prnAno', 'Año: ');
+    setFieldValue('prnModelo', '');
+    setFieldValue('prnKm', 'Km: ');
   }
 
   function applyStaticTextFixes(){
     document.title='Servicios - Taller Alianza';
+
     const gateTitle=document.querySelector('#gate .gate-card h1');
     const gateSub=document.querySelector('#gate .gate-card .sub');
     const ownerBtn=document.getElementById('rDueno');
     const assistBtn=document.getElementById('rAsist');
     const gatePass=document.getElementById('gatePass');
+
     if(gateTitle) gateTitle.textContent='Taller Alianza';
-    if(gateSub) gateSub.textContent='Sistema de Servicios - Chincha';
-    if(ownerBtn) ownerBtn.textContent='Dueno';
+    if(gateSub) gateSub.textContent='Sistema de Servicios · Chincha';
+    if(ownerBtn) ownerBtn.textContent='Dueño';
     if(assistBtn) assistBtn.textContent='Asistente';
-    if(gatePass) gatePass.placeholder='Contrasena';
+    if(gatePass) gatePass.placeholder='Contraseña';
 
     const header=document.querySelector('.header h1');
     if(header) header.textContent='Servicios Alianza';
-    const pill=document.getElementById('rolePill');
-    if(pill){
-      const txt=(pill.textContent||'').toUpperCase();
-      if(txt.includes('ASIST')) pill.textContent='ASISTENTE';
-      if(txt.includes('DUE') || txt.includes('DUEN')) pill.textContent='DUENO';
-    }
+
     const tabs=document.querySelectorAll('.tab');
     if(tabs[0]) tabs[0].textContent='Buscar';
     if(tabs[1]) tabs[1].textContent='Historial';
-    if(tabs[2]) tabs[2].textContent='Vehiculos';
+    if(tabs[2]) tabs[2].textContent='Vehículos';
     if(tabs[3]) tabs[3].textContent='Nueva';
     if(tabs[4]) tabs[4].textContent='Archivo';
     if(tabs[5]) tabs[5].textContent='Config';
 
     const tag=document.querySelector('#printArea .tag');
-    if(tag) tag.textContent='Mecanica Automotriz - Diagnostico Especializado';
+    if(tag) tag.textContent='Mecánica Automotriz · Diagnóstico Especializado';
+
     const info=document.querySelectorAll('#printArea .info div');
-    if(info[0]) info[0].textContent='MANTENIMIENTO PREVENTIVO Y CORRECTIVO DE VEHICULOS';
+    if(info[0]) info[0].textContent='MANTENIMIENTO PREVENTIVO Y CORRECTIVO DE VEHÍCULOS';
+    if(info[1]) info[1].textContent='VENTA DE REPUESTOS Y LUBRICANTES';
+
     const numLbl=document.querySelector('#printArea .pf-num .lbl');
-    if(numLbl) numLbl.textContent='Proforma Nro.';
+    if(numLbl) numLbl.textContent='PROFORMA NRO.';
+
     const blocks=document.querySelectorAll('#printArea .pf-cli .blk h3');
-    if(blocks[1]) blocks[1].textContent='Vehiculo';
+    if(blocks[0]) blocks[0].textContent='CLIENTE';
+    if(blocks[1]) blocks[1].textContent='VEHÍCULO';
+
     const descHead=document.querySelector('#printArea table.pf-items thead th:nth-child(2)');
-    if(descHead) descHead.textContent='Descripcion';
-    const foot=document.querySelector('#printArea .pf-foot');
-    if(foot) foot.innerHTML='Cotizacion referencial sin valor fiscal | Validez 7 dias | Precios sujetos a confirmacion de stock<br>Taller Alianza 2026 | Generado el <span id="prnGen"></span>';
+    if(descHead) descHead.textContent='DESCRIPCIÓN';
 
     document.querySelectorAll('.card h2').forEach(function(el){
-      const txt=(el.textContent||'').toUpperCase();
-      if(txt.includes('BUSCAR') && txt.includes('PLACA')) el.textContent='Buscar vehiculo por placa';
-      else if(txt.includes('BUSQUEDA') && txt.includes('GENERAL')) el.textContent='Busqueda general';
+      const txt=(fixTextString(el.textContent)||'').toUpperCase();
+      if(txt.includes('BUSCAR') && txt.includes('PLACA')) el.textContent='Buscar vehículo por placa';
+      else if(txt.includes('BUSQUEDA') && txt.includes('GENERAL')) el.textContent='Búsqueda general';
       else if(txt.includes('DATOS DEL CLIENTE')) el.textContent='Datos del cliente';
-      else if(txt.includes('VEH')) el.textContent='Vehiculo';
+      else if(txt.includes('VEHIC')) el.textContent='Vehículo';
       else if(txt.includes('ITEM')) el.textContent='Items / Servicios';
       else if(txt.includes('ARCHIVO')) el.textContent='Archivo de documentos';
-      else if(txt.includes('CONFIG')) el.textContent='Configuracion';
+      else if(txt.includes('CONFIG')) el.textContent='Configuración';
     });
 
     document.querySelectorAll('label').forEach(function(el){
       const txt=fixTextString(el.textContent);
       if(/PLACA/i.test(txt)) el.textContent='Placa';
       else if(/KILOMETR/i.test(txt)) el.textContent='Kilometraje';
-      else if(/A.NO|AÃ‘O|ANO/i.test(txt)) el.textContent='Ano';
+      else if(/AÑO|ANO/i.test(txt)) el.textContent='Año';
       else if(/MARCA/i.test(txt) && /MODELO/i.test(txt)) el.textContent='Marca / Modelo';
-      else if(/NOMBRE/i.test(txt)) el.textContent='Nombre / Razon Social';
-      else if(/TEL/i.test(txt)) el.textContent='Telefono';
-      else if(/DIRE/i.test(txt)) el.textContent='Direccion';
-      else if(/DESCRIP/i.test(txt)) el.textContent='Descripcion';
-      else if(/B[UÃš]SQUEDA GENERAL|BUSQUEDA GENERAL/i.test(txt)) el.textContent='Busqueda general';
+      else if(/NOMBRE/i.test(txt)) el.textContent='Nombre / Razón Social';
+      else if(/TEL/i.test(txt)) el.textContent='Teléfono';
+      else if(/DIRE/i.test(txt)) el.textContent='Dirección';
+      else if(/DESCRIP/i.test(txt)) el.textContent='Descripción';
+      else if(/BUSQUEDA GENERAL|BÚSQUEDA GENERAL/i.test(txt)) el.textContent='Búsqueda general';
     });
 
     const btnEdit=document.getElementById('btnEditStored');
@@ -246,6 +258,7 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     const btnDelete=document.getElementById('btnDeleteStored');
     const btnSave=document.getElementById('btnSaveDb');
     const printCtrl=document.getElementById('printCtrl');
+
     if(printCtrl){
       const first=printCtrl.querySelector('button');
       if(first) first.textContent='Volver';
@@ -254,177 +267,104 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     if(btnCancel && !(btnCancel.textContent||'').includes('Reactivar')) btnCancel.textContent='Anular';
     if(btnDelete) btnDelete.textContent='Eliminar';
     if(btnSave) btnSave.textContent='Guardar en BD';
-    const printButtons=document.querySelectorAll('#printCtrl .btn');
-    const lastBtn=printButtons[printButtons.length-1];
-    if(lastBtn) lastBtn.textContent='Imprimir / PDF';
 
-    moveGeneralSearchToHistorial();
-    cleanseNodeText(document.body);
-  }
-
-  function fixRenderedLineItems(){
-    document.querySelectorAll('.li-desc-label').forEach(function(el){ el.textContent='Descripcion'; });
-    document.querySelectorAll('.li-desc-input').forEach(function(el){ el.placeholder='ESCRIBA AQUI LA DESCRIPCION'; });
-    document.querySelectorAll('.li-del').forEach(function(el){ el.textContent='x'; });
-    document.querySelectorAll('#lineItems input[placeholder]').forEach(function(el){
-      if((el.placeholder||'').toUpperCase().includes('INTERNO')) el.placeholder='Cod. Interno';
-      if((el.placeholder||'').toUpperCase().includes('OEM')) el.placeholder='Cod. OEM';
+    document.querySelectorAll('.empty').forEach(function(el){
+      el.textContent = fixTextString(el.textContent || '');
     });
   }
 
-  function installBehaviorFixes(){
-    window.showToast = showToast;
+  function fixRenderedLineItems(){
+    document.querySelectorAll('.li-desc-label').forEach(function(el){ el.textContent='Descripción'; });
+    document.querySelectorAll('.li-desc-input').forEach(function(el){ el.placeholder='ESCRIBA AQUÍ LA DESCRIPCIÓN'; });
+    document.querySelectorAll('.li-del').forEach(function(el){ el.textContent='×'; });
+    document.querySelectorAll('#lineItems input[placeholder]').forEach(function(el){
+      const ph = (el.placeholder||'').toUpperCase();
+      if(ph.includes('INTERNO')) el.placeholder='Cód. Interno';
+      if(ph.includes('OEM')) el.placeholder='Cód. OEM';
+    });
+  }
 
-    if(typeof window.buildCurrentProforma === 'function'){
-      const originalBuild=window.buildCurrentProforma;
-      window.buildCurrentProforma=function(){
-        const pf=originalBuild();
-        const lines=cleanLines(pf.lines);
-        const sub=lines.reduce(function(acc,l){ return acc+(l.cant*l.precio); },0);
-        pf.lines=lines;
-        pf.sub=sub;
-        pf.tot=sub-(parseFloat(pf.ac1)||0)-(parseFloat(pf.ac2)||0);
-        ['cliente','doc','tel','dir','placa','km','ano','modelo'].forEach(function(key){
-          if(!String(pf[key]||'').trim()) pf[key]='-';
-        });
-        return pf;
-      };
-    }
-
-    if(typeof window.generarProforma === 'function'){
-      const originalGenerar=window.generarProforma;
-      window.generarProforma=function(){
-        const currentLines=window.state ? window.state.lines : [];
-        if(cleanLines(currentLines).length===0){
-          alert('Agrega al menos un item con descripcion');
-          return;
-        }
-        return originalGenerar();
-      };
-    }
-
-    if(typeof window.renderPrintFromProforma === 'function'){
-      const originalRenderPrint=window.renderPrintFromProforma;
-      window.renderPrintFromProforma=function(pf){
-        const fixed=Object.assign({}, pf, { lines: cleanLines(pf.lines) });
-        originalRenderPrint(fixed);
-        const ano=document.getElementById('prnAno');
-        const doc=document.getElementById('prnDoc');
-        const tel=document.getElementById('prnTel');
-        const dir=document.getElementById('prnDir');
-        const placa=document.getElementById('prnPlaca');
-        const modelo=document.getElementById('prnModelo');
-        const km=document.getElementById('prnKm');
-        if(ano) ano.textContent='Ano: '+cleanDisplayValue(fixed.ano);
-        if(doc) doc.textContent='DNI/RUC: '+cleanDisplayValue(fixed.doc);
-        if(tel) tel.textContent='Tel: '+cleanDisplayValue(fixed.tel);
-        if(dir) dir.textContent='Dir: '+cleanDisplayValue(fixed.dir);
-        if(placa) placa.textContent=cleanDisplayValue(fixed.placa);
-        if(modelo) modelo.textContent=cleanDisplayValue(fixed.modelo);
-        if(km) km.textContent='Km: '+cleanDisplayValue(fixed.km);
+  function patchFunctions(){
+    if(typeof window.renderPrintFromProforma === 'function' && !window.__patchedPrintTextFix){
+      const original = window.renderPrintFromProforma;
+      window.renderPrintFromProforma = function(pf){
+        original(pf);
         applyStaticTextFixes();
+        fixPrintOutput();
+        cleanseNodeText(document.body);
       };
+      window.__patchedPrintTextFix = true;
     }
 
-    if(typeof window.renderLines === 'function'){
-      const originalRenderLines=window.renderLines;
-      window.renderLines=function(){
-        originalRenderLines();
+    if(typeof window.renderLines === 'function' && !window.__patchedLinesTextFix){
+      const original = window.renderLines;
+      window.renderLines = function(){
+        original();
         fixRenderedLineItems();
+        cleanseNodeText(document.body);
       };
+      window.__patchedLinesTextFix = true;
     }
 
-    if(typeof window.renderPrintControls === 'function'){
-      const originalRenderPrintControls=window.renderPrintControls;
-      window.renderPrintControls=function(){
-        originalRenderPrintControls();
-        const btnCancel=document.getElementById('btnCancelStored');
-        if(btnCancel){
-          btnCancel.textContent=(window.state && window.state.currentProforma && window.state.currentProforma.cancelled) ? 'Reactivar' : 'Anular';
-        }
+    if(typeof window.renderProformasList === 'function' && !window.__patchedListTextFix){
+      const original = window.renderProformasList;
+      window.renderProformasList = function(){
+        original();
         applyStaticTextFixes();
+        cleanseNodeText(document.body);
       };
+      window.__patchedListTextFix = true;
     }
 
-    if(typeof window.eliminarProformaEnSheets === 'function'){
-      const originalDeleteSheets=window.eliminarProformaEnSheets;
-      window.eliminarProformaEnSheets=async function(proforma){
-        try{
-          return await originalDeleteSheets(proforma);
-        }catch(err){
-          showToast('Error al eliminar en Google Sheets: '+(err && err.message ? err.message : err),'warn',4200);
-          return false;
-        }
-      };
-    }
-
-    window.deleteStoredProforma=async function(num){
-      if(window.state.role!=='dueno'){ alert('Solo el dueno puede eliminar documentos.'); return; }
-      const idx=window.state.proformas.findIndex(function(p){ return p.num===num; });
-      if(idx<0){ alert('No se encontro la proforma.'); return; }
-      const pf=window.state.proformas[idx];
-      let msg='Desea eliminar la proforma '+pf.num+'?';
-      if(pf.savedToDb) msg+='\\n\\nTambien se intentara eliminar de Google Sheets.';
-      if(!confirm(msg)) return;
-      showToast('Eliminando proforma '+pf.num+'...','info',1600);
-      if(pf.savedToDb){
-        const ok=await window.eliminarProformaEnSheets(pf);
-        if(!ok) return;
-      }
-      window.state.proformas.splice(idx,1);
-      window.saveProformasLocal();
-      window.removeSavedProformaMark(pf.num);
-      if(window.state.currentProforma && window.state.currentProforma.num===pf.num){
-        window.state.currentProforma=null;
-        window.closePrint();
-      }
-      window.renderProformasList();
-      showToast('Proforma eliminada: '+pf.num,'ok',3200);
-    };
-
-    if(typeof window.enterApp === 'function'){
-      const originalEnterApp=window.enterApp;
-      window.enterApp=function(){
-        originalEnterApp();
+    if(typeof window.renderVehTable === 'function' && !window.__patchedVehTextFix){
+      const original = window.renderVehTable;
+      window.renderVehTable = function(){
+        original();
         applyStaticTextFixes();
+        cleanseNodeText(document.body);
       };
+      window.__patchedVehTextFix = true;
     }
 
-    if(typeof window.renderProformasList === 'function'){
-      const originalRenderList=window.renderProformasList;
-      window.renderProformasList=function(){
-        originalRenderList();
+    if(typeof window.enterApp === 'function' && !window.__patchedEnterTextFix){
+      const original = window.enterApp;
+      window.enterApp = function(){
+        original();
         applyStaticTextFixes();
+        cleanseNodeText(document.body);
       };
+      window.__patchedEnterTextFix = true;
     }
   }
 
   function mount(){
     ensureToastUi();
+    patchFunctions();
     applyStaticTextFixes();
     fixRenderedLineItems();
+    fixPrintOutput();
+    cleanseNodeText(document.body);
   }
 
-  let mountTimer=null;
+  let mountTimer = null;
   function scheduleMount(){
-    if(mountTimer) window.clearTimeout(mountTimer);
-    mountTimer=window.setTimeout(function(){
-      mount();
-    },60);
+    if(mountTimer) clearTimeout(mountTimer);
+    mountTimer = setTimeout(mount, 60);
   }
 
   window.addEventListener('load', function(){
-    installBehaviorFixes();
     mount();
-    const observer=new MutationObserver(function(){ scheduleMount(); });
+    const observer = new MutationObserver(function(){
+      scheduleMount();
+    });
     observer.observe(document.body,{childList:true,subtree:true,characterData:true});
-    window.setInterval(mount, 1200);
+    setInterval(mount, 1200);
   });
 })();
 <\/script>`;
 
     if (!html.includes('</body>')) {
-      throw new Error('La pagina base no tiene </body>');
+      throw new Error('La página base no tiene </body>');
     }
 
     html = html.replace('</body>', patch + '\n</body>');
