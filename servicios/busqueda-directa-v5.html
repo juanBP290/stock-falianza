@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios - Taller Alianza</title>
+<style>
+body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif;display:grid;place-items:center;min-height:100vh}
+.box{max-width:560px;padding:24px;border:1px solid #2a3850;border-radius:16px;background:#161e2e;box-shadow:0 20px 50px rgba(0,0,0,.28)}
+.box h1{margin:0 0 10px;font-size:22px;color:#f59e0b}
+.box p{margin:0;color:#94a3b8;line-height:1.5}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>Servicios Alianza</h1>
+    <p>Cargando la version corregida...</p>
+  </div>
+<script>
+(async function () {
+  function renderError(message) {
+    document.body.innerHTML = '<div class="box"><h1>Error</h1><p>' + String(message || 'No se pudo cargar la pagina') + '</p></div>';
+  }
+
+  try {
+    const response = await fetch('./busqueda-directa-v2.html', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('No se pudo abrir busqueda-directa-v2.html');
+    }
+
+    let html = await response.text();
+
+    const patch = `<script>
+(function () {
+  function ensureToastUi(){
+    if(document.getElementById('toastWrap')) return;
+    const style=document.createElement('style');
+    style.textContent='.toast-wrap{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:12000;pointer-events:none}.toast{min-width:240px;max-width:360px;padding:12px 14px;border-radius:10px;border:1px solid #2a3850;background:#1e2a3f;color:#e5e7eb;box-shadow:0 12px 30px rgba(0,0,0,.28);font-size:13px;line-height:1.35;opacity:0;transform:translateY(-8px);transition:opacity .18s ease,transform .18s ease}.toast.show{opacity:1;transform:translateY(0)}.toast.ok{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.12)}.toast.warn{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.12)}.toast.info{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.12)}';
+    document.head.appendChild(style);
+    const wrap=document.createElement('div');
+    wrap.className='toast-wrap';
+    wrap.id='toastWrap';
+    document.body.appendChild(wrap);
+  }
+
+  function showToast(message,type,duration){
+    ensureToastUi();
+    const wrap=document.getElementById('toastWrap');
+    if(!wrap) return;
+    const toast=document.createElement('div');
+    toast.className='toast '+(type||'info');
+    toast.textContent=String(message||'');
+    wrap.appendChild(toast);
+    requestAnimationFrame(function(){ toast.classList.add('show'); });
+    window.setTimeout(function(){
+      toast.classList.remove('show');
+      window.setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); },220);
+    }, typeof duration==='number' ? duration : 2600);
+  }
+
+  function cleanLines(lines){
+    return (lines||[]).map(function(l){
+      return {
+        desc:String((l&&l.desc)||'').trim().toUpperCase(),
+        cint:String((l&&l.cint)||'').trim().toUpperCase(),
+        coem:String((l&&l.coem)||'').trim().toUpperCase(),
+        cant:parseFloat(l&&l.cant)||0,
+        precio:parseFloat(l&&l.precio)||0
+      };
+    }).filter(function(l){ return l.desc; });
+  }
+
+  function cleanDisplayValue(value){
+    const text=fixTextString(String(value==null ? '' : value)).trim();
+    if(!text || text==='-' || text==='â€”' || text==='Ã¢â‚¬â€') return '-';
+    return text;
+  }
+
+  const textReplacements = [
+    ['Ã°Å¸â€Â§ ', ''],
+    ['Ã°Å¸â€Â ', ''],
+    ['Ã°Å¸â€œâ€¹ ', ''],
+    ['Ã°Å¸Å¡â€” ', ''],
+    ['Ã°Å¸â€œÂ ', ''],
+    ['Ã°Å¸â€”â€š ', ''],
+    ['Ã¢Å¡â„¢Ã¯Â¸Â ', ''],
+    ['Ã°Å¸â€Å½ ', ''],
+    ['Ã°Å¸â€˜Â ', ''],
+    ['Ã°Å¸Å¡Â« ', ''],
+    ['Ã°Å¸â€™Â¾ ', ''],
+    ['Ã°Å¸â€“Â¨ ', ''],
+    ['Ã°Å¸â€”â€˜ ', ''],
+    ['Ã¢Å“ÂÃ¯Â¸Â ', ''],
+    ['Ã¢â€ Â ', ''],
+    ['Ã¢â€ Â© ', ''],
+    ['Ã¢Å“â€œ ', ''],
+    ['Ã°Å¸â€œÂ ', ''],
+    ['Ã‚Â·', ' - '],
+    ['Ã¢â‚¬â€', '-'],
+    ['Ã‚Â¿', ''],
+    ['NÃ‚Â°', 'Nro.'],
+    ['MecÃƒÂ¡nica', 'Mecanica'],
+    ['DiagnÃƒÂ³stico', 'Diagnostico'],
+    ['VehÃƒÂ­culo', 'Vehiculo'],
+    ['VehÃƒÂ­culos', 'Vehiculos'],
+    ['vehÃƒÂ­culo', 'vehiculo'],
+    ['vehÃƒÂ­culos', 'vehiculos'],
+    ['BÃƒÂºsqueda', 'Busqueda'],
+    ['bÃƒÂºsqueda', 'busqueda'],
+    ['ContraseÃƒÂ±a', 'Contrasena'],
+    ['DescripciÃƒÂ³n', 'Descripcion'],
+    ['descripciÃƒÂ³n', 'descripcion'],
+    ['CÃƒÂ³digo', 'Codigo'],
+    ['CÃƒÂ³d.', 'Cod.'],
+    ['AÃƒÂ±o', 'Ano'],
+    ['aÃƒÂ±o', 'ano'],
+    ['TambiÃƒÂ©n', 'Tambien'],
+    ['nÃƒÂºmero', 'numero'],
+    ['No se encontrÃƒÂ³', 'No se encontro'],
+    ['MÃƒÂ¡s', 'Mas'],
+    ['DirecciÃƒÂ³n', 'Direccion'],
+    ['TelÃƒÂ©fono', 'Telefono'],
+    ['MecÃƒÂ¡nica Automotriz Ã‚Â· DiagnÃƒÂ³stico Especializado', 'Mecanica Automotriz - Diagnostico Especializado']
+  ];
+
+  function fixTextString(value){
+    let text=String(value||'');
+    textReplacements.forEach(function(pair){
+      text=text.split(pair[0]).join(pair[1]);
+    });
+    return text;
+  }
+
+  function cleanseNodeText(root){
+    if(!root) return;
+    const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node){
+        const parent=node && node.parentNode;
+        if(!parent) return NodeFilter.FILTER_REJECT;
+        const tag=(parent.tagName||'').toUpperCase();
+        if(tag==='SCRIPT' || tag==='STYLE') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const textNodes=[];
+    while(walker.nextNode()){
+      textNodes.push(walker.currentNode);
+    }
+
+    textNodes.forEach(function(node){
+      const fixed=fixTextString(node.nodeValue);
+      if(fixed!==node.nodeValue){
+        node.nodeValue=fixed;
+      }
+    });
+
+    root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(function(el){
+      const fixed=fixTextString(el.getAttribute('placeholder'));
+      if(fixed!==el.getAttribute('placeholder')){
+        el.setAttribute('placeholder', fixed);
+      }
+    });
+  }
+
+  function moveGeneralSearchToHistorial(){
+    const searchInput=document.getElementById('searchAny');
+    const hist=document.getElementById('tHist');
+    if(!searchInput || !hist) return;
+    const card=searchInput.closest('.card');
+    if(!card || card.dataset.movedToHistorial==='1') return;
+    card.dataset.movedToHistorial='1';
+    const title=card.querySelector('h2');
+    if(title) title.textContent='Busqueda general';
+    hist.insertBefore(card, hist.firstChild);
+  }
+
+  function applyStaticTextFixes(){
+    document.title='Servicios - Taller Alianza';
+    const gateTitle=document.querySelector('#gate .gate-card h1');
+    const gateSub=document.querySelector('#gate .gate-card .sub');
+    const ownerBtn=document.getElementById('rDueno');
+    const assistBtn=document.getElementById('rAsist');
+    const gatePass=document.getElementById('gatePass');
+    if(gateTitle) gateTitle.textContent='Taller Alianza';
+    if(gateSub) gateSub.textContent='Sistema de Servicios - Chincha';
+    if(ownerBtn) ownerBtn.textContent='Dueno';
+    if(assistBtn) assistBtn.textContent='Asistente';
+    if(gatePass) gatePass.placeholder='Contrasena';
+
+    const header=document.querySelector('.header h1');
+    if(header) header.textContent='Servicios Alianza';
+    const pill=document.getElementById('rolePill');
+    if(pill){
+      const txt=(pill.textContent||'').toUpperCase();
+      if(txt.includes('ASIST')) pill.textContent='ASISTENTE';
+      if(txt.includes('DUE') || txt.includes('DUEN')) pill.textContent='DUENO';
+    }
+    const tabs=document.querySelectorAll('.tab');
+    if(tabs[0]) tabs[0].textContent='Buscar';
+    if(tabs[1]) tabs[1].textContent='Historial';
+    if(tabs[2]) tabs[2].textContent='Vehiculos';
+    if(tabs[3]) tabs[3].textContent='Nueva';
+    if(tabs[4]) tabs[4].textContent='Archivo';
+    if(tabs[5]) tabs[5].textContent='Config';
+
+    const tag=document.querySelector('#printArea .tag');
+    if(tag) tag.textContent='Mecanica Automotriz - Diagnostico Especializado';
+    const info=document.querySelectorAll('#printArea .info div');
+    if(info[0]) info[0].textContent='MANTENIMIENTO PREVENTIVO Y CORRECTIVO DE VEHICULOS';
+    const numLbl=document.querySelector('#printArea .pf-num .lbl');
+    if(numLbl) numLbl.textContent='Proforma Nro.';
+    const blocks=document.querySelectorAll('#printArea .pf-cli .blk h3');
+    if(blocks[1]) blocks[1].textContent='Vehiculo';
+    const descHead=document.querySelector('#printArea table.pf-items thead th:nth-child(2)');
+    if(descHead) descHead.textContent='Descripcion';
+    const foot=document.querySelector('#printArea .pf-foot');
+    if(foot) foot.innerHTML='Cotizacion referencial sin valor fiscal | Validez 7 dias | Precios sujetos a confirmacion de stock<br>Taller Alianza 2026 | Generado el <span id="prnGen"></span>';
+
+    document.querySelectorAll('.card h2').forEach(function(el){
+      const txt=(el.textContent||'').toUpperCase();
+      if(txt.includes('BUSCAR') && txt.includes('PLACA')) el.textContent='Buscar vehiculo por placa';
+      else if(txt.includes('BUSQUEDA') && txt.includes('GENERAL')) el.textContent='Busqueda general';
+      else if(txt.includes('DATOS DEL CLIENTE')) el.textContent='Datos del cliente';
+      else if(txt.includes('VEH')) el.textContent='Vehiculo';
+      else if(txt.includes('ITEM')) el.textContent='Items / Servicios';
+      else if(txt.includes('ARCHIVO')) el.textContent='Archivo de documentos';
+      else if(txt.includes('CONFIG')) el.textContent='Configuracion';
+    });
+
+    document.querySelectorAll('label').forEach(function(el){
+      const txt=fixTextString(el.textContent);
+      if(/PLACA/i.test(txt)) el.textContent='Placa';
+      else if(/KILOMETR/i.test(txt)) el.textContent='Kilometraje';
+      else if(/A.NO|AÃ‘O|ANO/i.test(txt)) el.textContent='Ano';
+      else if(/MARCA/i.test(txt) && /MODELO/i.test(txt)) el.textContent='Marca / Modelo';
+      else if(/NOMBRE/i.test(txt)) el.textContent='Nombre / Razon Social';
+      else if(/TEL/i.test(txt)) el.textContent='Telefono';
+      else if(/DIRE/i.test(txt)) el.textContent='Direccion';
+      else if(/DESCRIP/i.test(txt)) el.textContent='Descripcion';
+      else if(/B[UÃš]SQUEDA GENERAL|BUSQUEDA GENERAL/i.test(txt)) el.textContent='Busqueda general';
+    });
+
+    const btnEdit=document.getElementById('btnEditStored');
+    const btnCancel=document.getElementById('btnCancelStored');
+    const btnDelete=document.getElementById('btnDeleteStored');
+    const btnSave=document.getElementById('btnSaveDb');
+    const printCtrl=document.getElementById('printCtrl');
+    if(printCtrl){
+      const first=printCtrl.querySelector('button');
+      if(first) first.textContent='Volver';
+    }
+    if(btnEdit) btnEdit.textContent='Editar';
+    if(btnCancel && !(btnCancel.textContent||'').includes('Reactivar')) btnCancel.textContent='Anular';
+    if(btnDelete) btnDelete.textContent='Eliminar';
+    if(btnSave) btnSave.textContent='Guardar en BD';
+    const printButtons=document.querySelectorAll('#printCtrl .btn');
+    const lastBtn=printButtons[printButtons.length-1];
+    if(lastBtn) lastBtn.textContent='Imprimir / PDF';
+
+    moveGeneralSearchToHistorial();
+    cleanseNodeText(document.body);
+  }
+
+  function fixRenderedLineItems(){
+    document.querySelectorAll('.li-desc-label').forEach(function(el){ el.textContent='Descripcion'; });
+    document.querySelectorAll('.li-desc-input').forEach(function(el){ el.placeholder='ESCRIBA AQUI LA DESCRIPCION'; });
+    document.querySelectorAll('.li-del').forEach(function(el){ el.textContent='x'; });
+    document.querySelectorAll('#lineItems input[placeholder]').forEach(function(el){
+      if((el.placeholder||'').toUpperCase().includes('INTERNO')) el.placeholder='Cod. Interno';
+      if((el.placeholder||'').toUpperCase().includes('OEM')) el.placeholder='Cod. OEM';
+    });
+  }
+
+  function installBehaviorFixes(){
+    window.showToast = showToast;
+
+    if(typeof window.buildCurrentProforma === 'function'){
+      const originalBuild=window.buildCurrentProforma;
+      window.buildCurrentProforma=function(){
+        const pf=originalBuild();
+        const lines=cleanLines(pf.lines);
+        const sub=lines.reduce(function(acc,l){ return acc+(l.cant*l.precio); },0);
+        pf.lines=lines;
+        pf.sub=sub;
+        pf.tot=sub-(parseFloat(pf.ac1)||0)-(parseFloat(pf.ac2)||0);
+        ['cliente','doc','tel','dir','placa','km','ano','modelo'].forEach(function(key){
+          if(!String(pf[key]||'').trim()) pf[key]='-';
+        });
+        return pf;
+      };
+    }
+
+    if(typeof window.generarProforma === 'function'){
+      const originalGenerar=window.generarProforma;
+      window.generarProforma=function(){
+        const currentLines=window.state ? window.state.lines : [];
+        if(cleanLines(currentLines).length===0){
+          alert('Agrega al menos un item con descripcion');
+          return;
+        }
+        return originalGenerar();
+      };
+    }
+
+    if(typeof window.renderPrintFromProforma === 'function'){
+      const originalRenderPrint=window.renderPrintFromProforma;
+      window.renderPrintFromProforma=function(pf){
+        const fixed=Object.assign({}, pf, { lines: cleanLines(pf.lines) });
+        originalRenderPrint(fixed);
+        const ano=document.getElementById('prnAno');
+        const doc=document.getElementById('prnDoc');
+        const tel=document.getElementById('prnTel');
+        const dir=document.getElementById('prnDir');
+        const placa=document.getElementById('prnPlaca');
+        const modelo=document.getElementById('prnModelo');
+        const km=document.getElementById('prnKm');
+        if(ano) ano.textContent='Ano: '+cleanDisplayValue(fixed.ano);
+        if(doc) doc.textContent='DNI/RUC: '+cleanDisplayValue(fixed.doc);
+        if(tel) tel.textContent='Tel: '+cleanDisplayValue(fixed.tel);
+        if(dir) dir.textContent='Dir: '+cleanDisplayValue(fixed.dir);
+        if(placa) placa.textContent=cleanDisplayValue(fixed.placa);
+        if(modelo) modelo.textContent=cleanDisplayValue(fixed.modelo);
+        if(km) km.textContent='Km: '+cleanDisplayValue(fixed.km);
+        applyStaticTextFixes();
+      };
+    }
+
+    if(typeof window.renderLines === 'function'){
+      const originalRenderLines=window.renderLines;
+      window.renderLines=function(){
+        originalRenderLines();
+        fixRenderedLineItems();
+      };
+    }
+
+    if(typeof window.renderPrintControls === 'function'){
+      const originalRenderPrintControls=window.renderPrintControls;
+      window.renderPrintControls=function(){
+        originalRenderPrintControls();
+        const btnCancel=document.getElementById('btnCancelStored');
+        if(btnCancel){
+          btnCancel.textContent=(window.state && window.state.currentProforma && window.state.currentProforma.cancelled) ? 'Reactivar' : 'Anular';
+        }
+        applyStaticTextFixes();
+      };
+    }
+
+    if(typeof window.eliminarProformaEnSheets === 'function'){
+      const originalDeleteSheets=window.eliminarProformaEnSheets;
+      window.eliminarProformaEnSheets=async function(proforma){
+        try{
+          return await originalDeleteSheets(proforma);
+        }catch(err){
+          showToast('Error al eliminar en Google Sheets: '+(err && err.message ? err.message : err),'warn',4200);
+          return false;
+        }
+      };
+    }
+
+    window.deleteStoredProforma=async function(num){
+      if(window.state.role!=='dueno'){ alert('Solo el dueno puede eliminar documentos.'); return; }
+      const idx=window.state.proformas.findIndex(function(p){ return p.num===num; });
+      if(idx<0){ alert('No se encontro la proforma.'); return; }
+      const pf=window.state.proformas[idx];
+      let msg='Desea eliminar la proforma '+pf.num+'?';
+      if(pf.savedToDb) msg+='\\n\\nTambien se intentara eliminar de Google Sheets.';
+      if(!confirm(msg)) return;
+      showToast('Eliminando proforma '+pf.num+'...','info',1600);
+      if(pf.savedToDb){
+        const ok=await window.eliminarProformaEnSheets(pf);
+        if(!ok) return;
+      }
+      window.state.proformas.splice(idx,1);
+      window.saveProformasLocal();
+      window.removeSavedProformaMark(pf.num);
+      if(window.state.currentProforma && window.state.currentProforma.num===pf.num){
+        window.state.currentProforma=null;
+        window.closePrint();
+      }
+      window.renderProformasList();
+      showToast('Proforma eliminada: '+pf.num,'ok',3200);
+    };
+
+    if(typeof window.enterApp === 'function'){
+      const originalEnterApp=window.enterApp;
+      window.enterApp=function(){
+        originalEnterApp();
+        applyStaticTextFixes();
+      };
+    }
+
+    if(typeof window.renderProformasList === 'function'){
+      const originalRenderList=window.renderProformasList;
+      window.renderProformasList=function(){
+        originalRenderList();
+        applyStaticTextFixes();
+      };
+    }
+  }
+
+  function mount(){
+    ensureToastUi();
+    applyStaticTextFixes();
+    fixRenderedLineItems();
+  }
+
+  let mountTimer=null;
+  function scheduleMount(){
+    if(mountTimer) window.clearTimeout(mountTimer);
+    mountTimer=window.setTimeout(function(){
+      mount();
+    },60);
+  }
+
+  window.addEventListener('load', function(){
+    installBehaviorFixes();
+    mount();
+    const observer=new MutationObserver(function(){ scheduleMount(); });
+    observer.observe(document.body,{childList:true,subtree:true,characterData:true});
+    window.setInterval(mount, 1200);
+  });
+})();
+<\/script>`;
+
+    if (!html.includes('</body>')) {
+      throw new Error('La pagina base no tiene </body>');
+    }
+
+    html = html.replace('</body>', patch + '\n</body>');
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (err) {
+    renderError(err.message);
+  }
+})();
+</script>
+</body>
+</html>
