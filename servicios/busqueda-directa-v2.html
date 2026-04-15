@@ -84,6 +84,19 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 .totals-box{background:var(--card2);border:1px solid var(--accent);border-radius:10px;padding:14px;margin-top:14px}
 .totals-box .tot-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
 .totals-box .tot-row.big{font-size:18px;font-weight:800;color:var(--accent);border-top:1px solid var(--border);margin-top:6px;padding-top:10px}
+
+.hist-search-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:14px;align-items:start}
+.preview-box{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;position:sticky;top:88px}
+.preview-box h3{margin:0 0 8px;font-size:13px;color:var(--accent2);text-transform:uppercase;letter-spacing:.4px}
+.preview-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted)}
+.preview-strong{font-size:16px;font-weight:800;color:var(--accent);letter-spacing:.5px}
+.preview-lines{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.preview-line{padding:8px 10px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);font-size:12px}
+.preview-line .desc{font-size:12px;color:var(--text);margin-bottom:4px}
+.preview-line .sub{font-size:11px;color:var(--muted)}
+.svc-item.active-preview{border-color:var(--accent);box-shadow:0 0 0 1px rgba(245,158,11,.18) inset}
+@media (max-width:900px){.hist-search-grid{grid-template-columns:1fr}.preview-box{position:static;top:auto}}
+
 .data-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--card2);border-radius:8px;overflow:hidden}
 .data-table th{background:var(--bg2);color:var(--accent);padding:8px 6px;text-align:left;font-size:10px;text-transform:uppercase;position:sticky;top:0;border-bottom:2px solid var(--border)}
 .data-table td{padding:7px 6px;border-bottom:1px solid var(--border);color:var(--text)}
@@ -174,16 +187,22 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   <div class="view active" id="tHist">
     <div class="card">
-      <h2>ðŸ”Ž BÃºsqueda General</h2>
-      <div class="field"><label>Buscar por cualquier palabra (nÃºmero, placa, cliente, modelo, descripciÃ³n, fecha, etc.)</label>
+      <h2>Búsqueda general</h2>
+      <div class="field"><label>Buscar por cualquier palabra (número, placa, cliente, modelo, descripción, fecha, etc.)</label>
         <input type="text" id="searchAny" class="uppercase-input" placeholder="Ej: PROF-2026-0023, U1D-272, YARIS, PERCY..." oninput="buscarGeneral()">
       </div>
-      <div id="genResult" style="margin-top:8px"></div>
-    </div>
-    <div class="card">
-      <h2>Historial de Servicios</h2>
-      <div id="histVehInfo" class="empty">Usa la bÃºsqueda general para encontrar una proforma o un vehÃ­culo</div>
-      <div id="histList" class="svc-list"></div>
+      <div class="hist-search-grid">
+        <div>
+          <div id="genResult" style="margin-top:8px"></div>
+        </div>
+        <div>
+          <div class="preview-box" id="histPreviewBox">
+            <h3>Vista previa</h3>
+            <div id="histVehInfo" class="empty" style="padding:16px">Busca una proforma y toca una fila para ver el detalle aquí.</div>
+            <div id="histList" class="svc-list" style="display:none"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -656,18 +675,45 @@ function openDocumentDoc(doc){
   window.scrollTo(0,0);
 }
 
+function renderSearchPreview(doc,index){
+  const box=document.getElementById('histVehInfo');
+  if(!box) return;
+  state.searchPreviewIndex=typeof index==='number'?index:-1;
+  if(!doc){
+    box.innerHTML='';
+    box.className='empty';
+    box.textContent='Busca una proforma y toca una fila para ver el detalle aquí.';
+    return;
+  }
+  const pf=buildPrintableProformaFromDoc(doc);
+  const lines=(pf.lines||[]);
+  box.className='';
+  box.innerHTML=`
+    <div class="preview-strong">${escapeHtml(pf.num||pf.placa||'—')}</div>
+    <div style="font-size:13px;color:var(--text);margin:4px 0 10px"><b>${escapeHtml(pf.cliente||'—')}</b></div>
+    <div class="preview-meta">
+      <div><b>Fecha:</b><br>${escapeHtml(pf.fechaTexto||'—')}</div>
+      <div><b>Placa:</b><br>${escapeHtml(pf.placa||'—')}</div>
+      <div><b>Modelo:</b><br>${escapeHtml(pf.modelo||'—')}</div>
+      <div><b>Total:</b><br>S/ ${(parseFloat(pf.tot)||0).toFixed(2)}</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px"><b>Detalle:</b></div>
+    <div class="preview-lines">
+      ${lines.length?lines.map(l=>`<div class="preview-line"><div class="desc">${escapeHtml(l.desc||'—')}</div><div class="sub">Cant: ${parseFloat(l.cant||0)||0} · P.Unit: S/ ${(parseFloat(l.precio||0)||0).toFixed(2)} · Total: S/ ${(((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))).toFixed(2)}</div></div>`).join(''):'<div class="empty" style="padding:10px">Sin detalle</div>'}
+    </div>
+    <div class="btn-row" style="margin-top:12px"><button class="btn" onclick="openDocumentDoc(state.searchDocs[${typeof index==='number'?index:0}]||null)">Abrir proforma</button></div>
+  `;
+}
+
 function openGeneralSearchDoc(index){
   const docs=state.searchDocs||[];
   const doc=docs[parseInt(index,10)];
   if(!doc)return;
-  if(doc.num){
-    const found=(state.proformas||[]).find(p=>String(p.num||'').toUpperCase()===String(doc.num||'').toUpperCase());
-    if(found){
-      openStoredProforma(found.num);
-      return;
-    }
+  renderSearchPreview(doc,parseInt(index,10));
+  const list=document.getElementById('genResult');
+  if(list){
+    list.querySelectorAll('.svc-item').forEach((el,i)=>el.classList.toggle('active-preview', i===parseInt(index,10)));
   }
-  openDocumentDoc(doc);
 }
 
 function abrirDocumentoDesdeBusqueda(num, placa){
@@ -685,13 +731,14 @@ function abrirDocumentoDesdeBusqueda(num, placa){
 }
 
 async function buscarGeneral(){
-  const input=document.querySelector('#tHist #searchAny') || document.getElementById('searchAny');
-  const box=document.querySelector('#tHist #genResult') || document.getElementById('genResult');
+  const input=document.getElementById('searchAny');
+  const box=document.getElementById('genResult');
   if(!input || !box) return;
   const q=(input.value||'').trim().toLowerCase();
   if(q.length<2){
     state.searchDocs=[];
     box.innerHTML='';
+    renderSearchPreview(null,-1);
     return;
   }
   try{
@@ -711,6 +758,7 @@ async function buscarGeneral(){
 
     if(docs.length===0){
       box.innerHTML='<div class="empty">Sin resultados para "'+escapeHtml(q)+'"</div>';
+      renderSearchPreview(null,-1);
       return;
     }
 
@@ -718,7 +766,8 @@ async function buscarGeneral(){
       const itemCount=(d.lines||d.items||[]).length;
       const total=parseFloat(d.tot ?? d.total ?? 0)||0;
       const badgeCancel=d.cancelled?'<span class="badge cancel">ANULADA</span>':'';
-      return `<div class="svc-item" onclick="openGeneralSearchDoc(${i})">
+      const detalle=(d.lines||d.items||[]).slice(0,2).map(x=>x.desc||x.descripcion).filter(Boolean).join(' · ');
+      return `<div class="svc-item ${i===0?'active-preview':''}" onclick="openGeneralSearchDoc(${i})">
         <div class="top">
           <span class="placa-tag">${escapeHtml(d.num||d.placa||'—')}</span>
           <span class="fecha">${escapeHtml(d.fechaTexto||fmtFecha(d.fecha)||'—')}</span>
@@ -726,6 +775,7 @@ async function buscarGeneral(){
         </div>
         <div class="cli"><b>${escapeHtml(d.cliente||'—')}</b></div>
         <div class="desc">${escapeHtml(d.modelo||'—')}</div>
+        <div style="font-size:11px;color:var(--muted);margin:6px 0">${escapeHtml(detalle||'Sin detalle')}</div>
         <div class="proforma-badges">
           <span class="badge">${itemCount} item(s)</span>
           ${d.savedToDb?'<span class="badge ok">Guardada en BD</span>':'<span class="badge warn">Pendiente</span>'}
@@ -734,6 +784,7 @@ async function buscarGeneral(){
         <div class="total">S/ ${total.toFixed(2)}</div>
       </div>`;
     }).join('')+'</div>';
+    renderSearchPreview(docs[0],0);
   }catch(e){
     box.innerHTML='<div class="empty" style="color:var(--warn)">Error: '+e.message+'</div>';
   }
