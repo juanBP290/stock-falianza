@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Servicios Alianza</title>
+<style>
+body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.box{max-width:560px;padding:24px;border:1px solid #2a3850;border-radius:16px;background:#161e2e;text-align:center}
+h1{margin:0 0 8px;color:#f59e0b;font-size:24px}p{margin:0;color:#94a3b8;line-height:1.5}.err{color:#fca5a5}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Cargando Servicios...</h1>
+  <p id="msg">Preparando la versión integrada con borrado en Google Sheets.</p>
+</div>
+<script>
+(async function(){
+  const msg=document.getElementById('msg');
+  try{
+    const res=await fetch('../servicios.html',{cache:'no-store'});
+    if(!res.ok) throw new Error('No se pudo cargar servicios.html');
+    let html=await res.text();
+    const patchScript=String.raw`
+(function(){
+  function installDeleteButton(){
+    const ctrl=document.getElementById('printCtrl');
+    if(!ctrl || document.getElementById('btnDeleteStored')) return;
+    const btn=document.createElement('button');
+    btn.className='btn sec';
+    btn.id='btnDeleteStored';
+    btn.textContent='Eliminar';
+    btn.style.display='none';
+    btn.onclick=function(){ if(window.deleteCurrentProforma) window.deleteCurrentProforma(); };
+    const saveBtn=document.getElementById('btnSaveDb');
+    if(saveBtn && saveBtn.parentNode) saveBtn.parentNode.insertBefore(btn, saveBtn);
+    else ctrl.appendChild(btn);
+  }
+
+  function normalizeTextKey(v){ return String(v||'').trim().toUpperCase(); }
+  function normalizeDateKey(v){
+    const raw=String(v||'').trim();
+    if(!raw) return '';
+    if(/^\d{4}-\d{2}-\d{2}/.test(raw)) return raw.slice(0,10);
+    const dt=new Date(raw);
+    if(!isNaN(dt)) return dt.toISOString().slice(0,10);
+    const m=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if(m){
+      const dd=String(m[1]).padStart(2,'0');
+      const mm=String(m[2]).padStart(2,'0');
+      return m[3]+'-'+mm+'-'+dd;
+    }
+    return raw;
+  }
+  function dedupeSheetRows(rows){
+    return Array.from(new Set((rows||[]).map(function(x){return parseInt(x,10)}).filter(Boolean))).sort(function(a,b){return a-b});
+  }
+  function lineMatchesSheetRow(line,row){
+    const sameDesc=normalizeTextKey(line.desc)===normalizeTextKey(row.descripcion);
+    const sameCant=Math.abs((parseFloat(line.cant)||0)-(parseFloat(row.cantidad)||0))<0.0001;
+    const samePrecio=Math.abs((parseFloat(line.precio)||0)-(parseFloat(row.costo_unit)||0))<0.0001;
+    return sameDesc && sameCant && samePrecio;
+  }
+  async function ensureSrvRowsLoaded(){
+    if(window.state && state.srvAll.length===0 && state.cfg.url){
+      const r=await callAS('srv');
+      state.srvAll=r.rows||[];
+    }
+    return (window.state && state.srvAll) ? state.srvAll : [];
+  }
+  async function collectSheetRowsForStoredProforma(pf){
+    if(!pf) return [];
+    if(Array.isArray(pf.sheetRows) && pf.sheetRows.length){
+      return dedupeSheetRows(pf.sheetRows);
+    }
+    const rows=await ensureSrvRowsLoaded();
+    const targetNum=normalizeTextKey(pf.num);
+    const byNum=rows.filter(function(r){ return normalizeTextKey(r.proforma_num)===targetNum; }).map(function(r){ return r._sheet_row; });
+    if(byNum.length){
+      const unique=dedupeSheetRows(byNum);
+      pf.sheetRows=unique;
+      if(window.upsertProformaLocal) upsertProformaLocal(pf);
+      return unique;
+    }
+    const targetPlaca=normalizeTextKey(pf.placa);
+    const targetDate=normalizeDateKey(pf.fechaIso||pf.fechaInput||pf.fecha);
+    const candidates=rows.filter(function(r){
+      return normalizeTextKey(r.placa)===targetPlaca && normalizeDateKey(r.fecha)===targetDate;
+    });
+    if(!candidates.length || !Array.isArray(pf.lines) || !pf.lines.length) return [];
+    const used=new Set();
+    const matched=[];
+    for(const line of pf.lines){
+      const idx=candidates.findIndex(function(row,i){ return !used.has(i) && lineMatchesSheetRow(line,row); });
+      if(idx===-1) return [];
+      used.add(idx);
+      matched.push(candidates[idx]._sheet_row);
+    }
+    const unique=dedupeSheetRows(matched);
+    if(unique.length){
+      pf.sheetRows=unique;
+      if(window.upsertProformaLocal) upsertProformaLocal(pf);
+    }
+    return unique;
+  }
+
+  window.groupSrvRowsToDocuments=function(rows){
+    const docs=[];
+    const map=new Map();
+    (rows||[]).forEach(function(r,idx){
+      const num=String(r.proforma_num||'').trim().toUpperCase();
+      const line={
+        desc:String(r.descripcion||'').trim(),
+        cant:parseFloat(r.cantidad||0)||0,
+        precio:parseFloat(r.costo_unit||0)||0,
+        total:parseFloat(r.total||((parseFloat(r.cantidad||0)||0)*(parseFloat(r.costo_unit||0)||0)))||0
+      };
+      const base={
+        num:num,
+        fecha:r.fecha||'',
+        fechaTexto:window.fmtFecha?fmtFecha(r.fecha):String(r.fecha||''),
+        placa:r.placa||'',
+        km:r.kilometraje||'',
+        cliente:r.cliente||r.chofer__empresa||'',
+        modelo:r.marca_modelo||r.modelo||'',
+        ano:r.ano||'',
+        total:line.total,
+        items:[line],
+        sheetRows:[parseInt(r._sheet_row,10)].filter(Boolean),
+        savedToDb:true,
+        cancelled:false,
+        local:false
+      };
+      if(num){
+        if(!map.has(num)) map.set(num,base);
+        else{
+          const g=map.get(num);
+          g.items.push(line);
+          g.total+=(line.total||0);
+          if(!g.placa && base.placa) g.placa=base.placa;
+          if(!g.km && base.km) g.km=base.km;
+          if(!g.cliente && base.cliente) g.cliente=base.cliente;
+          if(!g.modelo && base.modelo) g.modelo=base.modelo;
+          if(!g.ano && base.ano) g.ano=base.ano;
+          g.sheetRows=(g.sheetRows||[]).concat(base.sheetRows||[]);
+        }
+      }else{
+        docs.push(Object.assign(base,{num:'',uniqueKey:'ROW-'+idx}));
+      }
+    });
+    docs.push.apply(docs,Array.from(map.values()));
+    docs.sort(function(a,b){ return new Date(b.fecha||0)-new Date(a.fecha||0); });
+    return docs;
+  };
+
+  window.mergeDocumentsForSearch=function(){
+    const localMap=new Map((state.proformas||[]).map(function(p){ return [String(p.num||'').toUpperCase(), Object.assign({},p,{local:true})]; }));
+    const dbDocs=window.groupSrvRowsToDocuments(state.srvAll||[]);
+    const merged=[];
+    const seen=new Set();
+    for(const d of dbDocs){
+      if(d.num && localMap.has(d.num)){
+        const local=localMap.get(d.num);
+        merged.push(Object.assign({}, d, local, {items:(local.lines||local.items||[]), total:(local.tot ?? d.total), local:true, savedToDb:true, sheetRows:Array.from(new Set([...(d.sheetRows||[]), ...(local.sheetRows||[])]))}));
+        seen.add(d.num);
+      }else{
+        merged.push(d);
+        if(d.num) seen.add(d.num);
+      }
+    }
+    for(const p of (state.proformas||[])){
+      const key=String(p.num||'').toUpperCase();
+      if(key && !seen.has(key)) merged.push(Object.assign({},p,{local:true}));
+    }
+    merged.sort(function(a,b){ return new Date(b.fechaIso||b.fecha||b.generatedAt||0)-new Date(a.fechaIso||a.fecha||a.generatedAt||0); });
+    return merged;
+  };
+
+  const originalRenderPrintControls=window.renderPrintControls;
+  window.renderPrintControls=function(){
+    if(originalRenderPrintControls) originalRenderPrintControls();
+    installDeleteButton();
+    const btnDelete=document.getElementById('btnDeleteStored');
+    const pf=window.state ? (state.currentProforma||{}) : {};
+    const owner=window.state ? state.role==='dueno' : false;
+    if(btnDelete) btnDelete.style.display=owner && !!pf.num ? '' : 'none';
+  };
+
+  window.deleteCurrentProforma=function(){
+    if(!window.state || !state.currentProforma || !state.currentProforma.num) return;
+    if(window.deleteStoredProforma) deleteStoredProforma(state.currentProforma.num);
+  };
+
+  window.eliminarProformaEnSheets=async function(proforma){
+    if(!state.cfg.url){alert('Configura la URL');return false}
+    try{
+      const target=(typeof proforma==='string') ? (state.proformas||[]).find(function(p){return p.num===proforma;}) : proforma;
+      if(!target) throw new Error('No se encontro la proforma local');
+      const sheetRows=await collectSheetRowsForStoredProforma(target);
+      const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'delete_proforma',target:'srv',proforma_num:target.num,row_numbers:sheetRows}),headers:{'Content-Type':'text/plain;charset=utf-8'}});
+      const data=await res.json();
+      if(!data.ok) throw new Error(data.error||'No se pudo eliminar en Google Sheets');
+      if(!(data.deleted>0)) throw new Error('No se encontro ninguna fila para eliminar en Google Sheets');
+      state.srvAll=[];
+      await precargarDatos();
+      return true;
+    }catch(e){
+      alert('Error al eliminar en Google Sheets: '+e.message);
+      return false;
+    }
+  };
+
+  window.deleteStoredProforma=async function(num){
+    if(state.role!=='dueno'){alert('Solo el dueno puede eliminar documentos.');return}
+    const idx=state.proformas.findIndex(function(p){ return p.num===num; });
+    if(idx<0){alert('No se encontro la proforma.');return}
+    const pf=state.proformas[idx];
+    let msg='Desea eliminar la proforma '+pf.num+'?';
+    if(pf.savedToDb){ msg+='\n\nTambien se intentara eliminar de Google Sheets.'; }
+    if(!confirm(msg)) return;
+    if(pf.savedToDb){
+      const ok=await window.eliminarProformaEnSheets(pf);
+      if(!ok) return;
+    }
+    state.proformas.splice(idx,1);
+    if(window.saveProformasLocal) saveProformasLocal();
+    if(window.removeSavedProformaMark) removeSavedProformaMark(pf.num);
+    if(state.currentProforma && state.currentProforma.num===pf.num){ state.currentProforma=null; if(window.closePrint) closePrint(); }
+    if(window.renderProformasList) renderProformasList();
+    alert('Proforma eliminada: '+pf.num);
+  };
+
+  const originalGuardar=window.guardarProformaEnSheets;
+  window.guardarProformaEnSheets=async function(proforma){
+    if(originalGuardar) await originalGuardar(proforma);
+    try{
+      const target=(state.proformas||[]).find(function(p){ return p.num===proforma.num; }) || proforma;
+      const rows=await collectSheetRowsForStoredProforma(target);
+      if(rows.length){
+        target.sheetRows=rows;
+        if(window.upsertProformaLocal) upsertProformaLocal(target);
+      }
+    }catch(e){}
+  };
+
+  installDeleteButton();
+})();`;
+    html=html.replace('<head>','<head><base href="../">');
+    html=html.replace('</body>','<script>'+patchScript+'<\/script></body>');
+    document.open();
+    document.write(html);
+    document.close();
+  }catch(err){
+    msg.textContent='Error al cargar la versión integrada: '+err.message;
+    msg.className='err';
+  }
+})();
+</script>
+</body>
+</html>
