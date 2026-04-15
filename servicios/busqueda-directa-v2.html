@@ -942,9 +942,7 @@ async function deleteStoredProforma(num){
   if(idx<0){notify('No se encontró la proforma.','warn',2600);return}
   const pf=state.proformas[idx];
   let msg='¿Desea eliminar la proforma '+pf.num+'?';
-  if(pf.savedToDb){ msg+='
-
-También se intentará eliminar de Google Sheets.'; }
+  if(pf.savedToDb){ msg+='\n\nTambién se intentará eliminar de Google Sheets.'; }
   if(!confirm(msg)) return;
 
   if(pf.savedToDb){
