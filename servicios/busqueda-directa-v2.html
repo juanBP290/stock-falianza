@@ -284,7 +284,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div class="tot-row big"><span>TOTAL:</span><span id="tTot">S/ 0.00</span></div>
       </div>
       <div class="field" style="margin-top:14px"><label>Observaciones</label><textarea id="pfObs" class="uppercase-input" placeholder="Notas adicionales..."></textarea></div>
-      <div class="btn-row"><button class="btn ok" id="btnGenerarDoc" onclick="generarProforma()">Generar documento</button></div>
+      <div class="btn-row"><button class="btn ok" id="btnGenerarDoc" onclick="generarProforma()">Generar documento</button><button class="btn" id="btnGuardarDirectoBd" onclick="generarYGuardarProforma()">Guardar en base de datos</button></div>
     </div>
   </div>
 
@@ -1102,6 +1102,18 @@ function attachUppercaseBehavior(){document.addEventListener('input',function(e)
 function closePrint(){document.getElementById('printArea').style.display='none';document.getElementById('printCtrl').style.display='none';document.getElementById('app').style.display='block'}
 function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;saveCfgRaw();alert('ConfiguraciÃ³n guardada âœ“')}
 function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').value,10);if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado âœ“')}}
+async function generarYGuardarProforma(){
+  if(state.role!=='dueno'){alert('Solo el dueño puede guardar en base de datos.');return}
+  if(state.lines.length===0){alert('Agrega al menos un item');return}
+  const pf=buildCurrentProforma();
+  state.currentProforma=pf;
+  upsertProformaLocal(pf);
+  state.editingProformaNum=pf.num;
+  updateFormModeUI();
+  renderProformasList();
+  await guardarProformaEnSheets(pf);
+}
+
 loadCfg();attachUppercaseBehavior();const savedRole = sessionStorage.getItem(ROLE_KEY);if (savedRole) {state.role = savedRole;enterApp();}
 document.getElementById('gatePass').addEventListener('keydown', function (e) {if (e.key === 'Enter') doLogin();});
 const pfPlacaEl = document.getElementById('pfPlaca');if (pfPlacaEl) {pfPlacaEl.addEventListener('input', function () {this.value = this.value.toUpperCase();autocompletarProformaPorPlaca();});pfPlacaEl.addEventListener('blur', function () {autocompletarProformaPorPlaca();});pfPlacaEl.addEventListener('keydown', function (e) {if (e.key === 'Enter') {e.preventDefault();autocompletarProformaPorPlaca();}});}
