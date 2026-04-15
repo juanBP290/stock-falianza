@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Borrar Filas · Servicios Alianza</title>
+<style>
+:root{--bg:#0b1020;--panel:#141c2f;--panel2:#1b2742;--bd:#2a395a;--text:#e6edf7;--muted:#93a4c7;--accent:#f59e0b;--ok:#22c55e;--bad:#ef4444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:18px}
+.card{background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+h1{margin:0 0 6px;color:var(--accent);font-size:24px}p{margin:0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-top:14px}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase}
+.field input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--panel2);color:var(--text)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn{padding:10px 14px;border:0;border-radius:10px;font-weight:700;cursor:pointer}.btn.main{background:var(--accent);color:#000}.btn.sec{background:var(--panel2);color:var(--text);border:1px solid var(--bd)}.btn.bad{background:var(--bad);color:#fff}
+.meta{margin-top:10px;font-size:12px;color:var(--muted)}
+.table-wrap{overflow:auto;border:1px solid var(--bd);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:980px}th,td{padding:10px 8px;border-bottom:1px solid var(--bd);font-size:13px;text-align:left}th{background:#17223d;color:var(--accent);position:sticky;top:0}.num{text-align:right}.rowid{color:#9ec1ff;font-weight:700}.empty{padding:26px;color:var(--muted);text-align:center}.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#11203b;border:1px solid var(--bd);font-size:11px;color:#9ec1ff}.ok{color:var(--ok)}.bad{color:#ff9c9c}.warn{color:#ffd479}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Borrar Filas de Google Sheets</h1>
+    <p>Selecciona filas exactas de la hoja <strong>servicios</strong> y elimínalas desde esta página.</p>
+    <div class="grid">
+      <div class="field"><label>Buscar</label><input id="q" placeholder="Placa, proforma, descripción, cliente..."></div>
+      <div class="field"><label>Placa</label><input id="fPlaca" placeholder="Ej: W4P-029"></div>
+      <div class="field"><label>Proforma</label><input id="fProforma" placeholder="Ej: PROF-2026-0018"></div>
+      <div class="field"><label>Fecha</label><input id="fFecha" placeholder="Ej: 2026-01-24 o 24/1/2026"></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn main" id="btnLoad">Cargar filas</button>
+      <button class="btn sec" id="btnSelectVisible">Seleccionar visibles</button>
+      <button class="btn sec" id="btnClearSel">Limpiar selección</button>
+      <button class="btn bad" id="btnDelete">Eliminar seleccionadas</button>
+    </div>
+    <div class="meta" id="meta">Leyendo configuración guardada...</div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="checkAll"></th>
+            <th>Fila</th>
+            <th>Fecha</th>
+            <th>Placa</th>
+            <th>Proforma</th>
+            <th>Cliente</th>
+            <th>Descripción</th>
+            <th class="num">Cant</th>
+            <th class="num">P. Unit</th>
+            <th class="num">Total</th>
+          </tr>
+        </thead>
+        <tbody id="tb">
+          <tr><td colspan="10" class="empty">Sin datos todavía</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+const CFG_KEY='stk_alianza_cfg_v3';
+const tb=document.getElementById('tb');
+const meta=document.getElementById('meta');
+const state={cfg:{url:'',secret:''},rows:[],visible:[]};
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function loadCfg(){try{const raw=localStorage.getItem(CFG_KEY);if(raw)state.cfg=Object.assign(state.cfg,JSON.parse(raw)||{})}catch(e){}}
+function setMeta(msg,cls=''){meta.className='meta '+cls;meta.textContent=msg}
+function norm(s){return String(s||'').trim().toUpperCase()}
+function contains(a,b){return norm(a).includes(norm(b))}
+async function apiGetSrv(){
+  if(!state.cfg.url||!state.cfg.secret) throw new Error('Falta URL o SECRET guardado en la otra plataforma');
+  const url=state.cfg.url+'?token='+encodeURIComponent(state.cfg.secret)+'&what=srv';
+  const res=await fetch(url);
+  const data=await res.json();
+  if(!data.ok) throw new Error(data.error||'Error al leer servicios');
+  return data.rows||[];
+}
+async function apiDeleteRows(rowNumbers){
+  const res=await fetch(state.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:state.cfg.secret,action:'delete_rows',target:'srv',row_numbers:rowNumbers})});
+  const data=await res.json();
+  if(!data.ok) throw new Error(data.error||'Error al borrar');
+  return data;
+}
+function applyFilters(){
+  const q=norm(document.getElementById('q').value);
+  const fPlaca=norm(document.getElementById('fPlaca').value);
+  const fProforma=norm(document.getElementById('fProforma').value);
+  const fFecha=norm(document.getElementById('fFecha').value);
+  state.visible=state.rows.filter(r=>{
+    const blob=[r.fecha,r.placa,r.proforma_num,r.cliente,r.descripcion,r.marca_modelo].join(' ').toUpperCase();
+    if(q && !blob.includes(q)) return false;
+    if(fPlaca && !contains(r.placa,fPlaca)) return false;
+    if(fProforma && !contains(r.proforma_num,fProforma)) return false;
+    if(fFecha && !contains(r.fecha,fFecha)) return false;
+    return true;
+  });
+  render();
+}
+function render(){
+  if(!state.visible.length){
+    tb.innerHTML='<tr><td colspan="10" class="empty">Sin resultados</td></tr>';
+    setMeta('0 filas visibles');
+    return;
+  }
+  tb.innerHTML=state.visible.map(r=>`<tr>
+    <td><input type="checkbox" class="row-check" value="${esc(r._sheet_row)}"></td>
+    <td class="rowid">${esc(r._sheet_row)}</td>
+    <td>${esc(r.fecha)}</td>
+    <td>${esc(r.placa)}</td>
+    <td>${r.proforma_num?'<span class="pill">'+esc(r.proforma_num)+'</span>':'<span class="warn">—</span>'}</td>
+    <td>${esc(r.cliente)}</td>
+    <td>${esc(r.descripcion)}</td>
+    <td class="num">${esc(r.cantidad)}</td>
+    <td class="num">${esc(r.costo_unit)}</td>
+    <td class="num ok">${esc(r.total)}</td>
+  </tr>`).join('');
+  setMeta(state.visible.length+' fila(s) visibles · selecciona las que quieras borrar');
+}
+function selectedRows(){return Array.from(document.querySelectorAll('.row-check:checked')).map(x=>parseInt(x.value,10)).filter(Boolean)}
+async function loadRows(){
+  try{
+    setMeta('Cargando filas desde Google Sheets...');
+    const rows=await apiGetSrv();
+    if(!rows.length) throw new Error('La hoja servicios está vacía');
+    if(rows[0]._sheet_row===undefined) throw new Error('Tu Apps Script todavía no expone _sheet_row. Debes usar la versión nueva del backend.');
+    state.rows=rows;
+    applyFilters();
+  }catch(e){
+    tb.innerHTML='<tr><td colspan="10" class="empty bad">'+esc(e.message)+'</td></tr>';
+    setMeta('Error: '+e.message,'bad');
+  }
+}
+
+document.getElementById('btnLoad').onclick=loadRows;
+document.getElementById('btnSelectVisible').onclick=()=>{document.querySelectorAll('.row-check').forEach(x=>x.checked=true)};
+document.getElementById('btnClearSel').onclick=()=>{document.querySelectorAll('.row-check').forEach(x=>x.checked=false);document.getElementById('checkAll').checked=false};
+document.getElementById('checkAll').onchange=e=>{document.querySelectorAll('.row-check').forEach(x=>x.checked=e.target.checked)};
+document.getElementById('btnDelete').onclick=async()=>{
+  const rows=selectedRows();
+  if(!rows.length){alert('Selecciona al menos una fila');return}
+  if(!confirm('Se eliminarán '+rows.length+' fila(s) exactas en Google Sheets. ¿Continuar?')) return;
+  try{
+    setMeta('Eliminando '+rows.length+' fila(s)...');
+    const res=await apiDeleteRows(rows);
+    setMeta('Eliminadas '+(res.deleted||0)+' fila(s) en Google Sheets','ok');
+    await loadRows();
+  }catch(e){
+    setMeta('Error: '+e.message,'bad');
+    alert('Error al borrar: '+e.message);
+  }
+};
+['q','fPlaca','fProforma','fFecha'].forEach(id=>document.getElementById(id).addEventListener('input',applyFilters));
+loadCfg();
+if(state.cfg.url&&state.cfg.secret){setMeta('Configuración detectada. Puedes cargar filas.','ok')}else{setMeta('No encuentro la configuración guardada. Primero entra a la otra plataforma y guarda URL + SECRET.','warn')}
+</script>
+</body>
+</html>
