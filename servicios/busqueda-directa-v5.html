@@ -3,69 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Alianza - Buscador V5</title>
+    <title>Stock Alianza - Buscador V5 (FIX)</title>
+    <style>
+        body { font-family: sans-serif; }
+        #loading { text-align: center; padding: 50px; color: #666; }
+    </style>
 </head>
 <body>
-    <div id="loading" style="text-align:center; padding:50px; font-family:sans-serif; color:#666;">
-        Cargando sistema de Factoría Alianza...
-    </div>
+    <div id="loading">Cargando y corrigiendo textos...</div>
     <div id="content-container"></div>
 
     <script>
-        // Diccionario completo para limpiar las letras raras
-        const correcciones = {
-            'Ãœ': 'Ü', 'Ã‘': 'Ñ', 'Â°': '°', 'Ã±': 'ñ', 'Ã¡': 'á', 
-            'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú', 'Ã': 'í',
-            'NÂ°': 'N°', 'NÃ‚Â°': 'N°', 'Ã‚Â': ' '
+        // Diccionario Maestro de Reparación (Basado en tu imagen)
+        const mapaReparacion = {
+            'ÃƒÅ“': 'Ü',    // Para CIGÜEÑAL
+            'Ãƒâ€˜': 'Ñ',   // Para CIGÜEÑAL
+            'ÃƒÂ±': 'ñ',
+            'Ã‚Â°': '°',    // Para N°
+            'NÃ‚Â°': 'N°',
+            'Ã‚Â': '',      // Para espacios fantasmas (como en LEVA)
+            'ÃƒÂ¡': 'á',
+            'ÃƒÂ©': 'é',
+            'ÃƒÂ­': 'í',
+            'ÃƒÂ³': 'ó',
+            'ÃƒÂº': 'ú',
+            'Ã¡': 'á',
+            'Ã©': 'é',
+            'Ã­': 'í',
+            'Ã³': 'ó',
+            'Ãº': 'ú',
+            'Ã±': 'ñ',
+            'Ã‘': 'Ñ'
         };
 
-        function limpiarTexto(texto) {
+        function limpiarTodo(texto) {
             if (!texto || typeof texto !== 'string') return texto;
-            let resultado = texto;
-            for (const [mal, bien] of Object.entries(correcciones)) {
-                resultado = resultado.split(mal).join(bien);
+            let str = texto;
+            // Aplicar correcciones del mapa
+            for (const [error, correcto] of Object.entries(mapaReparacion)) {
+                str = str.split(error).join(correcto);
             }
-            return resultado;
+            return str;
         }
 
+        // Esta función escanea toda la pantalla y limpia cada palabra
         function corregirPantalla() {
-            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-            let nodo;
-            while (nodo = walker.nextNode()) {
-                const limpio = limpiarTexto(nodo.nodeValue);
-                if (nodo.nodeValue !== limpio) nodo.nodeValue = limpio;
-            }
+            const elementos = document.querySelectorAll('body *:not(script):not(style)');
+            elementos.forEach(el => {
+                if (el.childNodes.length > 0) {
+                    el.childNodes.forEach(nodo => {
+                        if (nodo.nodeType === 3) { // Si es un nodo de texto
+                            const textoLimpio = limpiarTodo(nodo.nodeValue);
+                            if (nodo.nodeValue !== textoLimpio) {
+                                nodo.nodeValue = textoLimpio;
+                            }
+                        }
+                    });
+                }
+            });
         }
 
-        async function cargarSistema() {
+        async function iniciar() {
             try {
-                const respuesta = await fetch('busqueda-directa-v2.html');
-                const html = await respuesta.text();
+                // Cargamos la base V2
+                const res = await fetch('busqueda-directa-v2.html');
+                const html = await res.text();
                 
                 document.getElementById('loading').style.display = 'none';
-                const contenedor = document.getElementById('content-container');
-                contenedor.innerHTML = html;
+                const container = document.getElementById('content-container');
+                container.innerHTML = html;
 
-                // Activar los scripts de la página base
-                contenedor.querySelectorAll('script').forEach(viejoScript => {
-                    const nuevoScript = document.createElement('script');
-                    Array.from(viejoScript.attributes).forEach(attr => nuevoScript.setAttribute(attr.name, attr.value));
-                    nuevoScript.textContent = viejoScript.textContent;
-                    document.body.appendChild(nuevoScript);
+                // Ejecutamos los scripts internos de la V2
+                container.querySelectorAll('script').forEach(s => {
+                    const nuevo = document.createElement('script');
+                    if (s.src) nuevo.src = s.src;
+                    nuevo.textContent = s.textContent;
+                    document.body.appendChild(nuevo);
                 });
 
-                // Corregir letras cada vez que el buscador traiga datos nuevos
-                const observador = new MutationObserver(corregirPantalla);
-                observador.observe(document.body, { childList: true, subtree: true });
-                
-                corregirPantalla();
+                // OBSERVADOR: Detecta cuando el buscador pone datos nuevos y los limpia
+                const observer = new MutationObserver(() => {
+                    corregirPantalla();
+                });
 
-            } catch (error) {
-                document.getElementById('loading').innerText = "Error: Asegúrate que busqueda-directa-v2.html esté en la misma carpeta.";
+                observer.observe(document.body, { childList: true, subtree: true });
+                
+                // Limpieza inicial y repetitiva (para asegurar)
+                corregirPantalla();
+                setInterval(corregirPantalla, 1000); // Re-limpia cada segundo por si acaso
+
+            } catch (e) {
+                document.getElementById('loading').innerText = "Error de conexión.";
             }
         }
 
-        cargarSistema();
+        iniciar();
     </script>
 </body>
 </html>
