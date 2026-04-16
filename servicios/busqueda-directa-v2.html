@@ -675,6 +675,18 @@ function openDocumentDoc(doc){
   window.scrollTo(0,0);
 }
 
+function ensureSearchDocLocal(index){
+  const docs=state.searchDocs||[];
+  const doc=docs[parseInt(index,10)];
+  if(!doc) return null;
+  const existing=(state.proformas||[]).find(p=>String(p.num||'').toUpperCase()===String(doc.num||'').toUpperCase());
+  if(existing) return existing;
+  const pf=buildPrintableProformaFromDoc(doc);
+  if(!pf.num) return pf;
+  upsertProformaLocal(pf);
+  return pf;
+}
+
 function renderSearchPreview(doc,index){
   const box=document.getElementById('histVehInfo');
   if(!box) return;
@@ -687,6 +699,8 @@ function renderSearchPreview(doc,index){
   }
   const pf=buildPrintableProformaFromDoc(doc);
   const lines=(pf.lines||[]);
+  const isLocal=(state.proformas||[]).find(p=>String(p.num||'').toUpperCase()===String(pf.num||'').toUpperCase());
+  const isCancelled=!!(isLocal ? isLocal.cancelled : pf.cancelled);
   box.className='';
   box.innerHTML=`
     <div class="preview-strong">${escapeHtml(pf.num||pf.placa||'—')}</div>
@@ -701,8 +715,28 @@ function renderSearchPreview(doc,index){
     <div class="preview-lines">
       ${lines.length?lines.map(l=>`<div class="preview-line"><div class="desc">${escapeHtml(l.desc||'—')}</div><div class="sub">Cant: ${parseFloat(l.cant||0)||0} · P.Unit: S/ ${(parseFloat(l.precio||0)||0).toFixed(2)} · Total: S/ ${(((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))).toFixed(2)}</div></div>`).join(''):'<div class="empty" style="padding:10px">Sin detalle</div>'}
     </div>
-    <div class="btn-row" style="margin-top:12px"><button class="btn" onclick="openDocumentDoc(state.searchDocs[${typeof index==='number'?index:0}]||null)">Abrir proforma</button></div>
+    <div class="btn-row" style="margin-top:12px;flex-wrap:wrap">
+      <button class="btn" onclick="openDocumentDoc(state.searchDocs[${typeof index==='number'?index:0}]||null)">Abrir proforma</button>
+      <button class="btn sec" onclick="deleteSearchPreviewDoc(${typeof index==='number'?index:0})">Eliminar</button>
+      <button class="btn sec" onclick="toggleSearchPreviewDoc(${typeof index==='number'?index:0})">${isCancelled?'Renovar':'Anular'}</button>
+    </div>
   `;
+}
+
+async function deleteSearchPreviewDoc(index){
+  const pf=ensureSearchDocLocal(index);
+  if(!pf || !pf.num){alert('No se pudo identificar la proforma para eliminar.');return}
+  await deleteStoredProforma(pf.num);
+  const docs=state.searchDocs||[];
+  renderSearchPreview(docs[index]||null,index);
+}
+
+function toggleSearchPreviewDoc(index){
+  const pf=ensureSearchDocLocal(index);
+  if(!pf || !pf.num){alert('No se pudo identificar la proforma para anular o renovar.');return}
+  toggleAnularProforma(pf.num);
+  const docs=state.searchDocs||[];
+  renderSearchPreview(docs[index]||null,index);
 }
 
 function openGeneralSearchDoc(index){
