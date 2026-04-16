@@ -74,34 +74,35 @@ body{margin:0;background:#0a1020;color:#e6edf7;font-family:system-ui,-apple-syst
     }
   }
 
-  const _openArtAdd = window.openArtAdd;
-  window.openArtAdd = function(){
-    if (typeof _openArtAdd === 'function') _openArtAdd();
-    const btnNew = ensureSaveNewButton();
+  function refreshArtModalState(){
+    const modal = document.getElementById('modalArt');
     const btnSave = document.getElementById('mArtSave');
-    if (btnNew) btnNew.style.display = 'none';
-    if (btnSave) btnSave.textContent = '💾 Guardar nuevo';
-  };
-
-  const _openArtEdit = window.openArtEdit;
-  window.openArtEdit = function(rowNum){
-    if (typeof _openArtEdit === 'function') _openArtEdit(rowNum);
     const btnNew = ensureSaveNewButton();
-    const btnSave = document.getElementById('mArtSave');
-    if (btnNew) btnNew.style.display = '';
-    if (btnSave) btnSave.textContent = '💾 Guardar cambios';
-  };
+    if (!modal || !btnSave || !btnNew) return;
+    const open = modal.classList.contains('on');
+    if (!open) return;
+    const isEdit = !!window.editTarget;
+    btnNew.style.display = isEdit ? '' : 'none';
+    btnSave.textContent = isEdit ? '💾 Guardar cambios' : '💾 Guardar';
+  }
 
   function bindButtons(){
     const btnSave = document.getElementById('mArtSave');
-    const btnSaveNew = ensureSaveNewButton();
+    const btnNew = ensureSaveNewButton();
     if (btnSave) btnSave.onclick = () => saveArticle('normal');
-    if (btnSaveNew) btnSaveNew.onclick = () => saveArticle('new');
+    if (btnNew) btnNew.onclick = () => saveArticle('new');
   }
 
   function boot(){
     ensureSaveNewButton();
     bindButtons();
+    refreshArtModalState();
+    const modal = document.getElementById('modalArt');
+    if (modal && !modal._patchedObserver) {
+      modal._patchedObserver = new MutationObserver(refreshArtModalState);
+      modal._patchedObserver.observe(modal,{attributes:true,attributeFilter:['class']});
+    }
+    setInterval(refreshArtModalState, 400);
   }
 
   window.addEventListener('load', boot);
