@@ -1,102 +1,380 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Alianza - Buscador V5 (Solución Definitiva)</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; padding: 0; }
-        #loading { text-align: center; padding: 50px; color: #333; font-size: 18px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios - Taller Alianza</title>
+<style>
+body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif;display:grid;place-items:center;min-height:100vh}
+.box{max-width:560px;padding:24px;border:1px solid #2a3850;border-radius:16px;background:#161e2e;box-shadow:0 20px 50px rgba(0,0,0,.28)}
+.box h1{margin:0 0 10px;font-size:22px;color:#f59e0b}
+.box p{margin:0;color:#94a3b8;line-height:1.5}
+</style>
 </head>
 <body>
-    <div id="loading">Conectando y limpiando base de datos...</div>
-    <div id="content-container"></div>
+  <div class="box">
+    <h1>Servicios Alianza</h1>
+    <p>Cargando corrección de textos...</p>
+  </div>
+<script>
+(async function () {
+  function renderError(message) {
+    document.body.innerHTML =
+      '<div class="box"><h1>Error</h1><p>' +
+      String(message || 'No se pudo cargar la página') +
+      '</p></div>';
+  }
 
-    <script>
-        // 1. DICCIONARIO DE ERRORES (Incluye MÁXIMA y CIGÜEÑAL)
-        const mapaReparacion = {
-            'ÃƒÅ“': 'Ü', 
-            'Ãƒâ€˜': 'Ñ', 
-            'ÃƒÂ±': 'ñ', 
-            'Ã‚Â°': '°', 
-            'NÃ‚Â°': 'N°', 
-            'Ã‚Â': ' ', 
-            'ÃƒÂ¡': 'á', 
-            'ÃƒÂ©': 'é', 
-            'ÃƒÂ­': 'í', 
-            'ÃƒÂ³': 'ó', 
-            'ÃƒÂº': 'ú',
-            'MÃƒâ€¡XIMA': 'MÁXIMA',
-            'Ã¡': 'á', 
-            'Ã©': 'é', 
-            'Ã­': 'í', 
-            'Ã³': 'ó', 
-            'Ãº': 'ú', 
-            'Ã±': 'ñ', 
-            'Ã‘': 'Ñ',
-            'Ãœ': 'Ü'
-        };
+  try {
+    const response = await fetch('./busqueda-directa-v2.html', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('No se pudo abrir busqueda-directa-v2.html');
+    }
 
-        // 2. EL FILTRO MAESTRO: Intercepta la descarga de datos
-        const fetchOriginal = window.fetch;
-        
-        window.fetch = async function(...args) {
-            const respuesta = await fetchOriginal.apply(this, args);
-            
-            // Detectar si la petición es hacia tu base de datos de Google Script
-            if (args[0] && typeof args[0] === 'string' && args[0].includes('script.google.com')) {
-                const clon = respuesta.clone();
-                try {
-                    let textoJson = await clon.text();
-                    
-                    // Limpiamos los datos crudos ANTES de que el sistema los procese
-                    for (const [error, correcto] of Object.entries(mapaReparacion)) {
-                        textoJson = textoJson.split(error).join(correcto);
-                    }
-                    
-                    // Entregamos los datos reparados
-                    return new Response(textoJson, {
-                        status: respuesta.status,
-                        statusText: respuesta.statusText,
-                        headers: respuesta.headers
-                    });
-                } catch(e) {
-                    console.error("Error al interceptar datos", e);
-                }
-            }
-            return respuesta;
-        };
+    let html = await response.text();
 
-        // 3. INICIAR EL SISTEMA
-        async function iniciar() {
-            try {
-                // Cargamos tu diseño base
-                const res = await fetchOriginal('busqueda-directa-v2.html');
-                let html = await res.text();
-                
-                // Limpiamos también el HTML base
-                for (const [error, correcto] of Object.entries(mapaReparacion)) {
-                    html = html.split(error).join(correcto);
-                }
+    const patch = `<script>
+(function () {
+  function repairEncoding(text){
+    let s = String(text == null ? '' : text);
+    for (let i = 0; i < 4; i++) {
+      if (!/[ÃÂâ]/.test(s)) break;
+      try {
+        const decoded = decodeURIComponent(escape(s));
+        if (decoded && decoded !== s) s = decoded;
+        else break;
+      } catch (e) {
+        break;
+      }
+    }
+    return s;
+  }
 
-                document.getElementById('loading').style.display = 'none';
-                const container = document.getElementById('content-container');
-                container.innerHTML = html;
+  const replacements = [
+    ['Ã°Å¸â€Â§ ', ''],
+    ['Ã°Å¸â€Â ', ''],
+    ['Ã°Å¸â€œâ€¹ ', ''],
+    ['Ã°Å¸Å¡â€” ', ''],
+    ['Ã°Å¸â€œÂ ', ''],
+    ['Ã°Å¸â€”â€š ', ''],
+    ['Ã¢Å¡â„¢Ã¯Â¸Â ', ''],
+    ['Ã°Å¸â€Å½ ', ''],
+    ['Ã°Å¸â€˜Â ', ''],
+    ['Ã°Å¸Å¡Â« ', ''],
+    ['Ã°Å¸â€™Â¾ ', ''],
+    ['Ã°Å¸â€“Â¨ ', ''],
+    ['Ã°Å¸â€”â€˜ ', ''],
+    ['Ã¢Å“ÂÃ¯Â¸Â ', ''],
+    ['Ã¢â€ Â ', ''],
+    ['Ã¢â€ Â© ', ''],
+    ['Ã¢Å“â€œ ', ''],
+    ['Ã°Å¸â€œÂ ', ''],
+    ['Ã‚Â·', ' · '],
+    ['Ã¢â‚¬â€', '—'],
+    ['Ã‚Â¿', ''],
+    ['â€”', '—'],
+    ['â€“', '–'],
+    ['â€œ', '"'],
+    ['â€', '"'],
+    ['â€˜', "'"],
+    ['â€™', "'"],
+    ['â€¢', '•'],
+    ['Â°', '°'],
+    ['NÃ‚Â°', 'NRO.'],
+    ['AÃºn', 'Aún'],
+    ['aÃºn', 'aún'],
+    ['vehÃ­culos', 'vehículos'],
+    ['VehÃ­culos', 'Vehículos'],
+    ['vehÃ­culo', 'vehículo'],
+    ['VehÃ­culo', 'Vehículo'],
+    ['MecÃ¡nica', 'Mecánica'],
+    ['DiagnÃ³stico', 'Diagnóstico'],
+    ['DirecciÃ³n', 'Dirección'],
+    ['TelÃ©fono', 'Teléfono'],
+    ['DescripciÃ³n', 'Descripción'],
+    ['CÃ³digo', 'Código'],
+    ['CÃ³d.', 'Cód.'],
+    ['ContraseÃ±a', 'Contraseña'],
+    ['BÃºsqueda', 'Búsqueda'],
+    ['ConfiguraciÃ³n', 'Configuración'],
+    ['RazÃ³n', 'Razón'],
+    ['NÃºmero', 'Número'],
+    ['MÃ¡s', 'Más'],
+    ['TambiÃ©n', 'También'],
+    ['No se encontrÃ³', 'No se encontró'],
+    ['AÃ±o', 'Año'],
+    ['aÃ±o', 'año'],
+    ['pÃ¡gina', 'página'],
+    ['versiÃ³n', 'versión']
+  ];
 
-                // Reactivamos los scripts de la página
-                container.querySelectorAll('script').forEach(s => {
-                    const nuevo = document.createElement('script');
-                    if (s.src) nuevo.src = s.src;
-                    nuevo.textContent = s.textContent;
-                    document.body.appendChild(nuevo);
-                });
-            } catch (e) {
-                document.getElementById('loading').innerText = "Error: no se encontró busqueda-directa-v2.html";
-            }
-        }
+  function fixTextString(value){
+    let text = repairEncoding(String(value == null ? '' : value));
+    replacements.forEach(function(pair){
+      text = text.split(pair[0]).join(pair[1]);
+    });
+    return text;
+  }
 
-        iniciar();
-    </script>
+  function cleanBrokenValue(value){
+    const fixed = fixTextString(value).trim();
+    if (!fixed) return '—';
+    const weirdOnly = fixed.replace(/[—\-]/g,'').replace(/[A-ZÁÉÍÓÚÑa-záéíóúñ0-9/.: ]/g,'').trim();
+    if (fixed === 'â€' || fixed === 'â€"' || fixed === 'â€™' || weirdOnly === fixed) return '—';
+    if (/^[âÃÂ€�œ”‘’]+$/.test(fixed)) return '—';
+    return fixed;
+  }
+
+  function cleanseNodeText(root){
+    if(!root) return;
+    const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node){
+        const parent=node && node.parentNode;
+        if(!parent) return NodeFilter.FILTER_REJECT;
+        const tag=(parent.tagName||'').toUpperCase();
+        if(tag==='SCRIPT' || tag==='STYLE') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    const textNodes=[];
+    while(walker.nextNode()){
+      textNodes.push(walker.currentNode);
+    }
+
+    textNodes.forEach(function(node){
+      const fixed=fixTextString(node.nodeValue);
+      if(fixed!==node.nodeValue){
+        node.nodeValue=fixed;
+      }
+    });
+
+    root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(function(el){
+      const oldPh = el.getAttribute('placeholder');
+      const ph = fixTextString(oldPh);
+      if(ph !== oldPh){
+        el.setAttribute('placeholder', ph);
+      }
+    });
+  }
+
+  function setFieldValue(id, prefix){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const raw = el.textContent || '';
+    let value = fixTextString(raw);
+    if(prefix){
+      if(value.startsWith(prefix)){
+        value = value.slice(prefix.length);
+      }else if(value.indexOf(':') !== -1){
+        value = value.split(':').slice(1).join(':');
+      }
+      el.textContent = prefix + cleanBrokenValue(value);
+    }else{
+      el.textContent = cleanBrokenValue(value);
+    }
+  }
+
+  function fixPrintOutput(){
+    setFieldValue('prnCliente', '');
+    setFieldValue('prnDoc', 'DNI/RUC: ');
+    setFieldValue('prnTel', 'Tel: ');
+    setFieldValue('prnDir', 'Dir: ');
+    setFieldValue('prnPlaca', '');
+    setFieldValue('prnAno', 'Año: ');
+    setFieldValue('prnModelo', '');
+    setFieldValue('prnKm', 'Km: ');
+  }
+
+  function applyStaticTextFixes(){
+    document.title='Servicios - Taller Alianza';
+
+    const gateTitle=document.querySelector('#gate .gate-card h1');
+    const gateSub=document.querySelector('#gate .gate-card .sub');
+    const ownerBtn=document.getElementById('rDueno');
+    const assistBtn=document.getElementById('rAsist');
+    const gatePass=document.getElementById('gatePass');
+
+    if(gateTitle) gateTitle.textContent='Taller Alianza';
+    if(gateSub) gateSub.textContent='Sistema de Servicios · Chincha';
+    if(ownerBtn) ownerBtn.textContent='Dueño';
+    if(assistBtn) assistBtn.textContent='Asistente';
+    if(gatePass) gatePass.placeholder='Contraseña';
+
+    const header=document.querySelector('.header h1');
+    if(header) header.textContent='Servicios Alianza';
+
+    const tabs=document.querySelectorAll('.tab');
+    if(tabs[0]) tabs[0].textContent='Buscar';
+    if(tabs[1]) tabs[1].textContent='Historial';
+    if(tabs[2]) tabs[2].textContent='Vehículos';
+    if(tabs[3]) tabs[3].textContent='Nueva';
+    if(tabs[4]) tabs[4].textContent='Archivo';
+    if(tabs[5]) tabs[5].textContent='Config';
+
+    const tag=document.querySelector('#printArea .tag');
+    if(tag) tag.textContent='Mecánica Automotriz · Diagnóstico Especializado';
+
+    const info=document.querySelectorAll('#printArea .info div');
+    if(info[0]) info[0].textContent='MANTENIMIENTO PREVENTIVO Y CORRECTIVO DE VEHÍCULOS';
+    if(info[1]) info[1].textContent='VENTA DE REPUESTOS Y LUBRICANTES';
+
+    const numLbl=document.querySelector('#printArea .pf-num .lbl');
+    if(numLbl) numLbl.textContent='PROFORMA NRO.';
+
+    const blocks=document.querySelectorAll('#printArea .pf-cli .blk h3');
+    if(blocks[0]) blocks[0].textContent='CLIENTE';
+    if(blocks[1]) blocks[1].textContent='VEHÍCULO';
+
+    const descHead=document.querySelector('#printArea table.pf-items thead th:nth-child(2)');
+    if(descHead) descHead.textContent='DESCRIPCIÓN';
+
+    document.querySelectorAll('.card h2').forEach(function(el){
+      const txt=(fixTextString(el.textContent)||'').toUpperCase();
+      if(txt.includes('BUSCAR') && txt.includes('PLACA')) el.textContent='Buscar vehículo por placa';
+      else if(txt.includes('BUSQUEDA') && txt.includes('GENERAL')) el.textContent='Búsqueda general';
+      else if(txt.includes('DATOS DEL CLIENTE')) el.textContent='Datos del cliente';
+      else if(txt.includes('VEHIC')) el.textContent='Vehículo';
+      else if(txt.includes('ITEM')) el.textContent='Items / Servicios';
+      else if(txt.includes('ARCHIVO')) el.textContent='Archivo de documentos';
+      else if(txt.includes('CONFIG')) el.textContent='Configuración';
+    });
+
+    document.querySelectorAll('label').forEach(function(el){
+      const txt=fixTextString(el.textContent);
+      if(/PLACA/i.test(txt)) el.textContent='Placa';
+      else if(/KILOMETR/i.test(txt)) el.textContent='Kilometraje';
+      else if(/AÑO|ANO/i.test(txt)) el.textContent='Año';
+      else if(/MARCA/i.test(txt) && /MODELO/i.test(txt)) el.textContent='Marca / Modelo';
+      else if(/NOMBRE/i.test(txt)) el.textContent='Nombre / Razón Social';
+      else if(/TEL/i.test(txt)) el.textContent='Teléfono';
+      else if(/DIRE/i.test(txt)) el.textContent='Dirección';
+      else if(/DESCRIP/i.test(txt)) el.textContent='Descripción';
+      else if(/BUSQUEDA GENERAL|BÚSQUEDA GENERAL/i.test(txt)) el.textContent='Búsqueda general';
+    });
+
+    const btnEdit=document.getElementById('btnEditStored');
+    const btnCancel=document.getElementById('btnCancelStored');
+    const btnDelete=document.getElementById('btnDeleteStored');
+    const btnSave=document.getElementById('btnSaveDb');
+    const printCtrl=document.getElementById('printCtrl');
+
+    if(printCtrl){
+      const first=printCtrl.querySelector('button');
+      if(first) first.textContent='Volver';
+    }
+    if(btnEdit) btnEdit.textContent='Editar';
+    if(btnCancel && !(btnCancel.textContent||'').includes('Reactivar')) btnCancel.textContent='Anular';
+    if(btnDelete) btnDelete.textContent='Eliminar';
+    if(btnSave) btnSave.textContent='Guardar en BD';
+
+    document.querySelectorAll('.empty').forEach(function(el){
+      el.textContent = fixTextString(el.textContent || '');
+    });
+  }
+
+  function fixRenderedLineItems(){
+    document.querySelectorAll('.li-desc-label').forEach(function(el){ el.textContent='Descripción'; });
+    document.querySelectorAll('.li-desc-input').forEach(function(el){ el.placeholder='ESCRIBA AQUÍ LA DESCRIPCIÓN'; });
+    document.querySelectorAll('.li-del').forEach(function(el){ el.textContent='×'; });
+    document.querySelectorAll('#lineItems input[placeholder]').forEach(function(el){
+      const ph = (el.placeholder||'').toUpperCase();
+      if(ph.includes('INTERNO')) el.placeholder='Cód. Interno';
+      if(ph.includes('OEM')) el.placeholder='Cód. OEM';
+    });
+  }
+
+  function patchFunctions(){
+    if(typeof window.renderPrintFromProforma === 'function' && !window.__patchedPrintTextFix){
+      const original = window.renderPrintFromProforma;
+      window.renderPrintFromProforma = function(pf){
+        original(pf);
+        applyStaticTextFixes();
+        fixPrintOutput();
+        cleanseNodeText(document.body);
+      };
+      window.__patchedPrintTextFix = true;
+    }
+
+    if(typeof window.renderLines === 'function' && !window.__patchedLinesTextFix){
+      const original = window.renderLines;
+      window.renderLines = function(){
+        original();
+        fixRenderedLineItems();
+        cleanseNodeText(document.body);
+      };
+      window.__patchedLinesTextFix = true;
+    }
+
+    if(typeof window.renderProformasList === 'function' && !window.__patchedListTextFix){
+      const original = window.renderProformasList;
+      window.renderProformasList = function(){
+        original();
+        applyStaticTextFixes();
+        cleanseNodeText(document.body);
+      };
+      window.__patchedListTextFix = true;
+    }
+
+    if(typeof window.renderVehTable === 'function' && !window.__patchedVehTextFix){
+      const original = window.renderVehTable;
+      window.renderVehTable = function(){
+        original();
+        applyStaticTextFixes();
+        cleanseNodeText(document.body);
+      };
+      window.__patchedVehTextFix = true;
+    }
+
+    if(typeof window.enterApp === 'function' && !window.__patchedEnterTextFix){
+      const original = window.enterApp;
+      window.enterApp = function(){
+        original();
+        applyStaticTextFixes();
+        cleanseNodeText(document.body);
+      };
+      window.__patchedEnterTextFix = true;
+    }
+  }
+
+  function mount(){
+    ensureToastUi();
+    patchFunctions();
+    applyStaticTextFixes();
+    fixRenderedLineItems();
+    fixPrintOutput();
+    cleanseNodeText(document.body);
+  }
+
+  let mountTimer = null;
+  function scheduleMount(){
+    if(mountTimer) clearTimeout(mountTimer);
+    mountTimer = setTimeout(mount, 60);
+  }
+
+  window.addEventListener('load', function(){
+    mount();
+    const observer = new MutationObserver(function(){
+      scheduleMount();
+    });
+    observer.observe(document.body,{childList:true,subtree:true,characterData:true});
+    setInterval(mount, 1200);
+  });
+})();
+<\/script>`;
+
+    if (!html.includes('</body>')) {
+      throw new Error('La página base no tiene </body>');
+    }
+
+    html = html.replace('</body>', patch + '\n</body>');
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (err) {
+    renderError(err.message);
+  }
+})();
+</script>
 </body>
 </html>
