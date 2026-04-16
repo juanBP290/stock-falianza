@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock Alianza Taller — versión corregida</title>
+<style>
+body{margin:0;background:#0a1020;color:#e6edf7;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:grid;place-items:center;min-height:100vh}
+.box{max-width:720px;padding:24px;border:1px solid #1f2b47;border-radius:14px;background:#111a2e;box-shadow:0 20px 40px rgba(0,0,0,.35)}
+.box h1{margin:0 0 8px;font-size:22px;color:#3ea6ff}.box p{margin:0;color:#8aa0c6;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="box"><h1>Stock Alianza Taller</h1><p>Cargando versión corregida...</p></div>
+<script>
+(async()=>{
+  try{
+    const res = await fetch('./index.html',{cache:'no-store'});
+    if(!res.ok) throw new Error('No se pudo abrir index.html');
+    let html = await res.text();
+    const patch = `<script>
+;(()=>{
+  function ensureSaveNewButton(){
+    let btn = document.getElementById('mArtSaveNew');
+    const saveBtn = document.getElementById('mArtSave');
+    const actions = document.querySelector('#modalArt .actions');
+    if (!btn && actions && saveBtn) {
+      btn = document.createElement('button');
+      btn.className = 'btn sec';
+      btn.id = 'mArtSaveNew';
+      btn.textContent = '🧾 Guardar como nuevo';
+      btn.style.display = 'none';
+      actions.insertBefore(btn, saveBtn);
+    }
+    return btn;
+  }
+
+  function getArtRowFromModal(){
+    const g = id => document.getElementById('m_' + id).value.trim();
+    const n = id => {
+      const v = document.getElementById('m_' + id).value.trim();
+      return v === '' ? '' : (isNaN(+v) ? '' : +v);
+    };
+    return {
+      cod: g('cod'), anaq: g('anaq'), cart: g('cart'), marca: g('marca'), tipo: g('tipo'),
+      prod: g('prod'), desc: g('desc'), obs: g('obs'), stk: n('stk'), costo: n('costo'),
+      precio: n('precio'), stk_min: n('stk_min'), stk_seg: n('stk_seg'), stk_max: n('stk_max'),
+      proveedor: document.getElementById('m_proveedor').value
+    };
+  }
+
+  async function saveArticle(mode){
+    const row = getArtRowFromModal();
+    if (!row.cart && !row.prod) { alert('Ingresa al menos Código Artículo y Producto'); return; }
+    const isEdit = !!window.editTarget;
+    const saveAsNew = mode === 'new';
+    showLoad(isEdit && !saveAsNew ? 'Actualizando...' : 'Guardando...');
+    try {
+      let action = 'add';
+      let payload = { target: 'stock', row };
+      if (isEdit && !saveAsNew) {
+        action = 'update';
+        payload = { target: 'stock', row, rowNum: window.editTarget.rowNum };
+      }
+      const res = await api(action, payload);
+      if (!res.ok) throw new Error(res.error || 'No se pudo guardar');
+      toast(isEdit && !saveAsNew ? '✓ Actualizado en la misma fila' : '✓ Guardado como nuevo');
+      document.getElementById('modalArt').classList.remove('on');
+      await loadAll();
+    } catch (err) {
+      toast('Error: ' + err.message, true);
+    } finally {
+      hideLoad();
+    }
+  }
+
+  const _openArtAdd = window.openArtAdd;
+  window.openArtAdd = function(){
+    if (typeof _openArtAdd === 'function') _openArtAdd();
+    const btnNew = ensureSaveNewButton();
+    const btnSave = document.getElementById('mArtSave');
+    if (btnNew) btnNew.style.display = 'none';
+    if (btnSave) btnSave.textContent = '💾 Guardar nuevo';
+  };
+
+  const _openArtEdit = window.openArtEdit;
+  window.openArtEdit = function(rowNum){
+    if (typeof _openArtEdit === 'function') _openArtEdit(rowNum);
+    const btnNew = ensureSaveNewButton();
+    const btnSave = document.getElementById('mArtSave');
+    if (btnNew) btnNew.style.display = '';
+    if (btnSave) btnSave.textContent = '💾 Guardar cambios';
+  };
+
+  function bindButtons(){
+    const btnSave = document.getElementById('mArtSave');
+    const btnSaveNew = ensureSaveNewButton();
+    if (btnSave) btnSave.onclick = () => saveArticle('normal');
+    if (btnSaveNew) btnSaveNew.onclick = () => saveArticle('new');
+  }
+
+  function boot(){
+    ensureSaveNewButton();
+    bindButtons();
+  }
+
+  window.addEventListener('load', boot);
+  setTimeout(boot, 1200);
+})();
+<\/script>`;
+    html = html.replace('</body>', patch + '\n</body>');
+    document.open();
+    document.write(html);
+    document.close();
+  }catch(err){
+    document.body.innerHTML = '<div class="box"><h1>Error</h1><p>'+String(err.message||err)+'</p></div>';
+  }
+})();
+</script>
+</body>
+</html>
