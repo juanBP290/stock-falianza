@@ -3,97 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Alianza - Buscador V5 (FIX)</title>
+    <title>Stock Alianza - Buscador V5 (Solución Definitiva)</title>
     <style>
-        body { font-family: sans-serif; }
-        #loading { text-align: center; padding: 50px; color: #666; }
+        body { font-family: sans-serif; margin: 0; padding: 0; }
+        #loading { text-align: center; padding: 50px; color: #333; font-size: 18px; }
     </style>
 </head>
 <body>
-    <div id="loading">Cargando y corrigiendo textos...</div>
+    <div id="loading">Conectando y limpiando base de datos...</div>
     <div id="content-container"></div>
 
     <script>
-        // Diccionario Maestro de Reparación (Basado en tu imagen)
+        // 1. DICCIONARIO DE ERRORES (Incluye MÁXIMA y CIGÜEÑAL)
         const mapaReparacion = {
-            'ÃƒÅ“': 'Ü',    // Para CIGÜEÑAL
-            'Ãƒâ€˜': 'Ñ',   // Para CIGÜEÑAL
-            'ÃƒÂ±': 'ñ',
-            'Ã‚Â°': '°',    // Para N°
-            'NÃ‚Â°': 'N°',
-            'Ã‚Â': '',      // Para espacios fantasmas (como en LEVA)
-            'ÃƒÂ¡': 'á',
-            'ÃƒÂ©': 'é',
-            'ÃƒÂ­': 'í',
-            'ÃƒÂ³': 'ó',
+            'ÃƒÅ“': 'Ü', 
+            'Ãƒâ€˜': 'Ñ', 
+            'ÃƒÂ±': 'ñ', 
+            'Ã‚Â°': '°', 
+            'NÃ‚Â°': 'N°', 
+            'Ã‚Â': ' ', 
+            'ÃƒÂ¡': 'á', 
+            'ÃƒÂ©': 'é', 
+            'ÃƒÂ­': 'í', 
+            'ÃƒÂ³': 'ó', 
             'ÃƒÂº': 'ú',
-            'Ã¡': 'á',
-            'Ã©': 'é',
-            'Ã­': 'í',
-            'Ã³': 'ó',
-            'Ãº': 'ú',
-            'Ã±': 'ñ',
-            'Ã‘': 'Ñ'
+            'MÃƒâ€¡XIMA': 'MÁXIMA',
+            'Ã¡': 'á', 
+            'Ã©': 'é', 
+            'Ã­': 'í', 
+            'Ã³': 'ó', 
+            'Ãº': 'ú', 
+            'Ã±': 'ñ', 
+            'Ã‘': 'Ñ',
+            'Ãœ': 'Ü'
         };
 
-        function limpiarTodo(texto) {
-            if (!texto || typeof texto !== 'string') return texto;
-            let str = texto;
-            // Aplicar correcciones del mapa
-            for (const [error, correcto] of Object.entries(mapaReparacion)) {
-                str = str.split(error).join(correcto);
-            }
-            return str;
-        }
-
-        // Esta función escanea toda la pantalla y limpia cada palabra
-        function corregirPantalla() {
-            const elementos = document.querySelectorAll('body *:not(script):not(style)');
-            elementos.forEach(el => {
-                if (el.childNodes.length > 0) {
-                    el.childNodes.forEach(nodo => {
-                        if (nodo.nodeType === 3) { // Si es un nodo de texto
-                            const textoLimpio = limpiarTodo(nodo.nodeValue);
-                            if (nodo.nodeValue !== textoLimpio) {
-                                nodo.nodeValue = textoLimpio;
-                            }
-                        }
+        // 2. EL FILTRO MAESTRO: Intercepta la descarga de datos
+        const fetchOriginal = window.fetch;
+        
+        window.fetch = async function(...args) {
+            const respuesta = await fetchOriginal.apply(this, args);
+            
+            // Detectar si la petición es hacia tu base de datos de Google Script
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('script.google.com')) {
+                const clon = respuesta.clone();
+                try {
+                    let textoJson = await clon.text();
+                    
+                    // Limpiamos los datos crudos ANTES de que el sistema los procese
+                    for (const [error, correcto] of Object.entries(mapaReparacion)) {
+                        textoJson = textoJson.split(error).join(correcto);
+                    }
+                    
+                    // Entregamos los datos reparados
+                    return new Response(textoJson, {
+                        status: respuesta.status,
+                        statusText: respuesta.statusText,
+                        headers: respuesta.headers
                     });
+                } catch(e) {
+                    console.error("Error al interceptar datos", e);
                 }
-            });
-        }
+            }
+            return respuesta;
+        };
 
+        // 3. INICIAR EL SISTEMA
         async function iniciar() {
             try {
-                // Cargamos la base V2
-                const res = await fetch('busqueda-directa-v2.html');
-                const html = await res.text();
+                // Cargamos tu diseño base
+                const res = await fetchOriginal('busqueda-directa-v2.html');
+                let html = await res.text();
                 
+                // Limpiamos también el HTML base
+                for (const [error, correcto] of Object.entries(mapaReparacion)) {
+                    html = html.split(error).join(correcto);
+                }
+
                 document.getElementById('loading').style.display = 'none';
                 const container = document.getElementById('content-container');
                 container.innerHTML = html;
 
-                // Ejecutamos los scripts internos de la V2
+                // Reactivamos los scripts de la página
                 container.querySelectorAll('script').forEach(s => {
                     const nuevo = document.createElement('script');
                     if (s.src) nuevo.src = s.src;
                     nuevo.textContent = s.textContent;
                     document.body.appendChild(nuevo);
                 });
-
-                // OBSERVADOR: Detecta cuando el buscador pone datos nuevos y los limpia
-                const observer = new MutationObserver(() => {
-                    corregirPantalla();
-                });
-
-                observer.observe(document.body, { childList: true, subtree: true });
-                
-                // Limpieza inicial y repetitiva (para asegurar)
-                corregirPantalla();
-                setInterval(corregirPantalla, 1000); // Re-limpia cada segundo por si acaso
-
             } catch (e) {
-                document.getElementById('loading').innerText = "Error de conexión.";
+                document.getElementById('loading').innerText = "Error: no se encontró busqueda-directa-v2.html";
             }
         }
 
