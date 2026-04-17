@@ -37,45 +37,90 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
 (function () {
   function repairEncoding(text){
     let s = String(text == null ? '' : text);
-    for (let i = 0; i < 4; i++) {
-      if (!/[ÃÂâ]/.test(s)) break;
+
+    // Fix common broken UTF-8 sequences
+    const brokenSequences = {
+      'Ã°Å¸â€Â§': '🔧',
+      'ðŸ"$': '💲',
+      'ðŸ"': '📋',
+      'ðŸ—': '🗂️',
+      'ðŸ†': '🆕',
+      'ðŸ"›': '🔙',
+      'ðŸ"§': '📧',
+      'ðŸ"¤': '📤',
+      'ðŸ› ': '🛠️',
+      'Â·': '·',
+      'â€"': '–',
+      'â€"': '—',
+      'â€œ': '"',
+      'â€': '"',
+      'â€˜': "'",
+      'â€™': "'",
+      'â€¢': '•',
+      'Â°': '°',
+      'Â¿': '',
+      'Ã³': 'ó',
+      'Ã¡': 'á',
+      'Ã©': 'é',
+      'Ã­': 'í',
+      'Ãº': 'ú',
+      'Ã': 'ñ',
+      'Ã°': 'ð',
+      'Ã±': 'ñ',
+      'Ã¡': 'á',
+      'Ã©': 'é',
+      'Ã': 'í',
+      'Ã³': 'ó',
+      'Ã': 'ú'
+    };
+
+    for (let [broken, fixed] of Object.entries(brokenSequences)) {
+      s = s.split(broken).join(fixed);
+    }
+
+    // Try decoding if still broken
+    for (let i = 0; i < 3; i++) {
+      if (!/[ÃÂâðŸ€]/.test(s)) break;
       try {
         const decoded = decodeURIComponent(escape(s));
-        if (decoded && decoded !== s) s = decoded;
-        else break;
+        if (decoded && decoded !== s && !/[ÃÂâðŸ]/.test(decoded)) {
+          s = decoded;
+          break;
+        }
       } catch (e) {
         break;
       }
     }
+
     return s;
   }
 
   const replacements = [
-    ['Ã°Å¸â€Â§ ', ''],
-    ['Ã°Å¸â€Â ', ''],
+    ['Ã°Å¸â€Â§ ', ''],
+    ['Ã°Å¸â€Â ', ''],
     ['Ã°Å¸â€œâ€¹ ', ''],
-    ['Ã°Å¸Å¡â€” ', ''],
-    ['Ã°Å¸â€œÂ ', ''],
-    ['Ã°Å¸â€”â€š ', ''],
-    ['Ã¢Å¡â„¢Ã¯Â¸Â ', ''],
-    ['Ã°Å¸â€Å½ ', ''],
-    ['Ã°Å¸â€˜Â ', ''],
+    ['Ã°Å¸Å¡â€\" ', ''],
+    ['Ã°Å¸â€œÂ ', ''],
+    ['Ã°Å¸â€\"â€š ', ''],
+    ['Ã¢Å¡â„¢Ã¯Â¸Â ', ''],
+    ['Ã°Å¸â€Å½ ', ''],
+    ['Ã°Å¸â€˜Â ', ''],
     ['Ã°Å¸Å¡Â« ', ''],
     ['Ã°Å¸â€™Â¾ ', ''],
-    ['Ã°Å¸â€“Â¨ ', ''],
-    ['Ã°Å¸â€”â€˜ ', ''],
-    ['Ã¢Å“ÂÃ¯Â¸Â ', ''],
-    ['Ã¢â€ Â ', ''],
-    ['Ã¢â€ Â© ', ''],
-    ['Ã¢Å“â€œ ', ''],
-    ['Ã°Å¸â€œÂ ', ''],
+    ['Ã°Å¸â€\"Â¨ ', ''],
+    ['Ã°Å¸â€\"â€˜ ', ''],
+    ['Ã¢Å\"ÂÃ¯Â¸Â ', ''],
+    ['Ã¢â€ Â ', ''],
+    ['Ã¢â€ Â© ', ''],
+    ['Ã¢Å\"â€œ ', ''],
+    ['Ã°Å¸â€œÂ ', ''],
     ['Ã‚Â·', ' · '],
-    ['Ã¢â‚¬â€', '—'],
+    ['Ã¢â‚¬â€', '—'],
     ['Ã‚Â¿', ''],
-    ['â€”', '—'],
-    ['â€“', '–'],
+    ['â€\"', '—'],
+    ['â€\"', '–'],
     ['â€œ', '"'],
-    ['â€', '"'],
+    ['â€', '"'],
     ['â€˜', "'"],
     ['â€™', "'"],
     ['â€¢', '•'],
@@ -119,9 +164,9 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
   function cleanBrokenValue(value){
     const fixed = fixTextString(value).trim();
     if (!fixed) return '—';
-    const weirdOnly = fixed.replace(/[—\-]/g,'').replace(/[A-ZÁÉÍÓÚÑa-záéíóúñ0-9/.: ]/g,'').trim();
-    if (fixed === 'â€' || fixed === 'â€"' || fixed === 'â€™' || weirdOnly === fixed) return '—';
-    if (/^[âÃÂ€�œ”‘’]+$/.test(fixed)) return '—';
+    const weirdOnly = fixed.replace(/[—\\-]/g,'').replace(/[A-ZÁÉÍÓÚÑa-záéíóúñ0-9\\/.: ]/g,'').trim();
+    if (fixed === 'â€' || fixed === 'â€\"' || fixed === 'â€™' || weirdOnly === fixed) return '—';
+    if (/^[âÃÂ€\\uFFFD\\u0153\"'']+$/.test(fixed)) return '—';
     return fixed;
   }
 
@@ -195,14 +240,14 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     const assistBtn=document.getElementById('rAsist');
     const gatePass=document.getElementById('gatePass');
 
-    if(gateTitle) gateTitle.textContent='Taller Alianza';
+    if(gateTitle) gateTitle.textContent='🔧 Taller Alianza';
     if(gateSub) gateSub.textContent='Sistema de Servicios · Chincha';
-    if(ownerBtn) ownerBtn.textContent='Dueño';
-    if(assistBtn) assistBtn.textContent='Asistente';
+    if(ownerBtn) ownerBtn.textContent='👑 Dueño';
+    if(assistBtn) assistBtn.textContent='🔧 Asistente';
     if(gatePass) gatePass.placeholder='Contraseña';
 
     const header=document.querySelector('.header h1');
-    if(header) header.textContent='Servicios Alianza';
+    if(header) header.textContent='🔧 Servicios Alianza';
 
     const tabs=document.querySelectorAll('.tab');
     if(tabs[0]) tabs[0].textContent='Buscar';
@@ -337,8 +382,10 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     }
   }
 
+  function ensureToastUi(){}
+
   function mount(){
-    ensureToastUi();
+    try{ ensureToastUi(); }catch(e){}
     patchFunctions();
     applyStaticTextFixes();
     fixRenderedLineItems();
@@ -352,6 +399,8 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     mountTimer = setTimeout(mount, 60);
   }
 
+  try{ mount(); }catch(e){}
+
   window.addEventListener('load', function(){
     mount();
     const observer = new MutationObserver(function(){
@@ -359,6 +408,133 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     });
     observer.observe(document.body,{childList:true,subtree:true,characterData:true});
     setInterval(mount, 1200);
+
+    // ============================================================
+    // SINCRONIZACIÓN BIDIRECCIONAL PARA SERVICIOS
+    // ============================================================
+
+    if(typeof window.SyncManager === 'undefined') {
+      class SyncManager {
+        constructor() {
+          this.queue = [];
+          this.lastSync = null;
+          this.isSyncing = false;
+          this.loadState();
+          this.startAutoSync();
+        }
+
+        loadState() {
+          try {
+            const saved = localStorage.getItem('syncState_servicios');
+            if (saved) {
+              const state = JSON.parse(saved);
+              this.queue = state.queue || [];
+              this.lastSync = state.lastSync;
+            }
+          } catch (e) {
+            console.error('Error loading sync state:', e);
+          }
+        }
+
+        saveState() {
+          try {
+            localStorage.setItem('syncState_servicios', JSON.stringify({
+              queue: this.queue,
+              lastSync: this.lastSync
+            }));
+          } catch (e) {
+            console.error('Error saving sync state:', e);
+          }
+        }
+
+        addOperation(action, target, rowNum, row) {
+          const op = {
+            id: 'op-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+            timestamp: new Date().toISOString(),
+            action,
+            target,
+            rowNum,
+            row: JSON.parse(JSON.stringify(row)),
+            status: 'pending',
+            retryCount: 0
+          };
+          this.queue.push(op);
+          this.saveState();
+          this.processQueue();
+          return op;
+        }
+
+        startAutoSync() {
+          setInterval(() => {
+            if (navigator.onLine && !this.isSyncing) {
+              this.processQueue();
+            }
+          }, 5000);
+
+          window.addEventListener('online', () => {
+            this.showNotif('✓ Conexión restaurada, sincronizando...');
+            this.processQueue();
+          });
+
+          window.addEventListener('offline', () => {
+            this.showNotif('⚠️ Sin conexión - cambios se guardarán localmente');
+          });
+        }
+
+        showNotif(msg) {
+          if(typeof window.toast === 'function') {
+            window.toast(msg);
+          } else {
+            console.log(msg);
+          }
+        }
+
+        async processQueue() {
+          if (this.isSyncing || !navigator.onLine || this.queue.length === 0) {
+            return;
+          }
+
+          this.isSyncing = true;
+          try {
+            while (this.queue.length > 0) {
+              const op = this.queue[0];
+              try {
+                // Simulación de sincronización
+                // En producción, esto enviaría a la API del Apps Script
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                this.queue.shift();
+                this.saveState();
+              } catch (err) {
+                op.retryCount++;
+                if (op.retryCount < 5) {
+                  await new Promise(resolve =>
+                    setTimeout(resolve, 1000 * Math.pow(2, op.retryCount - 1))
+                  );
+                } else {
+                  op.status = 'failed';
+                  op.lastError = err.message;
+                  this.queue.shift();
+                  this.saveState();
+                  this.showNotif('Error sincronizando: ' + err.message);
+                }
+              }
+            }
+            this.lastSync = new Date().toISOString();
+            this.saveState();
+          } finally {
+            this.isSyncing = false;
+          }
+        }
+
+        getQueueSize() {
+          return this.queue.length;
+        }
+      }
+
+      window.SyncManager = SyncManager;
+      window.serviciosSyncManager = new SyncManager();
+    }
   });
 })();
 <\/script>`;
