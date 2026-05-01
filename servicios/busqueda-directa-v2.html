@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Servicios Â· Taller Alianza</title>
+<title>Servicios · Taller Alianza</title>
 <style>
 :root{--bg:#0b0f17;--bg2:#111827;--card:#161e2e;--card2:#1e2a3f;--border:#2a3850;--text:#e5e7eb;--muted:#94a3b8;--accent:#f59e0b;--accent2:#fbbf24;--ok:#22c55e;--warn:#ef4444}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -141,13 +141,13 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 <body>
 <div id="gate">
   <div class="gate-card">
-    <h1>ðŸ”§ Taller Alianza</h1>
-    <div class="sub">Sistema de Servicios Â· Chincha</div>
+    <h1>🔧 Taller Alianza</h1>
+    <div class="sub">Sistema de Servicios · Chincha</div>
     <div class="role-btns">
-      <button class="role-btn active" id="rDueno" onclick="selRole('dueno')">ðŸ‘‘ DueÃ±o</button>
-      <button class="role-btn" id="rAsist" onclick="selRole('asistente')">ðŸ”§ Asistente</button>
+      <button class="role-btn active" id="rDueno" onclick="selRole('dueno')">👑 Dueño</button>
+      <button class="role-btn" id="rAsist" onclick="selRole('asistente')">🔧 Asistente</button>
     </div>
-    <input type="password" id="gatePass" placeholder="ContraseÃ±a" autocomplete="off">
+    <input type="password" id="gatePass" placeholder="Contraseña" autocomplete="off">
     <button class="enter" onclick="doLogin()">Ingresar</button>
     <div class="gate-msg" id="gateMsg"></div>
   </div>
@@ -155,30 +155,30 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
 <div id="app" style="display:none">
   <div class="header">
-    <h1>ðŸ”§ Servicios Alianza</h1>
-    <span class="role-pill" id="rolePill">â€”</span>
+    <h1>🔧 Servicios Alianza</h1>
+    <span class="role-pill" id="rolePill">—</span>
     <button class="logout-btn" onclick="logout()">Salir</button>
   </div>
   <div class="tabs">
-    <button class="tab active" data-view="tHist" onclick="showTab(event,'tHist')">ðŸ“‹ Historial</button>
-    <button class="tab" data-view="tVeh" id="tabVeh" onclick="showTab(event,'tVeh')">ðŸš— VehÃ­culos</button>
-    <button class="tab" data-view="tProf" onclick="showTab(event,'tProf')">ðŸ“ Nueva</button>
-    <button class="tab" data-view="tProfs" onclick="showTab(event,'tProfs')">ðŸ—‚ Archivo</button>
-    <button class="tab" data-view="tConfig" id="tabConfig" onclick="showTab(event,'tConfig')">âš™ï¸ Config</button>
+    <button class="tab active" data-view="tHist" onclick="showTab(event,'tHist')">📋 Historial</button>
+    <button class="tab" data-view="tVeh" id="tabVeh" onclick="showTab(event,'tVeh')">🚗 Vehículos</button>
+    <button class="tab" data-view="tProf" onclick="showTab(event,'tProf')">📝 Nueva</button>
+    <button class="tab" data-view="tProfs" onclick="showTab(event,'tProfs')">🗂 Archivo</button>
+    <button class="tab" data-view="tConfig" id="tabConfig" onclick="showTab(event,'tConfig')">⚙️ Config</button>
   </div>
 
   <div class="view" id="tBuscar" style="display:none">
     <div class="card">
-      <h2>ðŸš— Buscar VehÃ­culo por Placa</h2>
+      <h2>🚗 Buscar Vehículo por Placa</h2>
       <div class="field"><label>Placa</label>
         <input type="text" id="searchPlaca" class="uppercase-input" placeholder="Ej: ATI-745" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
       </div>
-      <button class="btn" onclick="buscarVehiculo()">Buscar VehÃ­culo</button>
+      <button class="btn" onclick="buscarVehiculo()">Buscar Vehículo</button>
       <div id="vehResult" style="margin-top:14px"></div>
     </div>
     <div class="card">
-      <h2>ðŸ”Ž BÃºsqueda General</h2>
-      <div class="field"><label>Buscar por cualquier palabra (placa, aceite, filtro, fecha, cÃ³digo, etc.)</label>
+      <h2>🔎 Búsqueda General</h2>
+      <div class="field"><label>Buscar por cualquier palabra (placa, aceite, filtro, fecha, código, etc.)</label>
         <input type="text" id="searchAny_old" class="uppercase-input" placeholder="Ej: aceite, ATI-745, 376841, filtro...">
       </div>
       <div id="genResult_old" style="margin-top:8px"></div>
@@ -187,8 +187,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   <div class="view active" id="tHist">
     <div class="card">
-      <h2>Búsqueda general</h2>
-      <div class="field"><label>Buscar por cualquier palabra (número, placa, cliente, modelo, descripción, fecha, etc.)</label>
+      <h2>B�squeda general</h2>
+      <div class="field"><label>Buscar por cualquier palabra (n�mero, placa, cliente, modelo, descripci�n, fecha, etc.)</label>
         <input type="text" id="searchAny" class="uppercase-input" placeholder="Ej: PROF-2026-0023, U1D-272, YARIS, PERCY..." oninput="buscarGeneral()">
       </div>
       <div class="hist-search-grid">
@@ -198,7 +198,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div>
           <div class="preview-box" id="histPreviewBox">
             <h3>Vista previa</h3>
-            <div id="histVehInfo" class="empty" style="padding:16px">Busca una proforma y toca una fila para ver el detalle aquí.</div>
+            <div id="histVehInfo" class="empty" style="padding:16px">Busca una proforma y toca una fila para ver el detalle aqu�.</div>
             <div id="histList" class="svc-list" style="display:none"></div>
           </div>
         </div>
@@ -208,31 +208,31 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   <div class="view" id="tVeh">
     <div class="card">
-      <h2>ðŸš— Base de Datos de VehÃ­culos</h2>
+      <h2>🚗 Base de Datos de Vehículos</h2>
       <div class="field"><label>Filtrar</label>
         <input type="text" id="vehFilter" class="uppercase-input" placeholder="Filtrar por placa, modelo, cliente, motor..." oninput="renderVehTable()">
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px"><span id="vehCount">0</span> vehÃ­culos Â· <button class="btn sec" style="display:inline-block;width:auto;padding:4px 10px;font-size:11px;margin-left:8px" onclick="cargarVehiculosTabla()">ðŸ”„ Recargar</button></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px"><span id="vehCount">0</span> vehículos · <button class="btn sec" style="display:inline-block;width:auto;padding:4px 10px;font-size:11px;margin-left:8px" onclick="cargarVehiculosTabla()">🔄 Recargar</button></div>
       <div id="vehTableBox"><div class="empty">Cargando...</div></div>
     </div>
     <div class="card" id="vehAddCard" style="display:none">
-      <h2>âž• Agregar VehÃ­culo</h2>
+      <h2>➕ Agregar Vehículo</h2>
       <div class="veh-add-grid">
         <div class="field"><label>Placa</label><input type="text" id="nvPlaca" class="uppercase-input"></div>
         <div class="field"><label>Modelo</label><input type="text" id="nvModelo" class="uppercase-input"></div>
-        <div class="field"><label>AÃ±o</label><input type="text" id="nvAno" class="uppercase-input"></div>
+        <div class="field"><label>Año</label><input type="text" id="nvAno" class="uppercase-input"></div>
         <div class="field"><label>Combustible</label><input type="text" id="nvCombustible" class="uppercase-input"></div>
         <div class="field"><label>Chofer / Empresa</label><input type="text" id="nvCliente" class="uppercase-input"></div>
         <div class="field"><label>RUC</label><input type="text" id="nvRuc" class="uppercase-input"></div>
-        <div class="field"><label>DirecciÃ³n</label><input type="text" id="nvDireccion" class="uppercase-input"></div>
-        <div class="field"><label>TelÃ©fono</label><input type="text" id="nvTelefono" class="uppercase-input"></div>
+        <div class="field"><label>Dirección</label><input type="text" id="nvDireccion" class="uppercase-input"></div>
+        <div class="field"><label>Teléfono</label><input type="text" id="nvTelefono" class="uppercase-input"></div>
         <div class="field"><label>DNI</label><input type="text" id="nvDni" class="uppercase-input"></div>
         <div class="field"><label>Motor</label><input type="text" id="nvMotor" class="uppercase-input"></div>
         <div class="field"><label>Caja</label><input type="text" id="nvCaja" class="uppercase-input"></div>
         <div class="field"><label>VIN</label><input type="text" id="nvVin" class="uppercase-input"></div>
       </div>
       <div class="btn-row" style="margin-top:12px">
-        <button class="btn ok" onclick="saveNewVehicle()">Guardar vehÃ­culo</button>
+        <button class="btn ok" onclick="saveNewVehicle()">Guardar vehículo</button>
         <button class="btn sec" onclick="clearVehicleForm()">Limpiar</button>
       </div>
     </div>
@@ -244,23 +244,23 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       <div class="proforma-status" id="editModeInfo">Modo nuevo</div>
       <div class="row2" style="margin-top:12px">
         <div class="field"><label>Fecha del documento</label><input type="date" id="pfFecha"></div>
-        <div class="field"><label>NÃºmero</label><input type="text" id="pfPreviewNum" class="uppercase-input" readonly placeholder="Se asigna al generar"></div>
+        <div class="field"><label>Número</label><input type="text" id="pfPreviewNum" class="uppercase-input" readonly placeholder="Se asigna al generar"></div>
       </div>
       <div class="btn-row" style="margin-top:12px">
         <button class="btn sec" type="button" onclick="resetProformaForm()">+ Nuevo documento</button>
       </div>
     </div>
     <div class="card"><h2>Datos del Cliente</h2>
-      <div class="field"><label>Nombre / RazÃ³n Social</label><input type="text" id="pfCliente" class="uppercase-input"></div>
+      <div class="field"><label>Nombre / Razón Social</label><input type="text" id="pfCliente" class="uppercase-input"></div>
       <div class="row2">
         <div class="field"><label>DNI / RUC</label><input type="text" id="pfDoc" class="uppercase-input"></div>
-        <div class="field"><label>TelÃ©fono</label><input type="text" id="pfTel" class="uppercase-input"></div>
+        <div class="field"><label>Teléfono</label><input type="text" id="pfTel" class="uppercase-input"></div>
       </div>
-      <div class="field"><label>DirecciÃ³n</label><input type="text" id="pfDir" class="uppercase-input"></div>
+      <div class="field"><label>Dirección</label><input type="text" id="pfDir" class="uppercase-input"></div>
     </div>
-    <div class="card"><h2>VehÃ­culo</h2>
+    <div class="card"><h2>Vehículo</h2>
       <div class="field">
-        <label>Buscar vehÃ­culo por modelo, placa o cliente</label>
+        <label>Buscar vehículo por modelo, placa o cliente</label>
         <input type="text" id="pfVehLookup" class="uppercase-input" placeholder="Ej: YARIS, CHANGAN, PERCY, U1D-272" oninput="renderNuevaVehicleLookupResults()">
         <div style="font-size:11px;color:var(--muted);margin-top:6px">Escribe modelo, placa, cliente, motor o VIN. Toca una coincidencia para cargar la placa y los datos.</div>
         <div id="pfVehLookupResults" style="margin-top:8px"></div>
@@ -270,7 +270,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div class="field"><label>Kilometraje</label><input type="number" id="pfKm"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>AÃ±o</label><input type="text" id="pfAno" class="uppercase-input"></div>
+        <div class="field"><label>Año</label><input type="text" id="pfAno" class="uppercase-input"></div>
         <div class="field"><label>Marca / Modelo</label><input type="text" id="pfModelo" class="uppercase-input"></div>
       </div>
     </div>
@@ -290,9 +290,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   <div class="view" id="tProfs">
     <div class="card">
-      <h2>ðŸ—‚ Archivo de documentos</h2>
+      <h2>🗂 Archivo de documentos</h2>
       <div class="field"><label>Buscar proforma</label>
-        <input type="text" id="pfHistFilter" class="uppercase-input" placeholder="Buscar por nÃºmero, placa, cliente..." oninput="renderProformasList()">
+        <input type="text" id="pfHistFilter" class="uppercase-input" placeholder="Buscar por número, placa, cliente..." oninput="renderProformasList()">
       </div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:8px"><span id="pfHistCount">0</span> proforma(s)</div>
       <div id="pfHistList" class="svc-list"></div>
@@ -300,12 +300,12 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
   </div>
 
   <div class="view" id="tConfig">
-    <div class="card"><h2>ConfiguraciÃ³n Apps Script</h2>
+    <div class="card"><h2>Configuración Apps Script</h2>
       <div class="field"><label>URL del Web App</label><input type="text" id="cfgUrl" placeholder="https://script.google.com/.../exec"></div>
       <div class="field"><label>SECRET (token)</label><input type="password" id="cfgSecret"></div>
       <button class="btn" onclick="saveCfg()">Guardar</button>
     </div>
-    <div class="card"><h2>PrÃ³ximo NÂº Proforma</h2>
+    <div class="card"><h2>Próximo Nº Proforma</h2>
       <div class="field"><label>Contador actual</label><input type="number" id="cfgCounter" min="1"></div>
       <button class="btn sec" onclick="saveCounter()">Actualizar contador</button>
     </div>
@@ -318,9 +318,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     <div class="pf-head">
       <div class="biz">
         <h1>TALLER ALIANZA</h1>
-        <div class="tag">MecÃ¡nica Automotriz Â· DiagnÃ³stico Especializado</div>
+        <div class="tag">Mecánica Automotriz · Diagnóstico Especializado</div>
         <div class="info">
-          <div style="font-weight:700;color:#b45309">MANTENIMIENTO PREVENTIVO Y CORRECTIVO DE VEHÃCULOS</div>
+          <div style="font-weight:700;color:#b45309">MANTENIMIENTO PREVENTIVO Y CORRECTIVO DE VEHÍCULOS</div>
           <div style="font-weight:700;color:#b45309">VENTA DE REPUESTOS Y LUBRICANTES</div>
           <div style="margin-top:4px">RUC: 10434002597</div>
           <div>Av. Oscar R. Benavides 1176 - Chincha</div>
@@ -329,27 +329,27 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         </div>
       </div>
       <div class="pf-num">
-        <div class="lbl">Proforma NÂ°</div>
+        <div class="lbl">Proforma N°</div>
         <div class="num" id="prnNum">PROF-2026-0001</div>
-        <div class="fch" id="prnFch">â€”</div>
+        <div class="fch" id="prnFch">—</div>
       </div>
     </div>
     <div class="pf-cli">
       <div class="blk"><h3>Cliente</h3>
-        <div><b id="prnCliente">â€”</b></div>
-        <div id="prnDoc">DNI/RUC: â€”</div>
-        <div id="prnTel">Tel: â€”</div>
-        <div id="prnDir">Dir: â€”</div>
+        <div><b id="prnCliente">—</b></div>
+        <div id="prnDoc">DNI/RUC: —</div>
+        <div id="prnTel">Tel: —</div>
+        <div id="prnDir">Dir: —</div>
       </div>
-      <div class="blk"><h3>VehÃ­culo</h3>
-        <div><b id="prnPlaca">â€”</b></div>
-        <div id="prnAno">AÃ±o: â€”</div>
-        <div id="prnModelo">â€”</div>
-        <div id="prnKm">Km: â€”</div>
+      <div class="blk"><h3>Vehículo</h3>
+        <div><b id="prnPlaca">—</b></div>
+        <div id="prnAno">Año: —</div>
+        <div id="prnModelo">—</div>
+        <div id="prnKm">Km: —</div>
       </div>
     </div>
     <table class="pf-items">
-      <thead><tr><th class="center" style="width:30px">#</th><th>DescripciÃ³n</th><th class="num-col" style="width:35px">Cant</th><th class="num-col" style="width:60px">P. Unit</th><th class="num-col" style="width:65px">Total</th></tr></thead>
+      <thead><tr><th class="center" style="width:30px">#</th><th>Descripción</th><th class="num-col" style="width:35px">Cant</th><th class="num-col" style="width:60px">P. Unit</th><th class="num-col" style="width:65px">Total</th></tr></thead>
       <tbody id="prnBody"></tbody>
     </table>
     <div class="pf-tot">
@@ -359,17 +359,17 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       <div class="row big"><span>TOTAL S/:</span><span id="prnTot">0.00</span></div>
     </div>
     <div class="pf-notes" id="prnObsBox" style="display:none"><b>Observaciones:</b> <span id="prnObs"></span></div>
-    <div class="pf-foot">CotizaciÃ³n referencial sin valor fiscal Â· Validez 7 dÃ­as Â· Precios sujetos a confirmaciÃ³n de stock<br>Taller Alianza Â© 2026 Â· Generado el <span id="prnGen"></span></div>
+    <div class="pf-foot">Cotización referencial sin valor fiscal · Validez 7 días · Precios sujetos a confirmación de stock<br>Taller Alianza © 2026 · Generado el <span id="prnGen"></span></div>
   </div>
 </div>
 
 <div class="print-controls" id="printCtrl" style="display:none">
-  <button class="btn sec" onclick="closePrint()">â† Volver</button>
-  <button class="btn sec" id="btnEditStored" onclick="editCurrentProforma()" style="display:none">âœï¸ Editar</button>
-  <button class="btn sec" id="btnCancelStored" onclick="toggleCurrentProformaCancelled()" style="display:none">ðŸš« Anular</button>
-  <button class="btn sec" id="btnDeleteStored" onclick="deleteCurrentProforma()" style="display:none">ðŸ—‘ Eliminar</button>
-  <button class="btn ok" id="btnSaveDb" onclick="guardarProformaActualEnSheets()" style="display:none">ðŸ’¾ Guardar en BD</button>
-  <button class="btn" onclick="window.print()">ðŸ–¨ Imprimir / PDF</button>
+  <button class="btn sec" onclick="closePrint()">← Volver</button>
+  <button class="btn sec" id="btnEditStored" onclick="editCurrentProforma()" style="display:none">✏️ Editar</button>
+  <button class="btn sec" id="btnCancelStored" onclick="toggleCurrentProformaCancelled()" style="display:none">🚫 Anular</button>
+  <button class="btn sec" id="btnDeleteStored" onclick="deleteCurrentProforma()" style="display:none">🗑 Eliminar</button>
+  <button class="btn ok" id="btnSaveDb" onclick="guardarProformaActualEnSheets()" style="display:none">💾 Guardar en BD</button>
+  <button class="btn" onclick="window.print()">🖨 Imprimir / PDF</button>
 </div>
 
 <script>
@@ -386,7 +386,7 @@ function doLogin(){
   const p=document.getElementById('gatePass').value,msg=document.getElementById('gateMsg');
   if(pendingRole==='dueno'&&p===PASS_DUENO)state.role='dueno';
   else if(pendingRole==='asistente'&&(p===PASS_ASIST||p===''))state.role='asistente';
-  else{msg.textContent='ContraseÃ±a incorrecta';return}
+  else{msg.textContent='Contraseña incorrecta';return}
   sessionStorage.setItem(ROLE_KEY,state.role);enterApp();
 }
 function logout(){sessionStorage.removeItem(ROLE_KEY);state.role=null;document.getElementById('app').style.display='none';document.getElementById('gate').style.display='flex';document.getElementById('gatePass').value=''}
@@ -395,12 +395,12 @@ function enterApp(){
   document.getElementById('app').style.display='block';
   const pill=document.getElementById('rolePill');
   if(state.role==='dueno'){
-    pill.textContent='ðŸ‘‘ DUEÃ‘O';pill.classList.add('dueno');
+    pill.textContent='👑 DUEÑO';pill.classList.add('dueno');
     document.getElementById('tabConfig').style.display='';
     document.getElementById('tabVeh').style.display='';
     const vehAddCard=document.getElementById('vehAddCard'); if(vehAddCard) vehAddCard.style.display='block';
   }else{
-    pill.textContent='ðŸ”§ ASISTENTE';pill.classList.remove('dueno');
+    pill.textContent='🔧 ASISTENTE';pill.classList.remove('dueno');
     document.getElementById('tabConfig').style.display='none';
     document.getElementById('tabVeh').style.display='none';
     const vehAddCard=document.getElementById('vehAddCard'); if(vehAddCard) vehAddCard.style.display='none';
@@ -422,7 +422,7 @@ async function precargarDatos(){
     const [rv,rs]=await Promise.all([callAS('veh'),callAS('srv')]);
     state.vehAll=rv.rows||[];
     state.srvAll=rs.rows||[];
-    console.log('âœ“ Precarga:',state.vehAll.length,'veh y',state.srvAll.length,'srv');
+    console.log('✓ Precarga:',state.vehAll.length,'veh y',state.srvAll.length,'srv');
   }catch(e){console.warn('Precarga fallo:',e.message)}
 }
 
@@ -454,7 +454,7 @@ async function callAS(what){
 }
 function normPlaca(s){return (s||'').toString().toUpperCase().replace(/[-\s]/g,'')}
 function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function fmtFecha(d){if(!d)return 'â€”';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return d}}
+function fmtFecha(d){if(!d)return '—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return d}}
 function todayInputValue(){
   const now=new Date();
   const y=now.getFullYear();
@@ -463,7 +463,7 @@ function todayInputValue(){
   return `${y}-${m}-${d}`;
 }
 function inputDateToText(v){
-  if(!v)return 'â€”';
+  if(!v)return '—';
   const parts=String(v).split('-');
   if(parts.length!==3)return v;
   const [y,m,d]=parts;
@@ -640,18 +640,18 @@ function buildPrintableProformaFromDoc(doc){
   const sub=lines.reduce((a,l)=>a+(l.cant*l.precio),0);
   return {
     num:doc.num||'',
-    fechaTexto:doc.fechaTexto||fmtFecha(doc.fecha)||'â€”',
+    fechaTexto:doc.fechaTexto||fmtFecha(doc.fecha)||'—',
     fechaIso:doc.fechaIso||doc.fecha||'',
     fechaInput:doc.fechaInput||'',
     generadoTexto:doc.generadoTexto||'',
-    cliente:doc.cliente||'â€”',
-    doc:doc.doc||'â€”',
-    tel:doc.tel||doc.telefono||'â€”',
-    dir:doc.dir||doc.direccion||'â€”',
-    placa:doc.placa||'â€”',
-    km:doc.km||doc.kilometraje||'â€”',
-    ano:doc.ano||'â€”',
-    modelo:doc.modelo||doc.marca_modelo||'â€”',
+    cliente:doc.cliente||'—',
+    doc:doc.doc||'—',
+    tel:doc.tel||doc.telefono||'—',
+    dir:doc.dir||doc.direccion||'—',
+    placa:doc.placa||'—',
+    km:doc.km||doc.kilometraje||'—',
+    ano:doc.ano||'—',
+    modelo:doc.modelo||doc.marca_modelo||'—',
     obs:doc.obs||'',
     lines:lines,
     sub:sub,
@@ -694,7 +694,7 @@ function renderSearchPreview(doc,index){
   if(!doc){
     box.innerHTML='';
     box.className='empty';
-    box.textContent='Busca una proforma y toca una fila para ver el detalle aquí.';
+    box.textContent='Busca una proforma y toca una fila para ver el detalle aqu�.';
     return;
   }
   const pf=buildPrintableProformaFromDoc(doc);
@@ -703,17 +703,17 @@ function renderSearchPreview(doc,index){
   const isCancelled=!!(isLocal ? isLocal.cancelled : pf.cancelled);
   box.className='';
   box.innerHTML=`
-    <div class="preview-strong">${escapeHtml(pf.num||pf.placa||'—')}</div>
-    <div style="font-size:13px;color:var(--text);margin:4px 0 10px"><b>${escapeHtml(pf.cliente||'—')}</b></div>
+    <div class="preview-strong">${escapeHtml(pf.num||pf.placa||'�')}</div>
+    <div style="font-size:13px;color:var(--text);margin:4px 0 10px"><b>${escapeHtml(pf.cliente||'�')}</b></div>
     <div class="preview-meta">
-      <div><b>Fecha:</b><br>${escapeHtml(pf.fechaTexto||'—')}</div>
-      <div><b>Placa:</b><br>${escapeHtml(pf.placa||'—')}</div>
-      <div><b>Modelo:</b><br>${escapeHtml(pf.modelo||'—')}</div>
+      <div><b>Fecha:</b><br>${escapeHtml(pf.fechaTexto||'�')}</div>
+      <div><b>Placa:</b><br>${escapeHtml(pf.placa||'�')}</div>
+      <div><b>Modelo:</b><br>${escapeHtml(pf.modelo||'�')}</div>
       <div><b>Total:</b><br>S/ ${(parseFloat(pf.tot)||0).toFixed(2)}</div>
     </div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:8px"><b>Detalle:</b></div>
     <div class="preview-lines">
-      ${lines.length?lines.map(l=>`<div class="preview-line"><div class="desc">${escapeHtml(l.desc||'—')}</div><div class="sub">Cant: ${parseFloat(l.cant||0)||0} · P.Unit: S/ ${(parseFloat(l.precio||0)||0).toFixed(2)} · Total: S/ ${(((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))).toFixed(2)}</div></div>`).join(''):'<div class="empty" style="padding:10px">Sin detalle</div>'}
+      ${lines.length?lines.map(l=>`<div class="preview-line"><div class="desc">${escapeHtml(l.desc||'�')}</div><div class="sub">Cant: ${parseFloat(l.cant||0)||0} � P.Unit: S/ ${(parseFloat(l.precio||0)||0).toFixed(2)} � Total: S/ ${(((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))).toFixed(2)}</div></div>`).join(''):'<div class="empty" style="padding:10px">Sin detalle</div>'}
     </div>
     <div class="btn-row" style="margin-top:12px;flex-wrap:wrap">
       <button class="btn" onclick="openDocumentDoc(state.searchDocs[${typeof index==='number'?index:0}]||null)">Abrir proforma</button>
@@ -800,15 +800,15 @@ async function buscarGeneral(){
       const itemCount=(d.lines||d.items||[]).length;
       const total=parseFloat(d.tot ?? d.total ?? 0)||0;
       const badgeCancel=d.cancelled?'<span class="badge cancel">ANULADA</span>':'';
-      const detalle=(d.lines||d.items||[]).slice(0,2).map(x=>x.desc||x.descripcion).filter(Boolean).join(' · ');
+      const detalle=(d.lines||d.items||[]).slice(0,2).map(x=>x.desc||x.descripcion).filter(Boolean).join(' � ');
       return `<div class="svc-item ${i===0?'active-preview':''}" onclick="openGeneralSearchDoc(${i})">
         <div class="top">
-          <span class="placa-tag">${escapeHtml(d.num||d.placa||'—')}</span>
-          <span class="fecha">${escapeHtml(d.fechaTexto||fmtFecha(d.fecha)||'—')}</span>
-          <span class="km">📏 ${escapeHtml(d.placa||'—')}</span>
+          <span class="placa-tag">${escapeHtml(d.num||d.placa||'�')}</span>
+          <span class="fecha">${escapeHtml(d.fechaTexto||fmtFecha(d.fecha)||'�')}</span>
+          <span class="km">📏 ${escapeHtml(d.placa||'�')}</span>
         </div>
-        <div class="cli"><b>${escapeHtml(d.cliente||'—')}</b></div>
-        <div class="desc">${escapeHtml(d.modelo||'—')}</div>
+        <div class="cli"><b>${escapeHtml(d.cliente||'�')}</b></div>
+        <div class="desc">${escapeHtml(d.modelo||'�')}</div>
         <div style="font-size:11px;color:var(--muted);margin:6px 0">${escapeHtml(detalle||'Sin detalle')}</div>
         <div class="proforma-badges">
           <span class="badge">${itemCount} item(s)</span>
@@ -831,7 +831,7 @@ async function abrirVehiculoDesdeServicio(placa){
   if(state.vehiculo)cargarHistorial();
 }
 
-/* === BUSCAR VEHÃCULO === */
+/* === BUSCAR VEHÍCULO === */
 async function buscarVehiculo(){
   const placa=document.getElementById('searchPlaca').value.trim().toUpperCase();
   if(!placa){alert('Ingresa una placa');return}
@@ -841,14 +841,14 @@ async function buscarVehiculo(){
     if(state.vehAll.length===0){const r=await callAS('veh');state.vehAll=r.rows||[]}
     const target=normPlaca(placa);
     const veh=state.vehAll.find(v=>normPlaca(v.placa)===target);
-    if(!veh){box.innerHTML='<div class="empty">âš ï¸ VehÃ­culo no encontrado</div>';state.vehiculo=null;return}
+    if(!veh){box.innerHTML='<div class="empty">⚠️ Vehículo no encontrado</div>';state.vehiculo=null;return}
     state.vehiculo=veh;
     box.innerHTML=`
       <div class="veh-info">
-        <div class="placa">${veh.placa||'â€”'}</div>
-        <div class="det">${veh.modelo||''} ${veh.ano||''} Â· ${veh.combustible||''}</div>
-        <div class="det">Cliente: ${veh.chofer__empresa||veh.chofer||'â€”'}</div>
-        <div class="det">ðŸ“ž ${veh.telefono||'â€”'} Â· DNI/RUC: ${veh.ruc||veh.dni||'â€”'}</div>
+        <div class="placa">${veh.placa||'—'}</div>
+        <div class="det">${veh.modelo||''} ${veh.ano||''} · ${veh.combustible||''}</div>
+        <div class="det">Cliente: ${veh.chofer__empresa||veh.chofer||'—'}</div>
+        <div class="det">📞 ${veh.telefono||'—'} · DNI/RUC: ${veh.ruc||veh.dni||'—'}</div>
       </div>`;
     usarEnProforma();
     await cargarHistorialSilencioso();
@@ -857,7 +857,7 @@ async function buscarVehiculo(){
 
 /* === HISTORIAL === */
 async function cargarHistorial(){
-  if(!state.vehiculo){alert('Primero busca un vehÃ­culo');return}
+  if(!state.vehiculo){alert('Primero busca un vehículo');return}
   showTab2('tHist');
   const placa=(state.vehiculo.placa||'').toString().toUpperCase();
   document.getElementById('histVehInfo').innerHTML=`
@@ -892,12 +892,12 @@ function renderHistorial(){
   const list=document.getElementById('histList');
   list.innerHTML=(state.servicios||[]).map(s=>{
     const items=(s.items||[]).map(x=>x.desc||x.descripcion).filter(Boolean);
-    const preview=items.join(' Â· ');
+    const preview=items.join(' · ');
     const badgeNum=s.num?`<span class="badge">${escapeHtml(s.num)}</span>`:'';
     return `<div class="svc-item">
-      <div class="top"><span class="fecha">${escapeHtml(s.fechaTexto||fmtFecha(s.fecha)||'â€”')}</span><span class="km">ðŸ“ ${escapeHtml(s.km||'â€”')} km</span></div>
-      <div class="cli"><b>${escapeHtml(s.cliente||'â€”')}</b></div>
-      <div class="desc">${escapeHtml(preview||'â€”')}</div>
+      <div class="top"><span class="fecha">${escapeHtml(s.fechaTexto||fmtFecha(s.fecha)||'—')}</span><span class="km">📏 ${escapeHtml(s.km||'—')} km</span></div>
+      <div class="cli"><b>${escapeHtml(s.cliente||'—')}</b></div>
+      <div class="desc">${escapeHtml(preview||'—')}</div>
       <div class="proforma-badges">
         ${badgeNum}
         <span class="badge">${items.length} item(s)</span>
@@ -907,10 +907,10 @@ function renderHistorial(){
   }).join('');
 }
 
-/* === TABLA VEHÃCULOS (solo dueÃ±o) === */
+/* === TABLA VEHÍCULOS (solo dueño) === */
 async function cargarVehiculosTabla(){
   const box=document.getElementById('vehTableBox');
-  box.innerHTML='<div class="loading">Cargando vehÃ­culos...</div>';
+  box.innerHTML='<div class="loading">Cargando vehículos...</div>';
   try{
     const r=await callAS('veh');
     state.vehAll=r.rows||[];
@@ -971,28 +971,28 @@ function renderVehTable(){
   const columns = [
     {label:'Placa', keys:['placa']},
     {label:'Modelo', keys:['modelo_base','modelo']},
-    {label:'AÃ±o', keys:['ano']},
+    {label:'Año', keys:['ano']},
     {label:'Combustible', keys:['combustible']},
     {label:'Chofer / Empresa', keys:['chofer__empresa','chofer_empresa','cliente']},
     {label:'RUC', keys:['ruc']},
-    {label:'DirecciÃ³n', keys:['direccion']},
-    {label:'TelÃ©fono', keys:['telefono']},
+    {label:'Dirección', keys:['direccion']},
+    {label:'Teléfono', keys:['telefono']},
     {label:'DNI', keys:['dni']},
     {label:'Motor', keys:['motor']},
     {label:'Caja', keys:['caja']},
     {label:'Ruta Scanner', keys:['ruta_scanner']},
     {label:'CCA', keys:['cca']},
     {label:'VIN', keys:['vin']},
-    {label:'VersiÃ³n Base', keys:['version_base','version']},
-    {label:'UbicaciÃ³n OBD2', keys:['ubicacion_obd2']},
+    {label:'Versión Base', keys:['version_base','version']},
+    {label:'Ubicación OBD2', keys:['ubicacion_obd2']},
     {label:'Capac. Oil', keys:['capac_oil']},
     {label:'Temperatura', keys:['temperatura']},
-    {label:'BaterÃ­a', keys:['bateria']},
+    {label:'Batería', keys:['bateria']},
     {label:'Tipo de Caja', keys:['tipo_de_caja']},
     {label:'F. Gasolina Ext', keys:['f_gasolina_ext']},
     {label:'Modelo Detalle', keys:['modelo_detalle','modelo_2','modelo2','modelo_secundario']},
     {label:'Potencia', keys:['potencia']},
-    {label:'VersiÃ³n Detalle', keys:['version_detalle','version_2','version2','version_secundaria']},
+    {label:'Versión Detalle', keys:['version_detalle','version_2','version2','version_secundaria']},
     {label:'Cilindrada', keys:['cilindrada']},
     {label:'Cilindro', keys:['cilindro']}
   ];
@@ -1018,7 +1018,7 @@ function clearVehicleForm(){
   ['nvPlaca','nvModelo','nvAno','nvCombustible','nvCliente','nvRuc','nvDireccion','nvTelefono','nvDni','nvMotor','nvCaja','nvVin'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
 }
 async function saveNewVehicle(){
-  if(state.role!=='dueno'){alert('Solo el dueÃ±o puede agregar vehÃ­culos.');return}
+  if(state.role!=='dueno'){alert('Solo el dueño puede agregar vehículos.');return}
   const row={
     placa:(document.getElementById('nvPlaca').value||'').toUpperCase().trim(),
     modelo:(document.getElementById('nvModelo').value||'').toUpperCase().trim(),
@@ -1035,15 +1035,15 @@ async function saveNewVehicle(){
   };
   if(!row.placa || !row.modelo){alert('Ingresa al menos placa y modelo.');return}
   if(state.vehAll.some(v=>normPlaca(v.placa)===normPlaca(row.placa))){alert('La placa '+row.placa+' ya existe en la base cargada.');return}
-  if(!state.cfg.url){alert('âš ï¸ Configura la URL');return}
+  if(!state.cfg.url){alert('⚠️ Configura la URL');return}
   try{
     const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'add',target:'veh',row:row}),headers:{'Content-Type':'text/plain;charset=utf-8'}});
     const data=await res.json();
-    if(!data.ok) throw new Error(data.error||'Error al guardar vehÃ­culo');
+    if(!data.ok) throw new Error(data.error||'Error al guardar vehículo');
     state.vehAll.unshift(row);
     renderVehTable();
     clearVehicleForm();
-    alert('âœ“ VehÃ­culo guardado: '+row.placa);
+    alert('✓ Vehículo guardado: '+row.placa);
   }catch(e){alert('Error: '+e.message)}
 }
 
@@ -1053,42 +1053,42 @@ function getSavedProformasMap(){try{return JSON.parse(localStorage.getItem(PROFO
 function canEditStoredProformas(){return state.role==='dueno';}
 function updateFormModeUI(){const title=document.getElementById('docFormTitle');const info=document.getElementById('editModeInfo');const btnSave=document.getElementById('btnGuardarCambios');const btnGen=document.getElementById('btnGenerarProforma');const preview=document.getElementById('pfPreviewNum');if(!title||!info)return;if(state.editingProformaNum){title.textContent='Editar documento';info.textContent='Editando: '+state.editingProformaNum;if(btnSave) btnSave.textContent='Guardar cambios';if(btnGen) btnGen.textContent='Generar proforma';if(preview) preview.value=state.editingProformaNum;}else{title.textContent='Nuevo documento';info.textContent='Modo nuevo';if(btnSave) btnSave.textContent='Guardar cambios';if(btnGen) btnGen.textContent='Generar proforma';if(preview) preview.value=nextProformaNum();}}
 function resetProformaForm(){state.editingProformaNum=null;state.currentProforma=null;document.getElementById('pfCliente').value='';document.getElementById('pfDoc').value='';document.getElementById('pfTel').value='';document.getElementById('pfDir').value='';document.getElementById('pfPlaca').value='';document.getElementById('pfKm').value='';document.getElementById('pfAno').value='';document.getElementById('pfModelo').value='';document.getElementById('pfObs').value='';if(document.getElementById('pfVehLookup')) document.getElementById('pfVehLookup').value='';if(document.getElementById('pfVehLookupResults')) document.getElementById('pfVehLookupResults').innerHTML='';document.getElementById('pfAc1').value='0';document.getElementById('pfAc2').value='0';document.getElementById('pfFecha').value=todayInputValue();document.getElementById('pfPreviewNum').value=nextProformaNum();state.lines=[];state.vehLookupResults=[];renderLines();updateFormModeUI();showTab2('tProf');}
-function loadProformaIntoForm(num){const pf=state.proformas.find(p=>p.num===num);if(!pf)return;if(!canEditStoredProformas()){alert('Solo el dueÃ±o puede editar documentos guardados.');return}state.editingProformaNum=pf.num;state.currentProforma=pf;document.getElementById('pfCliente').value=pf.cliente||'';document.getElementById('pfDoc').value=pf.doc||'';document.getElementById('pfTel').value=pf.tel||'';document.getElementById('pfDir').value=pf.dir||'';document.getElementById('pfPlaca').value=pf.placa||'';document.getElementById('pfKm').value=pf.km||'';document.getElementById('pfAno').value=pf.ano||'';document.getElementById('pfModelo').value=pf.modelo||'';if(document.getElementById('pfVehLookup')) document.getElementById('pfVehLookup').value=[pf.placa||'',pf.modelo||''].join(' ').trim();if(document.getElementById('pfVehLookupResults')) document.getElementById('pfVehLookupResults').innerHTML='';document.getElementById('pfObs').value=pf.obs||'';document.getElementById('pfAc1').value=(parseFloat(pf.ac1)||0);document.getElementById('pfAc2').value=(parseFloat(pf.ac2)||0);document.getElementById('pfFecha').value=pf.fechaInput||todayInputValue();document.getElementById('pfPreviewNum').value=pf.num||'';state.lines=(pf.lines||[]).map(l=>({desc:l.desc||'',cint:l.cint||'',coem:l.coem||'',cant:parseFloat(l.cant)||0,precio:parseFloat(l.precio)||0}));renderLines();updateFormModeUI();showTab2('tProf');}
-function renderPrintControls(){const ctrl=document.getElementById('printCtrl');const btnSave=document.getElementById('btnSaveDb');const btnEdit=document.getElementById('btnEditStored');const btnCancel=document.getElementById('btnCancelStored');const btnDelete=document.getElementById('btnDeleteStored');ctrl.style.display='flex';const pf=state.currentProforma||{};const owner=state.role==='dueno';btnEdit.style.display=owner && !!pf.num ? '' : 'none';btnDelete.style.display=owner && !!pf.num ? '' : 'none';btnSave.style.display=owner && !!pf.num && !isProformaSaved(pf.num) && !pf.cancelled ? '' : 'none';if(btnCancel){ btnCancel.style.display=owner && !!pf.num ? '' : 'none'; btnCancel.textContent=pf.cancelled ? 'â†© Reactivar' : 'ðŸš« Anular'; }}
+function loadProformaIntoForm(num){const pf=state.proformas.find(p=>p.num===num);if(!pf)return;if(!canEditStoredProformas()){alert('Solo el dueño puede editar documentos guardados.');return}state.editingProformaNum=pf.num;state.currentProforma=pf;document.getElementById('pfCliente').value=pf.cliente||'';document.getElementById('pfDoc').value=pf.doc||'';document.getElementById('pfTel').value=pf.tel||'';document.getElementById('pfDir').value=pf.dir||'';document.getElementById('pfPlaca').value=pf.placa||'';document.getElementById('pfKm').value=pf.km||'';document.getElementById('pfAno').value=pf.ano||'';document.getElementById('pfModelo').value=pf.modelo||'';if(document.getElementById('pfVehLookup')) document.getElementById('pfVehLookup').value=[pf.placa||'',pf.modelo||''].join(' ').trim();if(document.getElementById('pfVehLookupResults')) document.getElementById('pfVehLookupResults').innerHTML='';document.getElementById('pfObs').value=pf.obs||'';document.getElementById('pfAc1').value=(parseFloat(pf.ac1)||0);document.getElementById('pfAc2').value=(parseFloat(pf.ac2)||0);document.getElementById('pfFecha').value=pf.fechaInput||todayInputValue();document.getElementById('pfPreviewNum').value=pf.num||'';state.lines=(pf.lines||[]).map(l=>({desc:l.desc||'',cint:l.cint||'',coem:l.coem||'',cant:parseFloat(l.cant)||0,precio:parseFloat(l.precio)||0}));renderLines();updateFormModeUI();showTab2('tProf');}
+function renderPrintControls(){const ctrl=document.getElementById('printCtrl');const btnSave=document.getElementById('btnSaveDb');const btnEdit=document.getElementById('btnEditStored');const btnCancel=document.getElementById('btnCancelStored');const btnDelete=document.getElementById('btnDeleteStored');ctrl.style.display='flex';const pf=state.currentProforma||{};const owner=state.role==='dueno';btnEdit.style.display=owner && !!pf.num ? '' : 'none';btnDelete.style.display=owner && !!pf.num ? '' : 'none';btnSave.style.display=owner && !!pf.num && !isProformaSaved(pf.num) && !pf.cancelled ? '' : 'none';if(btnCancel){ btnCancel.style.display=owner && !!pf.num ? '' : 'none'; btnCancel.textContent=pf.cancelled ? '↩ Reactivar' : '🚫 Anular'; }}
 function guardarProformaActualEnSheets(){if(!state.currentProforma)return;guardarProformaEnSheets(state.currentProforma)}
 function editCurrentProforma(){if(!state.currentProforma||!state.currentProforma.num)return;closePrint();loadProformaIntoForm(state.currentProforma.num)}
 function deleteCurrentProforma(){if(!state.currentProforma||!state.currentProforma.num)return;deleteStoredProforma(state.currentProforma.num)}
 function toggleCurrentProformaCancelled(){if(!state.currentProforma||!state.currentProforma.num)return;toggleAnularProforma(state.currentProforma.num)}
-function toggleAnularProforma(num){if(state.role!=='dueno'){alert('Solo el dueÃ±o puede anular documentos.');return}const idx=state.proformas.findIndex(p=>p.num===num);if(idx<0) return;const pf=state.proformas[idx];const willCancel=!pf.cancelled;const msg=willCancel ? 'Â¿Desea anular la proforma '+pf.num+'?' : 'Â¿Desea reactivar la proforma '+pf.num+'?';if(!confirm(msg)) return;pf.cancelled=willCancel;pf.cancelledAt=willCancel ? new Date().toISOString() : '';if(willCancel && pf.savedToDb){alert('La proforma quedarÃ¡ ANULADA solo en este sistema local. No se eliminarÃ¡n filas ya guardadas en la base de datos.');}saveProformasLocal();renderProformasList();if(state.currentProforma && state.currentProforma.num===pf.num){state.currentProforma=pf;renderPrintFromProforma(pf);renderPrintControls();}}
+function toggleAnularProforma(num){if(state.role!=='dueno'){alert('Solo el dueño puede anular documentos.');return}const idx=state.proformas.findIndex(p=>p.num===num);if(idx<0) return;const pf=state.proformas[idx];const willCancel=!pf.cancelled;const msg=willCancel ? '¿Desea anular la proforma '+pf.num+'?' : '¿Desea reactivar la proforma '+pf.num+'?';if(!confirm(msg)) return;pf.cancelled=willCancel;pf.cancelledAt=willCancel ? new Date().toISOString() : '';if(willCancel && pf.savedToDb){alert('La proforma quedará ANULADA solo en este sistema local. No se eliminarán filas ya guardadas en la base de datos.');}saveProformasLocal();renderProformasList();if(state.currentProforma && state.currentProforma.num===pf.num){state.currentProforma=pf;renderPrintFromProforma(pf);renderPrintControls();}}
 function markProformaSaved(num, meta){const data=getSavedProformasMap();data[num]=Object.assign({savedAt:new Date().toISOString()},meta||{});localStorage.setItem(PROFORMAS_SAVED_KEY,JSON.stringify(data));const idx=state.proformas.findIndex(p=>p.num===num);if(idx>=0){state.proformas[idx].savedToDb=true;state.proformas[idx].savedAt=data[num].savedAt;saveProformasLocal();}}
 function removeSavedProformaMark(num){const data=getSavedProformasMap();delete data[num];localStorage.setItem(PROFORMAS_SAVED_KEY,JSON.stringify(data));}
 function isProformaSaved(num){const data=getSavedProformasMap();return !!data[num];}
 function upsertProformaLocal(pf){const idx=state.proformas.findIndex(p=>p.num===pf.num);if(idx>=0) state.proformas[idx]=pf;else state.proformas.unshift(pf);state.proformas.sort((a,b)=>new Date(b.fechaIso||b.generatedAt||0)-new Date(a.fechaIso||a.generatedAt||0));saveProformasLocal();}
-function buildCurrentProforma(){const cliente=(document.getElementById('pfCliente').value||'â€”').toUpperCase();const doc=(document.getElementById('pfDoc').value||'â€”').toUpperCase();const tel=(document.getElementById('pfTel').value||'â€”').toUpperCase();const dir=(document.getElementById('pfDir').value||'â€”').toUpperCase();const placa=(document.getElementById('pfPlaca').value||'â€”').toUpperCase();const km=document.getElementById('pfKm').value||'â€”';const ano=(document.getElementById('pfAno').value||'â€”').toUpperCase();const modelo=(document.getElementById('pfModelo').value||'â€”').toUpperCase();const obs=(document.getElementById('pfObs').value||'').toUpperCase();const now=new Date();const existing=state.editingProformaNum ? state.proformas.find(p=>p.num===state.editingProformaNum) : null;const fechaInput=(document.getElementById('pfFecha').value||existing?.fechaInput||todayInputValue());const num=existing?.num || reserveNextProformaNumber(fechaInput);const generatedAt=existing?.generatedAt || now.toISOString();const fechaTexto=inputDateToText(fechaInput);const fechaIso=inputDateToIso(fechaInput);const generadoTexto=existing?.generadoTexto || now.toLocaleString('es-PE');const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);const ac1=parseFloat(document.getElementById('pfAc1').value)||0;const ac2=parseFloat(document.getElementById('pfAc2').value)||0;return {num,generatedAt,fechaInput,fechaIso,fechaTexto,generadoTexto,updatedAt: now.toISOString(),cliente, doc, tel, dir, placa, km, ano, modelo, obs,lines: state.lines.map(l=>({desc:(l.desc||'').toUpperCase(),cint:(l.cint||'').toUpperCase(),coem:(l.coem||'').toUpperCase(),cant:parseFloat(l.cant)||0,precio:parseFloat(l.precio)||0})),sub, ac1, ac2, tot: sub-ac1-ac2,savedToDb: existing?.savedToDb || isProformaSaved(num),cancelled: existing?.cancelled || false,cancelledAt: existing?.cancelledAt || ''};}
-function renderPrintFromProforma(pf){const wm=document.querySelector('#printArea .wm'); if(wm) wm.textContent=pf.cancelled ? 'ANULADA' : 'ANTICOPIA';document.getElementById('prnNum').textContent=pf.num;document.getElementById('prnFch').textContent=pf.fechaTexto||'â€”';document.getElementById('prnCliente').textContent=pf.cliente||'â€”';document.getElementById('prnDoc').textContent='DNI/RUC: '+(pf.doc||'â€”');document.getElementById('prnTel').textContent='Tel: '+(pf.tel||'â€”');document.getElementById('prnDir').textContent='Dir: '+(pf.dir||'â€”');document.getElementById('prnPlaca').textContent=pf.placa||'â€”';document.getElementById('prnAno').textContent='AÃ±o: '+(pf.ano||'â€”');document.getElementById('prnModelo').textContent=pf.modelo||'â€”';document.getElementById('prnKm').textContent='Km: '+(pf.km||'â€”');document.getElementById('prnBody').innerHTML=(pf.lines||[]).map((l,i)=>`<tr><td class="center">${i+1}</td><td>${escapeHtml(l.desc)}</td><td class="num-col">${l.cant}</td><td class="num-col">${(parseFloat(l.precio)||0).toFixed(2)}</td><td class="num-col">${((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0)).toFixed(2)}</td></tr>`).join('');document.getElementById('prnSub').textContent='S/ '+(parseFloat(pf.sub)||0).toFixed(2);document.getElementById('prnAc1').textContent='S/ '+(parseFloat(pf.ac1)||0).toFixed(2);document.getElementById('prnAc2').textContent='S/ '+(parseFloat(pf.ac2)||0).toFixed(2);document.getElementById('prnTot').textContent=(parseFloat(pf.tot)||0).toFixed(2);if(pf.obs){document.getElementById('prnObsBox').style.display='block';document.getElementById('prnObs').textContent=pf.obs}else document.getElementById('prnObsBox').style.display='none';document.getElementById('prnGen').textContent=pf.generadoTexto||'â€”';}
+function buildCurrentProforma(){const cliente=(document.getElementById('pfCliente').value||'—').toUpperCase();const doc=(document.getElementById('pfDoc').value||'—').toUpperCase();const tel=(document.getElementById('pfTel').value||'—').toUpperCase();const dir=(document.getElementById('pfDir').value||'—').toUpperCase();const placa=(document.getElementById('pfPlaca').value||'—').toUpperCase();const km=document.getElementById('pfKm').value||'—';const ano=(document.getElementById('pfAno').value||'—').toUpperCase();const modelo=(document.getElementById('pfModelo').value||'—').toUpperCase();const obs=(document.getElementById('pfObs').value||'').toUpperCase();const now=new Date();const existing=state.editingProformaNum ? state.proformas.find(p=>p.num===state.editingProformaNum) : null;const fechaInput=(document.getElementById('pfFecha').value||existing?.fechaInput||todayInputValue());const num=existing?.num || reserveNextProformaNumber(fechaInput);const generatedAt=existing?.generatedAt || now.toISOString();const fechaTexto=inputDateToText(fechaInput);const fechaIso=inputDateToIso(fechaInput);const generadoTexto=existing?.generadoTexto || now.toLocaleString('es-PE');const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);const ac1=parseFloat(document.getElementById('pfAc1').value)||0;const ac2=parseFloat(document.getElementById('pfAc2').value)||0;return {num,generatedAt,fechaInput,fechaIso,fechaTexto,generadoTexto,updatedAt: now.toISOString(),cliente, doc, tel, dir, placa, km, ano, modelo, obs,lines: state.lines.map(l=>({desc:(l.desc||'').toUpperCase(),cint:(l.cint||'').toUpperCase(),coem:(l.coem||'').toUpperCase(),cant:parseFloat(l.cant)||0,precio:parseFloat(l.precio)||0})),sub, ac1, ac2, tot: sub-ac1-ac2,savedToDb: existing?.savedToDb || isProformaSaved(num),cancelled: existing?.cancelled || false,cancelledAt: existing?.cancelledAt || ''};}
+function renderPrintFromProforma(pf){const wm=document.querySelector('#printArea .wm'); if(wm) wm.textContent=pf.cancelled ? 'ANULADA' : 'ANTICOPIA';document.getElementById('prnNum').textContent=pf.num;document.getElementById('prnFch').textContent=pf.fechaTexto||'—';document.getElementById('prnCliente').textContent=pf.cliente||'—';document.getElementById('prnDoc').textContent='DNI/RUC: '+(pf.doc||'—');document.getElementById('prnTel').textContent='Tel: '+(pf.tel||'—');document.getElementById('prnDir').textContent='Dir: '+(pf.dir||'—');document.getElementById('prnPlaca').textContent=pf.placa||'—';document.getElementById('prnAno').textContent='Año: '+(pf.ano||'—');document.getElementById('prnModelo').textContent=pf.modelo||'—';document.getElementById('prnKm').textContent='Km: '+(pf.km||'—');document.getElementById('prnBody').innerHTML=(pf.lines||[]).map((l,i)=>`<tr><td class="center">${i+1}</td><td>${escapeHtml(l.desc)}</td><td class="num-col">${l.cant}</td><td class="num-col">${(parseFloat(l.precio)||0).toFixed(2)}</td><td class="num-col">${((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0)).toFixed(2)}</td></tr>`).join('');document.getElementById('prnSub').textContent='S/ '+(parseFloat(pf.sub)||0).toFixed(2);document.getElementById('prnAc1').textContent='S/ '+(parseFloat(pf.ac1)||0).toFixed(2);document.getElementById('prnAc2').textContent='S/ '+(parseFloat(pf.ac2)||0).toFixed(2);document.getElementById('prnTot').textContent=(parseFloat(pf.tot)||0).toFixed(2);if(pf.obs){document.getElementById('prnObsBox').style.display='block';document.getElementById('prnObs').textContent=pf.obs}else document.getElementById('prnObsBox').style.display='none';document.getElementById('prnGen').textContent=pf.generadoTexto||'—';}
 function openStoredProforma(num){const pf=state.proformas.find(p=>p.num===num);if(!pf)return;state.currentProforma=pf;renderPrintFromProforma(pf);document.getElementById('app').style.display='none';document.getElementById('printArea').style.display='block';renderPrintControls();window.scrollTo(0,0)}
-async function eliminarProformaEnSheets(proforma){if(!state.cfg.url){alert('âš ï¸ Configura la URL');return false}try{const sheetRows=await collectSheetRowsForStoredProforma(proforma);const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'delete_proforma',target:'srv',proforma_num:proforma.num,row_numbers:sheetRows}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo eliminar en Google Sheets');if(!(data.deleted>0)) throw new Error('No se encontro ninguna fila para eliminar en Google Sheets');state.srvAll=[];await precargarDatos();return true;}catch(e){alert('Error al eliminar en Google Sheets: '+e.message);return false}}
-async function deleteStoredProforma(num){if(state.role!=='dueno'){alert('Solo el dueÃ±o puede eliminar documentos.');return}const idx=state.proformas.findIndex(p=>p.num===num);if(idx<0){alert('No se encontrÃ³ la proforma.');return}const pf=state.proformas[idx];let msg='Â¿Desea eliminar la proforma '+pf.num+'?';if(pf.savedToDb){ msg+='\n\nTambiÃ©n se intentarÃ¡ eliminar de Google Sheets.'; }if(!confirm(msg)) return;if(pf.savedToDb){const ok=await eliminarProformaEnSheets(pf);if(!ok) return;}state.proformas.splice(idx,1);saveProformasLocal();removeSavedProformaMark(pf.num);if(state.currentProforma && state.currentProforma.num===pf.num){ state.currentProforma=null; closePrint(); }renderProformasList();alert('âœ“ Proforma eliminada: '+pf.num)}
-function renderProformasList(){const box=document.getElementById('pfHistList');const counter=document.getElementById('pfHistCount');if(!box||!counter)return;const q=(document.getElementById('pfHistFilter')?.value||'').trim().toLowerCase();const rows=state.proformas.filter(p=>{if(!q)return true;const blob=[p.num,p.cliente,p.placa,p.modelo,p.doc,p.fechaTexto].join(' ').toLowerCase();return blob.includes(q);});counter.textContent=rows.length;if(rows.length===0){box.innerHTML='<div class="empty">AÃºn no hay proformas guardadas en este navegador</div>';return;}box.innerHTML=rows.map(p=>`
+async function eliminarProformaEnSheets(proforma){if(!state.cfg.url){alert('⚠️ Configura la URL');return false}try{const sheetRows=await collectSheetRowsForStoredProforma(proforma);const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'delete_proforma',target:'srv',proforma_num:proforma.num,row_numbers:sheetRows}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo eliminar en Google Sheets');if(!(data.deleted>0)) throw new Error('No se encontro ninguna fila para eliminar en Google Sheets');state.srvAll=[];await precargarDatos();return true;}catch(e){alert('Error al eliminar en Google Sheets: '+e.message);return false}}
+async function deleteStoredProforma(num){if(state.role!=='dueno'){alert('Solo el dueño puede eliminar documentos.');return}const idx=state.proformas.findIndex(p=>p.num===num);if(idx<0){alert('No se encontró la proforma.');return}const pf=state.proformas[idx];let msg='¿Desea eliminar la proforma '+pf.num+'?';if(pf.savedToDb){ msg+='\n\nTambién se intentará eliminar de Google Sheets.'; }if(!confirm(msg)) return;if(pf.savedToDb){const ok=await eliminarProformaEnSheets(pf);if(!ok) return;}state.proformas.splice(idx,1);saveProformasLocal();removeSavedProformaMark(pf.num);if(state.currentProforma && state.currentProforma.num===pf.num){ state.currentProforma=null; closePrint(); }renderProformasList();alert('✓ Proforma eliminada: '+pf.num)}
+function renderProformasList(){const box=document.getElementById('pfHistList');const counter=document.getElementById('pfHistCount');if(!box||!counter)return;const q=(document.getElementById('pfHistFilter')?.value||'').trim().toLowerCase();const rows=state.proformas.filter(p=>{if(!q)return true;const blob=[p.num,p.cliente,p.placa,p.modelo,p.doc,p.fechaTexto].join(' ').toLowerCase();return blob.includes(q);});counter.textContent=rows.length;if(rows.length===0){box.innerHTML='<div class="empty">Aún no hay proformas guardadas en este navegador</div>';return;}box.innerHTML=rows.map(p=>`
     <div class="svc-item" onclick="openStoredProforma('${escapeHtml(p.num)}')">
       <div class="top">
         <span class="placa-tag">${escapeHtml(p.num)}</span>
-        <span class="fecha">${escapeHtml(p.fechaTexto||'â€”')}</span>
-        <span class="km">ðŸ“ ${escapeHtml(p.placa||'â€”')}</span>
+        <span class="fecha">${escapeHtml(p.fechaTexto||'—')}</span>
+        <span class="km">📏 ${escapeHtml(p.placa||'—')}</span>
       </div>
-      <div class="cli"><b>${escapeHtml(p.cliente||'â€”')}</b></div>
-      <div class="desc">${escapeHtml(p.modelo||'â€”')}</div>
+      <div class="cli"><b>${escapeHtml(p.cliente||'—')}</b></div>
+      <div class="desc">${escapeHtml(p.modelo||'—')}</div>
       <div class="proforma-badges">
         <span class="badge">${(p.lines||[]).length} item(s)</span>
         <span class="badge ${p.savedToDb?'ok':'warn'}">${p.savedToDb?'Guardada en BD':'Pendiente de guardar'}</span>
         ${p.cancelled?'<span class="badge cancel">ANULADA</span>':''}
       </div>
       <div class="proforma-actions">
-        ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();loadProformaIntoForm('${escapeHtml(p.num)}')">âœï¸ Editar</button>`:''}
-        <button class="btn sec" onclick="event.stopPropagation();openStoredProforma('${escapeHtml(p.num)}')">ðŸ‘ Ver</button>
-        ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();toggleAnularProforma('${escapeHtml(p.num)}')">${p.cancelled?'â†© Reactivar':'ðŸš« Anular'}</button>`:''}
-        ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();deleteStoredProforma('${escapeHtml(p.num)}')">ðŸ—‘ Eliminar</button>`:''}
-        ${canEditStoredProformas() && !p.savedToDb && !p.cancelled ? `<button class="btn ok" onclick="event.stopPropagation();guardarProformaEnSheets(state.proformas.find(x=>x.num==='${escapeHtml(p.num)}'))">ðŸ’¾ Guardar BD</button>`:''}
+        ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();loadProformaIntoForm('${escapeHtml(p.num)}')">✏️ Editar</button>`:''}
+        <button class="btn sec" onclick="event.stopPropagation();openStoredProforma('${escapeHtml(p.num)}')">👁 Ver</button>
+        ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();toggleAnularProforma('${escapeHtml(p.num)}')">${p.cancelled?'↩ Reactivar':'🚫 Anular'}</button>`:''}
+        ${canEditStoredProformas()?`<button class="btn sec" onclick="event.stopPropagation();deleteStoredProforma('${escapeHtml(p.num)}')">🗑 Eliminar</button>`:''}
+        ${canEditStoredProformas() && !p.savedToDb && !p.cancelled ? `<button class="btn ok" onclick="event.stopPropagation();guardarProformaEnSheets(state.proformas.find(x=>x.num==='${escapeHtml(p.num)}'))">💾 Guardar BD</button>`:''}
       </div>
       <div class="total">S/ ${(parseFloat(p.tot)||0).toFixed(2)}</div>
     </div>`).join('')}
@@ -1098,27 +1098,27 @@ async function ensureVehRowsLoaded(){if(state.vehAll.length===0 && state.cfg.url
 async function ensureSrvRowsLoadedForLookup(){if(state.srvAll.length===0 && state.cfg.url){const r=await callAS('srv');state.srvAll=r.rows||[]}return state.srvAll||[]}
 function normalizeLookupText(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase()}
 function getVehicleLookupBlob(v){return normalizeLookupText([pickVehValue(v,['placa']),getVehModeloTexto(v),pickVehValue(v,['modelo','modelo_base','marca_modelo','modelo_detalle']),getVehClienteNombre(v),pickVehValue(v,['motor','vin','caja','combustible','ruc','dni','telefono'])].join(' '))}
-function getVehicleLookupLabel(v){return {placa:String(pickVehValue(v,['placa'])||'â€”').toUpperCase(),modelo:String(getVehModeloTexto(v)||pickVehValue(v,['modelo','modelo_base','marca_modelo'])||'â€”').toUpperCase(),cliente:String(getVehClienteNombre(v)||'â€”').toUpperCase(),ano:String(getVehAno(v)||'').toUpperCase()}}
-function buildServiceLookupCandidates(rows, seenPlates){const grouped=new Map();(rows||[]).forEach(r=>{const plateKey=normalizeLookupText(r && r.placa).trim();if(!plateKey || seenPlates.has(plateKey)) return;let item=grouped.get(plateKey);if(!item){item={placa:r.placa||'',marca_modelo:r.marca_modelo||r.modelo||'',cliente:r.cliente||r.chofer__empresa||'',ano:r.ano||'',kilometraje:r.kilometraje||'',telefono:r.telefono||'',direccion:r.direccion||'',doc:r.doc||'',extras:[]};grouped.set(plateKey,item);}if(!item.marca_modelo && (r.marca_modelo||r.modelo)) item.marca_modelo=r.marca_modelo||r.modelo||'';if(!item.cliente && (r.cliente||r.chofer__empresa)) item.cliente=r.cliente||r.chofer__empresa||'';if(!item.ano && r.ano) item.ano=r.ano;if(!item.kilometraje && r.kilometraje) item.kilometraje=r.kilometraje;if(!item.telefono && r.telefono) item.telefono=r.telefono;if(!item.direccion && r.direccion) item.direccion=r.direccion;if(!item.doc && r.doc) item.doc=r.doc;if(r.descripcion && item.extras.length<4) item.extras.push(r.descripcion);});return Array.from(grouped.values()).map(item=>{const meta={placa:String(item.placa||'â€”').toUpperCase(),modelo:String(item.marca_modelo||'â€”').toUpperCase(),cliente:String(item.cliente||'â€”').toUpperCase(),ano:String(item.ano||'').toUpperCase()};const blob=normalizeLookupText([item.placa,item.marca_modelo,item.cliente,item.ano,item.kilometraje,item.telefono,item.direccion,item.doc,(item.extras||[]).join(' ')].join(' '));return {source:'srv', data:item, meta:meta, blob:blob}})}
-function selectVehicleForNueva(index){const rows=state.vehLookupResults||[];const found=rows[parseInt(index,10)];if(!found)return;const veh=found.source==='veh'? found.data : {placa:found.data.placa||'',marca_modelo:found.data.marca_modelo||'',modelo:found.data.marca_modelo||'',cliente:found.data.cliente||'',chofer__empresa:found.data.cliente||'',ano:found.data.ano||'',kilometraje:found.data.kilometraje||'',telefono:found.data.telefono||'',direccion:found.data.direccion||'',ruc:found.data.doc||'',dni:found.data.doc||''};state.vehiculo=veh;aplicarVehiculoAProforma(veh);const meta=found.meta || getVehicleLookupLabel(veh);const input=document.getElementById('pfVehLookup');const results=document.getElementById('pfVehLookupResults');if(document.getElementById('pfKm') && found.data && found.data.kilometraje) document.getElementById('pfKm').value=found.data.kilometraje;if(input) input.value=(meta.placa+' '+meta.modelo).trim();if(results){results.innerHTML='<div style="font-size:12px;color:var(--ok);padding:6px 2px">VehÃ­culo cargado: <b>'+escapeHtml(meta.placa)+'</b> Â· '+escapeHtml(meta.modelo)+'</div>'}}
-async function renderNuevaVehicleLookupResults(){const input=document.getElementById('pfVehLookup');const box=document.getElementById('pfVehLookupResults');if(!input || !box)return;const query=String(input.value||'').trim();if(query.length<2){box.innerHTML='';state.vehLookupResults=[];return;}box.innerHTML='<div style="font-size:11px;color:var(--muted);padding:6px 2px">Buscando vehÃ­culos...</div>';if(!state.cfg.url){box.innerHTML='<div style="font-size:11px;color:var(--muted);padding:6px 2px">Configura primero la URL en Config.</div>';return;}const vehRows=await ensureVehRowsLoaded();const srvRows=await ensureSrvRowsLoadedForLookup();const terms=normalizeLookupText(query).split(/\s+/).filter(Boolean);const seenPlates=new Set();const vehCandidates=(vehRows||[]).map(v=>{const meta=getVehicleLookupLabel(v);const plateKey=normalizeLookupText(meta.placa).trim();if(plateKey) seenPlates.add(plateKey);return {source:'veh', data:v, meta:meta, blob:getVehicleLookupBlob(v)}});const srvCandidates=buildServiceLookupCandidates(srvRows, seenPlates);const matches=vehCandidates.concat(srvCandidates).filter(item=>{return terms.every(term=>item.blob.includes(term))}).slice(0,12);state.vehLookupResults=matches;if(!matches.length){box.innerHTML='<div style="font-size:11px;color:var(--muted);padding:6px 2px">Sin coincidencias.</div>';return;}box.innerHTML=matches.map((item,index)=>{const meta=item.meta;return '<button type="button" class="btn sec" onclick="selectVehicleForNueva('+index+')" style="width:100%;text-align:left;padding:10px 12px;margin-top:6px">'+ '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">'+ '<span style="font-weight:800;color:var(--accent);letter-spacing:1px">'+escapeHtml(meta.placa)+'</span>'+ '<span style="font-size:11px;color:var(--muted)">'+escapeHtml(meta.ano||'')+'</span>'+ '</div>'+ '<div style="font-size:13px;margin-top:4px">'+escapeHtml(meta.modelo)+'</div>'+ '<div style="font-size:11px;color:var(--muted);margin-top:4px">'+escapeHtml(meta.cliente)+'</div>'+ '<div style="font-size:10px;color:var(--muted);margin-top:4px">'+(item.source==='veh'?'Base vehÃ­culos':'Historial servicios')+'</div>'+ '</button>'}).join('')}
+function getVehicleLookupLabel(v){return {placa:String(pickVehValue(v,['placa'])||'—').toUpperCase(),modelo:String(getVehModeloTexto(v)||pickVehValue(v,['modelo','modelo_base','marca_modelo'])||'—').toUpperCase(),cliente:String(getVehClienteNombre(v)||'—').toUpperCase(),ano:String(getVehAno(v)||'').toUpperCase()}}
+function buildServiceLookupCandidates(rows, seenPlates){const grouped=new Map();(rows||[]).forEach(r=>{const plateKey=normalizeLookupText(r && r.placa).trim();if(!plateKey || seenPlates.has(plateKey)) return;let item=grouped.get(plateKey);if(!item){item={placa:r.placa||'',marca_modelo:r.marca_modelo||r.modelo||'',cliente:r.cliente||r.chofer__empresa||'',ano:r.ano||'',kilometraje:r.kilometraje||'',telefono:r.telefono||'',direccion:r.direccion||'',doc:r.doc||'',extras:[]};grouped.set(plateKey,item);}if(!item.marca_modelo && (r.marca_modelo||r.modelo)) item.marca_modelo=r.marca_modelo||r.modelo||'';if(!item.cliente && (r.cliente||r.chofer__empresa)) item.cliente=r.cliente||r.chofer__empresa||'';if(!item.ano && r.ano) item.ano=r.ano;if(!item.kilometraje && r.kilometraje) item.kilometraje=r.kilometraje;if(!item.telefono && r.telefono) item.telefono=r.telefono;if(!item.direccion && r.direccion) item.direccion=r.direccion;if(!item.doc && r.doc) item.doc=r.doc;if(r.descripcion && item.extras.length<4) item.extras.push(r.descripcion);});return Array.from(grouped.values()).map(item=>{const meta={placa:String(item.placa||'—').toUpperCase(),modelo:String(item.marca_modelo||'—').toUpperCase(),cliente:String(item.cliente||'—').toUpperCase(),ano:String(item.ano||'').toUpperCase()};const blob=normalizeLookupText([item.placa,item.marca_modelo,item.cliente,item.ano,item.kilometraje,item.telefono,item.direccion,item.doc,(item.extras||[]).join(' ')].join(' '));return {source:'srv', data:item, meta:meta, blob:blob}})}
+function selectVehicleForNueva(index){const rows=state.vehLookupResults||[];const found=rows[parseInt(index,10)];if(!found)return;const veh=found.source==='veh'? found.data : {placa:found.data.placa||'',marca_modelo:found.data.marca_modelo||'',modelo:found.data.marca_modelo||'',cliente:found.data.cliente||'',chofer__empresa:found.data.cliente||'',ano:found.data.ano||'',kilometraje:found.data.kilometraje||'',telefono:found.data.telefono||'',direccion:found.data.direccion||'',ruc:found.data.doc||'',dni:found.data.doc||''};state.vehiculo=veh;aplicarVehiculoAProforma(veh);const meta=found.meta || getVehicleLookupLabel(veh);const input=document.getElementById('pfVehLookup');const results=document.getElementById('pfVehLookupResults');if(document.getElementById('pfKm') && found.data && found.data.kilometraje) document.getElementById('pfKm').value=found.data.kilometraje;if(input) input.value=(meta.placa+' '+meta.modelo).trim();if(results){results.innerHTML='<div style="font-size:12px;color:var(--ok);padding:6px 2px">Vehículo cargado: <b>'+escapeHtml(meta.placa)+'</b> · '+escapeHtml(meta.modelo)+'</div>'}}
+async function renderNuevaVehicleLookupResults(){const input=document.getElementById('pfVehLookup');const box=document.getElementById('pfVehLookupResults');if(!input || !box)return;const query=String(input.value||'').trim();if(query.length<2){box.innerHTML='';state.vehLookupResults=[];return;}box.innerHTML='<div style="font-size:11px;color:var(--muted);padding:6px 2px">Buscando vehículos...</div>';if(!state.cfg.url){box.innerHTML='<div style="font-size:11px;color:var(--muted);padding:6px 2px">Configura primero la URL en Config.</div>';return;}const vehRows=await ensureVehRowsLoaded();const srvRows=await ensureSrvRowsLoadedForLookup();const terms=normalizeLookupText(query).split(/\s+/).filter(Boolean);const seenPlates=new Set();const vehCandidates=(vehRows||[]).map(v=>{const meta=getVehicleLookupLabel(v);const plateKey=normalizeLookupText(meta.placa).trim();if(plateKey) seenPlates.add(plateKey);return {source:'veh', data:v, meta:meta, blob:getVehicleLookupBlob(v)}});const srvCandidates=buildServiceLookupCandidates(srvRows, seenPlates);const matches=vehCandidates.concat(srvCandidates).filter(item=>{return terms.every(term=>item.blob.includes(term))}).slice(0,12);state.vehLookupResults=matches;if(!matches.length){box.innerHTML='<div style="font-size:11px;color:var(--muted);padding:6px 2px">Sin coincidencias.</div>';return;}box.innerHTML=matches.map((item,index)=>{const meta=item.meta;return '<button type="button" class="btn sec" onclick="selectVehicleForNueva('+index+')" style="width:100%;text-align:left;padding:10px 12px;margin-top:6px">'+ '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">'+ '<span style="font-weight:800;color:var(--accent);letter-spacing:1px">'+escapeHtml(meta.placa)+'</span>'+ '<span style="font-size:11px;color:var(--muted)">'+escapeHtml(meta.ano||'')+'</span>'+ '</div>'+ '<div style="font-size:13px;margin-top:4px">'+escapeHtml(meta.modelo)+'</div>'+ '<div style="font-size:11px;color:var(--muted);margin-top:4px">'+escapeHtml(meta.cliente)+'</div>'+ '<div style="font-size:10px;color:var(--muted);margin-top:4px">'+(item.source==='veh'?'Base vehículos':'Historial servicios')+'</div>'+ '</button>'}).join('')}
 function getVehClienteNombre(v){return pickVehValue(v,['chofer__empresa','chofer_empresa','chofer','cliente','nombre'])||''}
 function getVehDoc(v){return pickVehValue(v,['ruc','dni'])||''}
 function cleanVehText(val){if(val===undefined || val===null) return '';return String(val).replace(/\s+/g,' ').trim()}
 function looksLikeYear(val){const s=cleanVehText(val);if(!s) return false;const n=parseInt(s,10);return /^\d{4}(\.0+)?$/.test(s) && n>=1950 && n<=2100}
 function normalizeYearValue(val){const s=cleanVehText(val);if(!s) return '';if(looksLikeYear(s)) return String(parseInt(s,10));return s}
-function looksLikeVehicleModel(val){const s=cleanVehText(val);if(!s) return false;if(looksLikeYear(s)) return false;if(/^[A-Z0-9-]{6,}$/.test(s)) return false;if(/^[0-9.@\/-]+$/.test(s)) return false;return /[A-ZÃÃ‰ÃÃ“ÃšÃ‘]/i.test(s)}
+function looksLikeVehicleModel(val){const s=cleanVehText(val);if(!s) return false;if(looksLikeYear(s)) return false;if(/^[A-Z0-9-]{6,}$/.test(s)) return false;if(/^[0-9.@\/-]+$/.test(s)) return false;return /[A-ZÁÉÍÓÚÑ]/i.test(s)}
 function getVehModeloDirect(v){return cleanVehText(pickVehValue(v,['modelo','modelo_base','marca_modelo','marca__modelo','modelo_detalle','modelo_2','modelo2','marca_modelo_vehiculo']))}
 function getVehVersionDirect(v){return cleanVehText(pickVehValue(v,['version','version_base','version_detalle','version_2','version2']))}
-function getVehModeloTexto(v){const directModelo=getVehModeloDirect(v);const directVersion=getVehVersionDirect(v);if(directModelo) return [directModelo,directVersion].filter(Boolean).join(' ').trim();const posModelo=cleanVehText(getVehValueByPosition(v,1));if(looksLikeVehicleModel(posModelo)) return [posModelo,directVersion].filter(Boolean).join(' ').trim();const excludedKeys=['placa','chofer__empresa','chofer_empresa','chofer','cliente','nombre','ruc','dni','direccion','telefono','motor','caja','ruta_scanner','cca','vin','bateria','temperatura','tipo_de_caja','f_gasolina_ext','potencia','cilindrada','cilindro','combustible','ano','aÃ±o','anio','version','version_base','version_detalle'];const entries=Object.entries(v||{});for(const [k,val] of entries){const nk=normalizeKeyName(k);const s=cleanVehText(val);if(!s) continue;if(nk.includes('modelo') || nk.includes('marca_modelo') || nk==='marca'){if(looksLikeVehicleModel(s)) return [s,directVersion].filter(Boolean).join(' ').trim();}}for(const [k,val] of entries){const nk=normalizeKeyName(k);const s=cleanVehText(val);if(!s || excludedKeys.includes(nk)) continue;if(looksLikeVehicleModel(s)) return [s,directVersion].filter(Boolean).join(' ').trim();}return ''}
-function getVehAno(v){const direct=normalizeYearValue(pickVehValue(v,['ano','aÃ±o','anio','year']));if(direct) return direct;const pos=normalizeYearValue(getVehValueByPosition(v,2));if(pos && looksLikeYear(pos)) return pos;for(const [k,val] of Object.entries(v||{})){const nk=normalizeKeyName(k);const s=normalizeYearValue(val);if(!s) continue;if(nk==='ano' || nk==='aÃ±o' || nk==='anio' || nk==='year') return s;}for(const val of Object.values(v||{})){const s=normalizeYearValue(val);if(looksLikeYear(s)) return s;}return ''}
+function getVehModeloTexto(v){const directModelo=getVehModeloDirect(v);const directVersion=getVehVersionDirect(v);if(directModelo) return [directModelo,directVersion].filter(Boolean).join(' ').trim();const posModelo=cleanVehText(getVehValueByPosition(v,1));if(looksLikeVehicleModel(posModelo)) return [posModelo,directVersion].filter(Boolean).join(' ').trim();const excludedKeys=['placa','chofer__empresa','chofer_empresa','chofer','cliente','nombre','ruc','dni','direccion','telefono','motor','caja','ruta_scanner','cca','vin','bateria','temperatura','tipo_de_caja','f_gasolina_ext','potencia','cilindrada','cilindro','combustible','ano','año','anio','version','version_base','version_detalle'];const entries=Object.entries(v||{});for(const [k,val] of entries){const nk=normalizeKeyName(k);const s=cleanVehText(val);if(!s) continue;if(nk.includes('modelo') || nk.includes('marca_modelo') || nk==='marca'){if(looksLikeVehicleModel(s)) return [s,directVersion].filter(Boolean).join(' ').trim();}}for(const [k,val] of entries){const nk=normalizeKeyName(k);const s=cleanVehText(val);if(!s || excludedKeys.includes(nk)) continue;if(looksLikeVehicleModel(s)) return [s,directVersion].filter(Boolean).join(' ').trim();}return ''}
+function getVehAno(v){const direct=normalizeYearValue(pickVehValue(v,['ano','año','anio','year']));if(direct) return direct;const pos=normalizeYearValue(getVehValueByPosition(v,2));if(pos && looksLikeYear(pos)) return pos;for(const [k,val] of Object.entries(v||{})){const nk=normalizeKeyName(k);const s=normalizeYearValue(val);if(!s) continue;if(nk==='ano' || nk==='año' || nk==='anio' || nk==='year') return s;}for(const val of Object.values(v||{})){const s=normalizeYearValue(val);if(looksLikeYear(s)) return s;}return ''}
 function aplicarVehiculoAProforma(v){if(!v)return;const ano=(getVehAno(v)||'').toUpperCase();const modelo=(getVehModeloTexto(v)||'').toUpperCase();document.getElementById('pfCliente').value=(getVehClienteNombre(v)||'').toUpperCase();document.getElementById('pfDoc').value=(getVehDoc(v)||'').toUpperCase();document.getElementById('pfTel').value=(pickVehValue(v,['telefono'])||'').toUpperCase();document.getElementById('pfDir').value=(pickVehValue(v,['direccion'])||'').toUpperCase();document.getElementById('pfPlaca').value=(pickVehValue(v,['placa'])||'').toUpperCase();document.getElementById('pfAno').value=ano;document.getElementById('pfModelo').value=modelo}
-async function autocompletarProformaPorPlaca(){const input=document.getElementById('pfPlaca');if(!input)return;const placa=(input.value||'').trim().toUpperCase();input.value=placa;if(!placa)return;try{if(state.vehAll.length===0 && state.cfg.url){const r=await callAS('veh');state.vehAll=r.rows||[]}const target=normPlaca(placa);const veh=state.vehAll.find(v=>normPlaca(v.placa)===target);if(!veh)return;state.vehiculo=veh;aplicarVehiculoAProforma(veh)}catch(e){console.warn('Autocompletar proforma fallÃ³:',e.message)}}
+async function autocompletarProformaPorPlaca(){const input=document.getElementById('pfPlaca');if(!input)return;const placa=(input.value||'').trim().toUpperCase();input.value=placa;if(!placa)return;try{if(state.vehAll.length===0 && state.cfg.url){const r=await callAS('veh');state.vehAll=r.rows||[]}const target=normPlaca(placa);const veh=state.vehAll.find(v=>normPlaca(v.placa)===target);if(!veh)return;state.vehiculo=veh;aplicarVehiculoAProforma(veh)}catch(e){console.warn('Autocompletar proforma falló:',e.message)}}
 function usarEnProforma(){if(!state.vehiculo)return;aplicarVehiculoAProforma(state.vehiculo)}
 function addLine(){state.lines.push({desc:'',cint:'',coem:'',cant:1,precio:0});renderLines()}
 function delLine(i){state.lines.splice(i,1);renderLines()}
 function updLine(i,f,v){state.lines[i][f]=(f==='cant'||f==='precio')?(parseFloat(v)||0):v;if(f==='cant'||f==='precio'){const l=state.lines[i],el=document.getElementById('lineTot'+i);if(el)el.value=(l.cant*l.precio).toFixed(2);}calcTot()}
-function renderLines(){const c=document.getElementById('lineItems');if(state.lines.length===0){c.innerHTML='<div class="empty">Sin items</div>';calcTot();return}c.innerHTML=state.lines.map((l,i)=>`<div class="line-item"><div class="li-top"><div style="flex:1"><label class="li-desc-label">DescripciÃ³n</label><input class="li-desc-input" value="${escapeHtml(l.desc)}" placeholder="ESCRIBA AQUÃ LA DESCRIPCIÃ“N" oninput="updLine(${i},'desc',this.value)"></div><button class="li-del" onclick="delLine(${i})">âœ•</button></div><div class="li-row"><div><label>Cant</label><input type="number" step="0.01" value="${l.cant}" oninput="updLine(${i},'cant',this.value)"></div><div><label>P. Unit S/</label><input type="number" step="0.01" value="${l.precio}" oninput="updLine(${i},'precio',this.value)"></div><div><label>Total S/</label><input type="text" id="lineTot${i}" value="${(l.cant*l.precio).toFixed(2)}" readonly></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px"><input style="padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;text-align:left" placeholder="CÃ³d. Interno" class="uppercase-input" value="${escapeHtml(l.cint)}" oninput="updLine(${i},'cint',this.value)"><input style="padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;text-align:left" placeholder="CÃ³d. OEM" class="uppercase-input" value="${escapeHtml(l.coem)}" oninput="updLine(${i},'coem',this.value)"></div></div>`).join('');calcTot()}
+function renderLines(){const c=document.getElementById('lineItems');if(state.lines.length===0){c.innerHTML='<div class="empty">Sin items</div>';calcTot();return}c.innerHTML=state.lines.map((l,i)=>`<div class="line-item"><div class="li-top"><div style="flex:1"><label class="li-desc-label">Descripción</label><input class="li-desc-input" value="${escapeHtml(l.desc)}" placeholder="ESCRIBA AQUÍ LA DESCRIPCIÓN" oninput="updLine(${i},'desc',this.value)"></div><button class="li-del" onclick="delLine(${i})">✕</button></div><div class="li-row"><div><label>Cant</label><input type="number" step="0.01" value="${l.cant}" oninput="updLine(${i},'cant',this.value)"></div><div><label>P. Unit S/</label><input type="number" step="0.01" value="${l.precio}" oninput="updLine(${i},'precio',this.value)"></div><div><label>Total S/</label><input type="text" id="lineTot${i}" value="${(l.cant*l.precio).toFixed(2)}" readonly></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px"><input style="padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;text-align:left" placeholder="Cód. Interno" class="uppercase-input" value="${escapeHtml(l.cint)}" oninput="updLine(${i},'cint',this.value)"><input style="padding:6px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;text-align:left" placeholder="Cód. OEM" class="uppercase-input" value="${escapeHtml(l.coem)}" oninput="updLine(${i},'coem',this.value)"></div></div>`).join('');calcTot()}
 function calcTot(){const sub=state.lines.reduce((a,l)=>a+(l.cant*l.precio),0);const ac1=parseFloat((document.getElementById('pfAc1')||{}).value)||0;const ac2=parseFloat((document.getElementById('pfAc2')||{}).value)||0;document.getElementById('tSub').textContent='S/ '+sub.toFixed(2);document.getElementById('tTot').textContent='S/ '+(sub-ac1-ac2).toFixed(2)}
 function getCounter(){const v=parseInt(localStorage.getItem(COUNTER_KEY)||'1',10);return isNaN(v)?1:v}
 function setCounter(n){localStorage.setItem(COUNTER_KEY,String(n))}
@@ -1128,20 +1128,20 @@ function getMaxLocalProformaSeq(year){let maxSeq=0;for(const p of (state.proform
 function ensureCounterAheadForYear(year){const localMax=getMaxLocalProformaSeq(year);if(year===new Date().getFullYear()){const desired=Math.max(getCounter(), localMax+1);if(desired!==getCounter()) setCounter(desired);return desired;}return localMax+1}
 function nextProformaNum(fechaInput){const year=getProformaYear(fechaInput);const nextSeq=ensureCounterAheadForYear(year);return 'PROF-'+year+'-'+String(nextSeq).padStart(4,'0')}
 function reserveNextProformaNumber(fechaInput){const year=getProformaYear(fechaInput);const nextSeq=ensureCounterAheadForYear(year);const num='PROF-'+year+'-'+String(nextSeq).padStart(4,'0');if(year===new Date().getFullYear()) setCounter(nextSeq+1);return num}
-async function shouldProceedWithDuplicateSave(proforma){const warnings=[];if(isProformaSaved(proforma.num)){warnings.push('La proforma '+proforma.num+' ya fue guardada antes en este navegador.');}try{if(state.srvAll.length===0 && state.cfg.url){const r=await callAS('srv');state.srvAll=r.rows||[];}}catch(e){console.warn('No se pudo revisar duplicados en BD:',e.message);}const rows=Array.isArray(state.srvAll)?state.srvAll:[];const sameNum=rows.filter(r=>String(r.proforma_num||'').trim().toUpperCase()===String(proforma.num||'').trim().toUpperCase());if(sameNum.length){warnings.push('En la base de datos ya existen '+sameNum.length+' fila(s) con el nÃºmero '+proforma.num+'.');}const samePlateDate=rows.filter(r=>{const placaOk=String(r.placa||'').trim().toUpperCase()===String(proforma.placa||'').trim().toUpperCase();const fechaOk=(String(r.fecha||'').slice(0,10)===String(proforma.fechaIso||'').slice(0,10));return placaOk && fechaOk;});if(samePlateDate.length){warnings.push('La placa '+proforma.placa+' ya tiene '+samePlateDate.length+' fila(s) registradas en esa misma fecha.');}if(!warnings.length) return true;return confirm('âš ï¸ POSIBLE DUPLICADO\n\n'+warnings.join('\n')+'\n\nÂ¿Desea duplicar la proforma de todas maneras?')}
+async function shouldProceedWithDuplicateSave(proforma){const warnings=[];if(isProformaSaved(proforma.num)){warnings.push('La proforma '+proforma.num+' ya fue guardada antes en este navegador.');}try{if(state.srvAll.length===0 && state.cfg.url){const r=await callAS('srv');state.srvAll=r.rows||[];}}catch(e){console.warn('No se pudo revisar duplicados en BD:',e.message);}const rows=Array.isArray(state.srvAll)?state.srvAll:[];const sameNum=rows.filter(r=>String(r.proforma_num||'').trim().toUpperCase()===String(proforma.num||'').trim().toUpperCase());if(sameNum.length){warnings.push('En la base de datos ya existen '+sameNum.length+' fila(s) con el número '+proforma.num+'.');}const samePlateDate=rows.filter(r=>{const placaOk=String(r.placa||'').trim().toUpperCase()===String(proforma.placa||'').trim().toUpperCase();const fechaOk=(String(r.fecha||'').slice(0,10)===String(proforma.fechaIso||'').slice(0,10));return placaOk && fechaOk;});if(samePlateDate.length){warnings.push('La placa '+proforma.placa+' ya tiene '+samePlateDate.length+' fila(s) registradas en esa misma fecha.');}if(!warnings.length) return true;return confirm('⚠️ POSIBLE DUPLICADO\n\n'+warnings.join('\n')+'\n\n¿Desea duplicar la proforma de todas maneras?')}
 function generarProforma(){if(state.lines.length===0){alert('Agrega al menos un item');return}const wasEditing=!!state.editingProformaNum;const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);renderProformasList();if(!wasEditing){document.getElementById('cfgCounter').value=getCounter();}state.editingProformaNum=pf.num;updateFormModeUI();mostrarPreviaInferior(pf,true);}
-async function guardarProformaEnSheets(proforma){if(state.role!=='dueno'){alert('Solo el dueño puede guardar cambios en la base de datos.');return}if(!state.cfg.url){alert('⚠️ Configura la URL');return}if(!proforma||!proforma.num){alert('No hay documento listo para guardar');return}if(proforma.cancelled){alert('La proforma '+proforma.num+' está ANULADA. Reactívala antes de guardarla en BD.');return}if(proforma.savedToDb){await replaceProformaEnSheets(proforma,false);return}const proceed=await shouldProceedWithDuplicateSave(proforma);if(!proceed) return;try{const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'save_proforma',target:'srv',proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo guardar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});state.srvAll=[];const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);await precargarDatos();renderProformasList();if(window.showToast){showToast('Proforma guardada: '+proforma.num,'ok',2200)}else{alert('✓ Proforma guardada: '+proforma.num)}}catch(e){alert('Error: '+e.message)}}
+async function guardarProformaEnSheets(proforma){if(state.role!=='dueno'){alert('Solo el due�o puede guardar cambios en la base de datos.');return}if(!state.cfg.url){alert('⚠️ Configura la URL');return}if(!proforma||!proforma.num){alert('No hay documento listo para guardar');return}if(proforma.cancelled){alert('La proforma '+proforma.num+' est� ANULADA. React�vala antes de guardarla en BD.');return}if(proforma.savedToDb){await replaceProformaEnSheets(proforma,false);return}const proceed=await shouldProceedWithDuplicateSave(proforma);if(!proceed) return;try{const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'save_proforma',target:'srv',proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo guardar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});state.srvAll=[];const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);await precargarDatos();renderProformasList();if(window.showToast){showToast('Proforma guardada: '+proforma.num,'ok',2200)}else{alert('✓ Proforma guardada: '+proforma.num)}}catch(e){alert('Error: '+e.message)}}
 
-async function replaceProformaEnSheets(proforma,silent){if(state.role!=='dueno'){alert('Solo el dueño puede actualizar la base de datos.');return false}if(!state.cfg.url){if(!silent) alert('⚠️ Configura la URL');return false}if(!proforma||!proforma.num)return false;try{const rowNumbers=await collectSheetRowsForStoredProforma(proforma);const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'replace_proforma',target:'srv',proforma_num:proforma.num,row_numbers:rowNumbers,proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo actualizar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);state.currentProforma=updatedPf;state.srvAll=[];await precargarDatos();renderProformasList();if(!silent){if(window.showToast){showToast('Cambios guardados en BD: '+proforma.num,'ok',2200)}else{alert('✓ Cambios guardados en BD: '+proforma.num)}}return true}catch(e){if(!silent) alert('Error: '+e.message);return false}}
+async function replaceProformaEnSheets(proforma,silent){if(state.role!=='dueno'){alert('Solo el due�o puede actualizar la base de datos.');return false}if(!state.cfg.url){if(!silent) alert('⚠️ Configura la URL');return false}if(!proforma||!proforma.num)return false;try{const rowNumbers=await collectSheetRowsForStoredProforma(proforma);const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'replace_proforma',target:'srv',proforma_num:proforma.num,row_numbers:rowNumbers,proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo actualizar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);state.currentProforma=updatedPf;state.srvAll=[];await precargarDatos();renderProformasList();if(!silent){if(window.showToast){showToast('Cambios guardados en BD: '+proforma.num,'ok',2200)}else{alert('✓ Cambios guardados en BD: '+proforma.num)}}return true}catch(e){if(!silent) alert('Error: '+e.message);return false}}
 
 function closePrint(){document.getElementById('printArea').style.display='none';document.getElementById('printCtrl').style.display='none';document.getElementById('app').style.display='block'}
-function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;saveCfgRaw();alert('ConfiguraciÃ³n guardada âœ“')}
-function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').value,10);if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado âœ“')}}
+function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;saveCfgRaw();alert('Configuración guardada ✓')}
+function saveCounter(){const n=parseInt(document.getElementById('cfgCounter').value,10);if(!isNaN(n)&&n>0){setCounter(n);alert('Contador actualizado ✓')}}
 function mostrarPreviaInferior(pf,scrollToPreview){state.currentProforma=pf;renderPrintFromProforma(pf);document.getElementById('printArea').style.display='block';document.getElementById('printCtrl').style.display='none';document.getElementById('app').style.display='block';if(scrollToPreview){setTimeout(()=>{document.getElementById('printArea').scrollIntoView({behavior:'smooth',block:'start'});},80);}}
 
 async function guardarCambiosDesdeNueva(){if(state.lines.length===0){alert('Agrega al menos un item');return}const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);state.editingProformaNum=pf.num;updateFormModeUI();renderProformasList();mostrarPreviaInferior(pf,false);if(pf.savedToDb){await replaceProformaEnSheets(pf,true);if(window.showToast){showToast('Cambios guardados: '+pf.num,'ok',2200);}else{alert('✓ Cambios guardados: '+pf.num);}}else{if(window.showToast){showToast('Cambios guardados localmente: '+pf.num,'info',2200);}else{alert('✓ Cambios guardados localmente: '+pf.num);}}}
 
-async function guardarDesdeNuevaEnBd(){if(state.role!=='dueno'){alert('Solo el dueño puede guardar en base de datos.');return}if(state.lines.length===0){alert('Agrega al menos un item');return}const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);state.editingProformaNum=pf.num;updateFormModeUI();renderProformasList();mostrarPreviaInferior(pf,false);await guardarProformaEnSheets(pf);}
+async function guardarDesdeNuevaEnBd(){if(state.role!=='dueno'){alert('Solo el due�o puede guardar en base de datos.');return}if(state.lines.length===0){alert('Agrega al menos un item');return}const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);state.editingProformaNum=pf.num;updateFormModeUI();renderProformasList();mostrarPreviaInferior(pf,false);await guardarProformaEnSheets(pf);}
 
 loadCfg();attachUppercaseBehavior();const savedRole = sessionStorage.getItem(ROLE_KEY);if (savedRole) {state.role = savedRole;enterApp();}
 document.getElementById('gatePass').addEventListener('keydown', function (e) {if (e.key === 'Enter') doLogin();});
