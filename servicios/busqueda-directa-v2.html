@@ -1168,7 +1168,7 @@ if (document.getElementById('pfFecha') && !document.getElementById('pfFecha').va
     function flash(){ badge.style.opacity = '1'; clearTimeout(badgeTimer); badgeTimer = setTimeout(function(){ badge.style.opacity = '0'; }, 1100); }
     async function silentSave(){
       try {
-        if (!window.state || !state.lines || state.lines.length === 0) return;
+        if (typeof state === "undefined" || !state || !state.lines || state.lines.length === 0) return;
         var pf = window.buildCurrentProforma();
         if (!pf) return;
         state.currentProforma = pf;
@@ -1178,7 +1178,7 @@ if (document.getElementById('pfFecha') && !document.getElementById('pfFecha').va
         if (typeof window.renderProformasList === 'function') window.renderProformasList();
         if (typeof window.mostrarPreviaInferior === 'function') window.mostrarPreviaInferior(pf, false);
         if (pf.savedToDb && typeof window.replaceProformaEnSheets === 'function') {
-          window.replaceProformaEnSheets(pf, true).catch(function(){});
+          try { await window.replaceProformaEnSheets(pf, true); } catch(_){ }
         }
         flash();
       } catch(e){ console.warn('autosave', e); }
@@ -1191,7 +1191,7 @@ if (document.getElementById('pfFecha') && !document.getElementById('pfFecha').va
     mo.observe(root, { childList: true, subtree: true });
     window.addEventListener('beforeunload', function(){ try{ silentSave(); }catch(_){} });
     var btn = document.getElementById('btnGuardarCambios');
-    if (btn) { btn.onclick = function(e){ if(e) e.preventDefault(); silentSave(); }; btn.setAttribute('onclick',''); }
+    if (btn) { btn.onclick = function(e){ if(e) e.preventDefault(); silentSave(); }; btn.removeAttribute('onclick'); }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
   else install();
