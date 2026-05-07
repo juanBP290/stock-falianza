@@ -286,7 +286,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div class="tot-row big"><span>TOTAL:</span><span id="tTot">S/ 0.00</span></div>
       </div>
       <div class="field" style="margin-top:14px"><label>Observaciones</label><textarea id="pfObs" class="uppercase-input" placeholder="Notas adicionales..."></textarea></div>
-      <div class="btn-row"><button class="btn sec" id="btnGuardarCambios" onclick="guardarCambiosDesdeNueva()">Guardar cambios</button><button class="btn" id="btnGuardarDirectoBd" onclick="guardarDesdeNuevaEnBd()">Guardar en base de datos</button><button class="btn ok" id="btnGenerarProforma" onclick="generarProforma()">Generar proforma</button><button class="btn" id="btnImprimirProformaPdf" style="background:#f4c430;color:#0b0f17;" onclick="window.print()">Imprimir proforma/PDF</button></div>
+      <div class="btn-row"><button class="btn sec" id="btnGuardarCambios" onclick="guardarCambiosDesdeNueva()">Guardar cambios</button><button class="btn" id="btnGuardarDirectoBd" onclick="guardarDesdeNuevaEnBd()">Guardar en base de datos</button><button class="btn" id="btnImprimirProformaPdf" style="background:#f4c430;color:#0b0f17;" onclick="imprimirProformaConGuardado()">Imprimir proforma/PDF</button></div>
     </div>
   </div>
 
@@ -1145,7 +1145,7 @@ async function guardarCambiosDesdeNueva(){if(state.lines.length===0){alert('Agre
 
 async function guardarDesdeNuevaEnBd(){if(state.role!=='dueno'){alert('Solo el due�o puede guardar en base de datos.');return}if(state.lines.length===0){alert('Agrega al menos un item');return}const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);state.editingProformaNum=pf.num;updateFormModeUI();renderProformasList();mostrarPreviaInferior(pf,false);await guardarProformaEnSheets(pf);}
 
-loadCfg();attachUppercaseBehavior();const savedRole = sessionStorage.getItem(ROLE_KEY);if (savedRole) {state.role = savedRole;enterApp();}
+function renderProformaLive(){try{if(typeof buildCurrentProforma!=='function'||typeof mostrarPreviaInferior!=='function')return;const pf=buildCurrentProforma();state.currentProforma=pf;mostrarPreviaInferior(pf,false);}catch(e){console.error('renderProformaLive',e);}}function __debounceLive(){clearTimeout(window.__livePf);window.__livePf=setTimeout(renderProformaLive,80);}attachUppercaseBehavior();const savedRole = sessionStorage.getItem(ROLE_KEY);if (savedRole) {state.role = savedRole;enterApp();}
 document.getElementById('gatePass').addEventListener('keydown', function (e) {if (e.key === 'Enter') doLogin();});
 const pfPlacaEl = document.getElementById('pfPlaca');if (pfPlacaEl) {pfPlacaEl.addEventListener('input', function () {this.value = this.value.toUpperCase();autocompletarProformaPorPlaca();});pfPlacaEl.addEventListener('blur', function () {autocompletarProformaPorPlaca();});pfPlacaEl.addEventListener('keydown', function (e) {if (e.key === 'Enter') {e.preventDefault();autocompletarProformaPorPlaca();}});}
 if (document.getElementById('pfFecha') && !document.getElementById('pfFecha').value) document.getElementById('pfFecha').value=todayInputValue();if (document.getElementById('pfPreviewNum')) document.getElementById('pfPreviewNum').value=nextProformaNum();if (state.lines.length === 0) addLine();
