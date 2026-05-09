@@ -551,30 +551,36 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     renderError(err.message);
   }
 
-  // ====== INICIO: Edicion de vehiculos (parche) ======
+  // ====== INICIO: Edicion de vehiculos (parche v2) ======
   function installVehicleEditor(){
     if (window.__vehEditorInstalled) return;
     if (typeof window.renderVehTable !== "function") return;
     if (typeof window.callAS !== "function") return;
     window.__vehEditorInstalled = true;
-
     var EV_FIELDS = [["placa","Placa"],["modelo","Modelo"],["ano","Año"],["combustible","Combustible"],["chofer__empresa","Chofer / Empresa"],["ruc","RUC"],["direccion","Dirección"],["telefono","Teléfono"],["dni","DNI"],["motor","Motor"],["caja","Caja"],["ruta_scanner","Ruta Scanner"],["cca","CCA"],["vin","VIN"],["version_base","Versión Base"],["ubicacion_obd2","Ubicación OBD2"],["capac_oil","Capac. Oil"],["temperatura","Temperatura"],["bateria","Batería"],["tipo_de_caja","Tipo de Caja"],["f_gasolina_ext","F. Gasolina Ext"],["modelo_detalle","Modelo Detalle"],["potencia","Potencia"],["version_detalle","Versión Detalle"],["cilindrada","Cilindrada"],["cilindro","Cilindro"]];
     window._evFields = EV_FIELDS;
-
-    // Inyectar modal
     if (!document.getElementById("evOverlay")) {
-      var modalHtml = "\n<div id=\"evOverlay\" style=\"display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:20px;overflow:auto\"><div style=\"background:#161e2e;border:1px solid #2a3850;border-radius:12px;max-width:900px;width:100%;max-height:90vh;overflow:auto;padding:20px;color:#e5e7eb\"><div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid #2a3850;padding-bottom:10px\"><h2 style=\"margin:0;color:#f59e0b\">Editar Vehículo</h2><button id=\"evClose\" style=\"background:#444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer\">Cerrar</button></div><div id=\"evGrid\" style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\"><div class=\"ev-field\"><label>Placa</label><input data-evk=\"placa\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Modelo</label><input data-evk=\"modelo\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Año</label><input data-evk=\"ano\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Combustible</label><input data-evk=\"combustible\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Chofer / Empresa</label><input data-evk=\"chofer__empresa\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>RUC</label><input data-evk=\"ruc\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Dirección</label><input data-evk=\"direccion\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Teléfono</label><input data-evk=\"telefono\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>DNI</label><input data-evk=\"dni\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Motor</label><input data-evk=\"motor\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Caja</label><input data-evk=\"caja\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Ruta Scanner</label><input data-evk=\"ruta_scanner\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>CCA</label><input data-evk=\"cca\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>VIN</label><input data-evk=\"vin\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Versión Base</label><input data-evk=\"version_base\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Ubicación OBD2</label><input data-evk=\"ubicacion_obd2\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Capac. Oil</label><input data-evk=\"capac_oil\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Temperatura</label><input data-evk=\"temperatura\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Batería</label><input data-evk=\"bateria\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Tipo de Caja</label><input data-evk=\"tipo_de_caja\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>F. Gasolina Ext</label><input data-evk=\"f_gasolina_ext\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Modelo Detalle</label><input data-evk=\"modelo_detalle\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Potencia</label><input data-evk=\"potencia\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Versión Detalle</label><input data-evk=\"version_detalle\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Cilindrada</label><input data-evk=\"cilindrada\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Cilindro</label><input data-evk=\"cilindro\" type=\"text\" class=\"ev-input\"></div></div><div style=\"margin-top:16px;display:flex;gap:10px;justify-content:flex-end\"><button id=\"evCancel\" style=\"background:#444;color:white;border:none;padding:10px 20px;border-radius:6px;cursor:pointer\">Cancelar</button><button id=\"evSave\" style=\"background:#22c55e;color:white;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:bold\">Guardar cambios</button></div></div></div>\n<style>.ev-field label{display:block;color:#94a3b8;font-size:12px;margin-bottom:4px}.ev-input{width:100%;padding:8px;background:#0b0f17;border:1px solid #2a3850;color:#e5e7eb;border-radius:6px;text-transform:uppercase;box-sizing:border-box}</style>\n";
+      var modalHtml = "\n<div id=\"evOverlay\" style=\"display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:20px;overflow:auto\"><div style=\"background:#161e2e;border:1px solid #2a3850;border-radius:12px;max-width:900px;width:100%;max-height:90vh;overflow:auto;padding:20px;color:#e5e7eb\"><div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid #2a3850;padding-bottom:10px\"><h2 style=\"margin:0;color:#f59e0b\">✏️ Editar Vehículo</h2><button id=\"evClose\" style=\"background:#444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer\">Cerrar</button></div><div id=\"evGrid\" style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\"><div class=\"ev-field\"><label>Placa</label><input data-evk=\"placa\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Modelo</label><input data-evk=\"modelo\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Año</label><input data-evk=\"ano\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Combustible</label><input data-evk=\"combustible\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Chofer / Empresa</label><input data-evk=\"chofer__empresa\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>RUC</label><input data-evk=\"ruc\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Dirección</label><input data-evk=\"direccion\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Teléfono</label><input data-evk=\"telefono\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>DNI</label><input data-evk=\"dni\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Motor</label><input data-evk=\"motor\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Caja</label><input data-evk=\"caja\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Ruta Scanner</label><input data-evk=\"ruta_scanner\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>CCA</label><input data-evk=\"cca\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>VIN</label><input data-evk=\"vin\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Versión Base</label><input data-evk=\"version_base\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Ubicación OBD2</label><input data-evk=\"ubicacion_obd2\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Capac. Oil</label><input data-evk=\"capac_oil\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Temperatura</label><input data-evk=\"temperatura\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Batería</label><input data-evk=\"bateria\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Tipo de Caja</label><input data-evk=\"tipo_de_caja\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>F. Gasolina Ext</label><input data-evk=\"f_gasolina_ext\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Modelo Detalle</label><input data-evk=\"modelo_detalle\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Potencia</label><input data-evk=\"potencia\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Versión Detalle</label><input data-evk=\"version_detalle\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Cilindrada</label><input data-evk=\"cilindrada\" type=\"text\" class=\"ev-input\"></div><div class=\"ev-field\"><label>Cilindro</label><input data-evk=\"cilindro\" type=\"text\" class=\"ev-input\"></div></div><div style=\"margin-top:16px;display:flex;gap:10px;justify-content:flex-end\"><button id=\"evCancel\" style=\"background:#444;color:white;border:none;padding:10px 20px;border-radius:6px;cursor:pointer\">Cancelar</button><button id=\"evSave\" style=\"background:#22c55e;color:white;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:bold\">💾 Guardar cambios</button></div></div></div>\n<style>.ev-field label{display:block;color:#94a3b8;font-size:12px;margin-bottom:4px}.ev-input{width:100%;padding:8px;background:#0b0f17;border:1px solid #2a3850;color:#e5e7eb;border-radius:6px;text-transform:uppercase;box-sizing:border-box}.veh-edit-cell{position:sticky;left:0;background:#0b0f17;z-index:2}.veh-edit-col{position:sticky;left:0;background:#161e2e;z-index:3}</style>\n";
       document.body.insertAdjacentHTML("beforeend", modalHtml);
       document.getElementById("evClose").onclick = closeEditVehicle;
       document.getElementById("evCancel").onclick = closeEditVehicle;
       document.getElementById("evSave").onclick = saveEditVehicle;
+      document.getElementById("evOverlay").addEventListener("click", function(ev){ if (ev.target.id === "evOverlay") closeEditVehicle(); });
     }
-
+    function findVehByPlaca(placa){
+      var list = (window.state && window.state.vehAll) || [];
+      var P = (placa||"").toString().trim().toUpperCase();
+      return list.find(function(v){ return (v.placa||"").toString().trim().toUpperCase() === P; });
+    }
     function closeEditVehicle(){ document.getElementById("evOverlay").style.display = "none"; window.__evCurrent = null; }
-
-    function openEditVehicle(rowNum){
-      var v = (window.state && window.state.vehAll || []).find(function(x){ return x._row === rowNum; });
-      if (!v) { alert("Vehiculo no encontrado: fila " + rowNum); return; }
+    function openEditVehicle(placaOrRow){
+      var v = null;
+      if (typeof placaOrRow === "number") {
+        v = ((window.state && window.state.vehAll) || []).find(function(x){ return x._row === placaOrRow; });
+      } else {
+        v = findVehByPlaca(placaOrRow);
+      }
+      if (!v) { alert("Vehículo no encontrado: " + placaOrRow + ". Pulsa 🔄 Recargar e intenta de nuevo."); return; }
       window.__evCurrent = v;
       EV_FIELDS.forEach(function(f){
         var inp = document.querySelector('[data-evk="'+f[0]+'"]');
@@ -587,89 +593,100 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
         }
         inp.value = val == null ? "" : String(val);
       });
-      var ovl = document.getElementById("evOverlay");
-      ovl.style.display = "flex";
+      document.getElementById("evOverlay").style.display = "flex";
     }
     window.openEditVehicle = openEditVehicle;
     window.closeEditVehicle = closeEditVehicle;
-
     async function saveEditVehicle(){
       var cur = window.__evCurrent;
-      if (!cur) { alert("No hay vehiculo seleccionado"); return; }
+      if (!cur) { alert("No hay vehículo seleccionado"); return; }
       var row = {};
       EV_FIELDS.forEach(function(f){
         var inp = document.querySelector('[data-evk="'+f[0]+'"]');
         if (inp) row[f[0]] = (inp.value || "").toString().toUpperCase().trim();
       });
-      if (!row.placa) { alert("La placa no puede estar vacia"); return; }
+      if (!row.placa) { alert("La placa no puede estar vacía"); return; }
+      var btn = document.getElementById("evSave");
       try {
-        var btn = document.getElementById("evSave");
         btn.disabled = true; btn.textContent = "Guardando...";
         var data = await window.callAS({ action: "update", target: "veh", rowNum: cur._row, row: row });
         if (!data || !data.ok) throw new Error((data && data.error) || "Error al actualizar");
         Object.keys(row).forEach(function(k){ cur[k] = row[k]; });
         if (typeof window.renderVehTable === "function") window.renderVehTable();
         closeEditVehicle();
-        alert("Vehiculo actualizado: " + row.placa);
+        alert("✓ Vehículo actualizado: " + row.placa);
       } catch (e) {
         alert("Error: " + e.message);
       } finally {
-        var btn2 = document.getElementById("evSave");
-        if (btn2) { btn2.disabled = false; btn2.textContent = "Guardar cambios"; }
+        if (btn) { btn.disabled = false; btn.textContent = "💾 Guardar cambios"; }
       }
     }
     window.saveEditVehicle = saveEditVehicle;
-
-    // Envolver renderVehTable para anadir columna y boton
-    var originalRender = window.renderVehTable;
-    window.renderVehTable = function(){
-      var ret = originalRender.apply(this, arguments);
-      try {
-        var box = document.getElementById("vehTableBox");
-        if (!box) return ret;
-        var thead = box.querySelector("thead tr");
-        if (thead && !thead.querySelector(".veh-edit-col")) {
+    function decorateTable(){
+      var box = document.getElementById("vehTableBox");
+      if (!box) return;
+      var thead = box.querySelector("thead tr");
+      if (thead) {
+        var existing = thead.querySelector(".veh-edit-col");
+        if (!existing) {
           var th = document.createElement("th");
           th.className = "veh-edit-col";
           th.textContent = "Acción";
-          thead.appendChild(th);
+          thead.insertBefore(th, thead.firstChild);
         }
-        var rows = box.querySelectorAll("tbody tr");
-        var vehAll = (window.state && window.state.vehAll) || [];
-        rows.forEach(function(tr){
-          if (tr.querySelector(".veh-edit-cell")) return;
-          var placaCell = tr.querySelector(".placa-cell");
-          var placa = placaCell ? placaCell.textContent.trim() : "";
-          var match = vehAll.find(function(v){ return (v.placa || "").toString().trim().toUpperCase() === placa.toUpperCase(); });
-          var rowNum = match ? match._row : null;
-          var td = document.createElement("td");
-          td.className = "veh-edit-cell";
-          if (rowNum) {
-            var b = document.createElement("button");
-            b.textContent = "✏️ Editar";
-            b.style.cssText = "background:#3b82f6;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px";
-            b.onclick = function(){ window.openEditVehicle(rowNum); };
-            td.appendChild(b);
-          } else {
-            td.textContent = "—";
-          }
-          tr.appendChild(td);
-        });
-      } catch (e) { console.warn("Error añadiendo botones de edición:", e); }
+      }
+      var rows = box.querySelectorAll("tbody tr");
+      rows.forEach(function(tr){
+        var existing = tr.querySelector(".veh-edit-cell");
+        if (existing) existing.remove();
+        var placaCell = tr.querySelector(".placa-cell") || tr.children[0];
+        var placa = placaCell ? placaCell.textContent.trim() : "";
+        var td = document.createElement("td");
+        td.className = "veh-edit-cell";
+        if (placa) {
+          var b = document.createElement("button");
+          b.textContent = "✏️ Editar";
+          b.style.cssText = "background:#3b82f6;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;white-space:nowrap";
+          b.onclick = function(){ window.openEditVehicle(placa); };
+          td.appendChild(b);
+        } else {
+          td.textContent = "—";
+        }
+        tr.insertBefore(td, tr.firstChild);
+      });
+    }
+    window.decorateVehTable = decorateTable;
+    var originalRender = window.renderVehTable;
+    window.renderVehTable = function(){
+      var ret = originalRender.apply(this, arguments);
+      try { decorateTable(); } catch (e) { console.warn("decorate err", e); }
       return ret;
     };
-    // Forzar re-render si la tabla ya estaba dibujada
+    // MutationObserver: si la tabla se redibuja desde fuera, re-decoramos
+    try {
+      var box = document.getElementById("vehTableBox");
+      if (box && !box.__evObserver) {
+        var obs = new MutationObserver(function(){
+          var thead = box.querySelector("thead tr");
+          var hasActionCol = thead && thead.querySelector(".veh-edit-col");
+          var rows = box.querySelectorAll("tbody tr");
+          var missing = false;
+          rows.forEach(function(tr){ if (!tr.querySelector(".veh-edit-cell")) missing = true; });
+          if (!hasActionCol || missing) decorateTable();
+        });
+        obs.observe(box, {childList:true, subtree:true});
+        box.__evObserver = obs;
+      }
+    } catch(e){}
     try { window.renderVehTable(); } catch(e){}
   }
-
-  // Reintentar instalacion hasta que las funciones existan
   var __evTries = 0;
   var __evTimer = setInterval(function(){
     __evTries++;
     if (typeof window.renderVehTable === "function" && typeof window.callAS === "function") {
       installVehicleEditor();
       clearInterval(__evTimer);
-    } else if (__evTries > 60) {
+    } else if (__evTries > 120) {
       clearInterval(__evTimer);
     }
   }, 500);
