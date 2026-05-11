@@ -1191,17 +1191,11 @@ if (document.getElementById('pfFecha') && !document.getElementById('pfFecha').va
             box.appendChild(bar);
           }
           bar.innerHTML = '';
-          const btnOpen = document.createElement('button');
-          btnOpen.className = 'btn nuevo-doc';
-          btnOpen.style.flex = '1';
-          btnOpen.textContent = 'Abrir proforma';
-          btnOpen.onclick = function(){ window.abrirProformaDesdeHistorial(index); };
           const btnPrint = document.createElement('button');
           btnPrint.className = 'btn ok';
           btnPrint.style.flex = '1';
-          btnPrint.textContent = 'Imprimir';
+          btnPrint.textContent = 'Imprimir proforma';
           btnPrint.onclick = function(){ window.imprimirProformaDesdeHistorial(index); };
-          bar.appendChild(btnOpen);
           bar.appendChild(btnPrint);
         }
       }catch(e){ console.warn('hist actions:', e); }
