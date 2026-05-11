@@ -45,6 +45,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 #btnGuardarCambios{background:#1d6df3;color:#fff;border:1px solid #1d6df3}
 #btnGuardarCambios:hover{background:#185fd6;border-color:#185fd6}
 .btn.ok{background:var(--ok);color:#000}
+.btn.nuevo-doc{background:linear-gradient(90deg,#f59e0b,#fb923c);color:#0b0f17;border:1px solid #f59e0b;box-shadow:0 4px 14px rgba(245,158,11,.25)}
+.btn.nuevo-doc:hover{background:linear-gradient(90deg,#fbbf24,#f59e0b);filter:brightness(1.05)}
 .btn-row{display:flex;gap:8px;margin-top:8px}
 .btn-row .btn{flex:1}
 .veh-info{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer}
@@ -189,8 +191,8 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 
   <div class="view active" id="tHist">
     <div class="card">
-      <h2>B�squeda general</h2>
-      <div class="field"><label>Buscar por cualquier palabra (n�mero, placa, cliente, modelo, descripci�n, fecha, etc.)</label>
+      <h2>Búsqueda general</h2>
+      <div class="field"><label>Buscar por cualquier palabra (número, placa, cliente, modelo, descripción, fecha, etc.)</label>
         <input type="text" id="searchAny" class="uppercase-input" placeholder="Ej: PROF-2026-0023, U1D-272, YARIS, PERCY..." oninput="buscarGeneral()">
       </div>
       <div class="hist-search-grid">
@@ -200,7 +202,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div>
           <div class="preview-box" id="histPreviewBox">
             <h3>Vista previa</h3>
-            <div id="histVehInfo" class="empty" style="padding:16px">Busca una proforma y toca una fila para ver el detalle aqu�.</div>
+            <div id="histVehInfo" class="empty" style="padding:16px">Busca una proforma y toca una fila para ver el detalle aquí.</div>
             <div id="histList" class="svc-list" style="display:none"></div>
           </div>
         </div>
@@ -249,7 +251,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
         <div class="field"><label>Número</label><input type="text" id="pfPreviewNum" class="uppercase-input" readonly placeholder="Se asigna al generar"></div>
       </div>
       <div class="btn-row" style="margin-top:12px">
-        <button class="btn sec" type="button" onclick="resetProformaForm()">+ Nuevo documento</button>
+        <button class="btn nuevo-doc" type="button" onclick="resetProformaForm()">+ Nuevo documento</button>
       </div>
     </div>
     <div class="card"><h2>Datos del Cliente</h2>
@@ -696,7 +698,7 @@ function renderSearchPreview(doc,index){
   if(!doc){
     box.innerHTML='';
     box.className='empty';
-    box.textContent='Busca una proforma y toca una fila para ver el detalle aqu�.';
+    box.textContent='Busca una proforma y toca una fila para ver el detalle aquí.';
     return;
   }
   const pf=buildPrintableProformaFromDoc(doc);
@@ -705,17 +707,17 @@ function renderSearchPreview(doc,index){
   const isCancelled=!!(isLocal ? isLocal.cancelled : pf.cancelled);
   box.className='';
   box.innerHTML=`
-    <div class="preview-strong">${escapeHtml(pf.num||pf.placa||'�')}</div>
-    <div style="font-size:13px;color:var(--text);margin:4px 0 10px"><b>${escapeHtml(pf.cliente||'�')}</b></div>
+    <div class="preview-strong">${escapeHtml(pf.num||pf.placa||'—')}</div>
+    <div style="font-size:13px;color:var(--text);margin:4px 0 10px"><b>${escapeHtml(pf.cliente||'—')}</b></div>
     <div class="preview-meta">
-      <div><b>Fecha:</b><br>${escapeHtml(pf.fechaTexto||'�')}</div>
-      <div><b>Placa:</b><br>${escapeHtml(pf.placa||'�')}</div>
-      <div><b>Modelo:</b><br>${escapeHtml(pf.modelo||'�')}</div>
+      <div><b>Fecha:</b><br>${escapeHtml(pf.fechaTexto||'—')}</div>
+      <div><b>Placa:</b><br>${escapeHtml(pf.placa||'—')}</div>
+      <div><b>Modelo:</b><br>${escapeHtml(pf.modelo||'—')}</div>
       <div><b>Total:</b><br>S/ ${(parseFloat(pf.tot)||0).toFixed(2)}</div>
     </div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:8px"><b>Detalle:</b></div>
     <div class="preview-lines">
-      ${lines.length?lines.map(l=>`<div class="preview-line"><div class="desc">${escapeHtml(l.desc||'�')}</div><div class="sub">Cant: ${parseFloat(l.cant||0)||0} � P.Unit: S/ ${(parseFloat(l.precio||0)||0).toFixed(2)} � Total: S/ ${(((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))).toFixed(2)}</div></div>`).join(''):'<div class="empty" style="padding:10px">Sin detalle</div>'}
+      ${lines.length?lines.map(l=>`<div class="preview-line"><div class="desc">${escapeHtml(l.desc||'—')}</div><div class="sub">Cant: ${parseFloat(l.cant||0)||0} · P.Unit: S/ ${(parseFloat(l.precio||0)||0).toFixed(2)} · Total: S/ ${(((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))).toFixed(2)}</div></div>`).join(''):'<div class="empty" style="padding:10px">Sin detalle</div>'}
     </div>
     <div class="btn-row" style="margin-top:12px;flex-wrap:wrap">
       <button class="btn" onclick="openDocumentDoc(state.searchDocs[${typeof index==='number'?index:0}]||null)">Abrir proforma</button>
@@ -802,15 +804,15 @@ async function buscarGeneral(){
       const itemCount=(d.lines||d.items||[]).length;
       const total=parseFloat(d.tot ?? d.total ?? 0)||0;
       const badgeCancel=d.cancelled?'<span class="badge cancel">ANULADA</span>':'';
-      const detalle=(d.lines||d.items||[]).slice(0,2).map(x=>x.desc||x.descripcion).filter(Boolean).join(' � ');
+      const detalle=(d.lines||d.items||[]).slice(0,2).map(x=>x.desc||x.descripcion).filter(Boolean).join(' · ');
       return `<div class="svc-item ${i===0?'active-preview':''}" onclick="openGeneralSearchDoc(${i})">
         <div class="top">
-          <span class="placa-tag">${escapeHtml(d.num||d.placa||'�')}</span>
-          <span class="fecha">${escapeHtml(d.fechaTexto||fmtFecha(d.fecha)||'�')}</span>
-          <span class="km">📏 ${escapeHtml(d.placa||'�')}</span>
+          <span class="placa-tag">${escapeHtml(d.num||d.placa||'—')}</span>
+          <span class="fecha">${escapeHtml(d.fechaTexto||fmtFecha(d.fecha)||'—')}</span>
+          <span class="km">📏 ${escapeHtml(d.placa||'—')}</span>
         </div>
-        <div class="cli"><b>${escapeHtml(d.cliente||'�')}</b></div>
-        <div class="desc">${escapeHtml(d.modelo||'�')}</div>
+        <div class="cli"><b>${escapeHtml(d.cliente||'—')}</b></div>
+        <div class="desc">${escapeHtml(d.modelo||'—')}</div>
         <div style="font-size:11px;color:var(--muted);margin:6px 0">${escapeHtml(detalle||'Sin detalle')}</div>
         <div class="proforma-badges">
           <span class="badge">${itemCount} item(s)</span>
@@ -1132,9 +1134,9 @@ function nextProformaNum(fechaInput){const year=getProformaYear(fechaInput);cons
 function reserveNextProformaNumber(fechaInput){const year=getProformaYear(fechaInput);const nextSeq=ensureCounterAheadForYear(year);const num='PROF-'+year+'-'+String(nextSeq).padStart(4,'0');if(year===new Date().getFullYear()) setCounter(nextSeq+1);return num}
 async function shouldProceedWithDuplicateSave(proforma){const warnings=[];if(isProformaSaved(proforma.num)){warnings.push('La proforma '+proforma.num+' ya fue guardada antes en este navegador.');}try{if(state.srvAll.length===0 && state.cfg.url){const r=await callAS('srv');state.srvAll=r.rows||[];}}catch(e){console.warn('No se pudo revisar duplicados en BD:',e.message);}const rows=Array.isArray(state.srvAll)?state.srvAll:[];const sameNum=rows.filter(r=>String(r.proforma_num||'').trim().toUpperCase()===String(proforma.num||'').trim().toUpperCase());if(sameNum.length){warnings.push('En la base de datos ya existen '+sameNum.length+' fila(s) con el número '+proforma.num+'.');}const samePlateDate=rows.filter(r=>{const placaOk=String(r.placa||'').trim().toUpperCase()===String(proforma.placa||'').trim().toUpperCase();const fechaOk=(String(r.fecha||'').slice(0,10)===String(proforma.fechaIso||'').slice(0,10));return placaOk && fechaOk;});if(samePlateDate.length){warnings.push('La placa '+proforma.placa+' ya tiene '+samePlateDate.length+' fila(s) registradas en esa misma fecha.');}if(!warnings.length) return true;return confirm('⚠️ POSIBLE DUPLICADO\n\n'+warnings.join('\n')+'\n\n¿Desea duplicar la proforma de todas maneras?')}
 function generarProforma(){if(state.lines.length===0){alert('Agrega al menos un item');return}const wasEditing=!!state.editingProformaNum;const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);renderProformasList();if(!wasEditing){document.getElementById('cfgCounter').value=getCounter();}state.editingProformaNum=pf.num;updateFormModeUI();mostrarPreviaInferior(pf,true);}
-async function guardarProformaEnSheets(proforma){if(state.role!=='dueno'){alert('Solo el due�o puede guardar cambios en la base de datos.');return}if(!state.cfg.url){alert('⚠️ Configura la URL');return}if(!proforma||!proforma.num){alert('No hay documento listo para guardar');return}if(proforma.cancelled){alert('La proforma '+proforma.num+' est� ANULADA. React�vala antes de guardarla en BD.');return}if(proforma.savedToDb){await replaceProformaEnSheets(proforma,false);return}if(state.editingProformaNum===proforma.num){proforma.savedToDb=true;await replaceProformaEnSheets(proforma,false);return}const proceed=await shouldProceedWithDuplicateSave(proforma);if(!proceed) return;try{const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'save_proforma',target:'srv',proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo guardar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});state.srvAll=[];const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);await precargarDatos();renderProformasList();if(window.showToast){showToast('Proforma guardada: '+proforma.num,'ok',2200)}else{alert('✓ Proforma guardada: '+proforma.num)}}catch(e){alert('Error: '+e.message)}}
+async function guardarProformaEnSheets(proforma){if(state.role!=='dueno'){alert('Solo el dueño puede guardar cambios en la base de datos.');return}if(!state.cfg.url){alert('⚠️ Configura la URL');return}if(!proforma||!proforma.num){alert('No hay documento listo para guardar');return}if(proforma.cancelled){alert('La proforma '+proforma.num+' está ANULADA. Reactívala antes de guardarla en BD.');return}if(proforma.savedToDb){await replaceProformaEnSheets(proforma,false);return}if(state.editingProformaNum===proforma.num){proforma.savedToDb=true;await replaceProformaEnSheets(proforma,false);return}const proceed=await shouldProceedWithDuplicateSave(proforma);if(!proceed) return;try{const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'save_proforma',target:'srv',proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo guardar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});state.srvAll=[];const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);await precargarDatos();renderProformasList();if(window.showToast){showToast('Proforma guardada: '+proforma.num,'ok',2200)}else{alert('✓ Proforma guardada: '+proforma.num)}}catch(e){alert('Error: '+e.message)}}
 
-async function replaceProformaEnSheets(proforma,silent){if(state.role!=='dueno'){alert('Solo el due�o puede actualizar la base de datos.');return false}if(!state.cfg.url){if(!silent) alert('⚠️ Configura la URL');return false}if(!proforma||!proforma.num)return false;try{const rowNumbers=await collectSheetRowsForStoredProforma(proforma);const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'replace_proforma',target:'srv',proforma_num:proforma.num,row_numbers:rowNumbers,proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo actualizar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);state.currentProforma=updatedPf;state.srvAll=[];await precargarDatos();renderProformasList();if(!silent){if(window.showToast){showToast('Cambios guardados en BD: '+proforma.num,'ok',2200)}else{alert('✓ Cambios guardados en BD: '+proforma.num)}}return true}catch(e){if(!silent) alert('Error: '+e.message);return false}}
+async function replaceProformaEnSheets(proforma,silent){if(state.role!=='dueno'){alert('Solo el dueño puede actualizar la base de datos.');return false}if(!state.cfg.url){if(!silent) alert('⚠️ Configura la URL');return false}if(!proforma||!proforma.num)return false;try{const rowNumbers=await collectSheetRowsForStoredProforma(proforma);const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'replace_proforma',target:'srv',proforma_num:proforma.num,row_numbers:rowNumbers,proforma:{num:proforma.num,fecha:proforma.fechaIso||inputDateToIso(proforma.fechaInput)||new Date().toISOString(),cliente:proforma.cliente,doc:proforma.doc,telefono:proforma.tel,direccion:proforma.dir,placa:proforma.placa,marca_modelo:proforma.modelo,ano:proforma.ano,kilometraje:proforma.km,lines:(proforma.lines||[]).map(l=>({cod_oem:l.coem||'',codigo_interno:l.cint||'',cantidad:l.cant,costo_unit:l.precio,descripcion:l.desc,total:((parseFloat(l.cant)||0)*(parseFloat(l.precio)||0))}))}}),headers:{'Content-Type':'text/plain;charset=utf-8'}});const data=await res.json();if(!data.ok) throw new Error(data.error||'No se pudo actualizar la proforma');markProformaSaved(proforma.num,{guardadas:data.guardadas||0,rowNumbers:data.rowNumbers||[]});const updatedPf=Object.assign({},proforma,{savedToDb:true,savedAt:new Date().toISOString(),sheetRows:data.rowNumbers||proforma.sheetRows||[]});upsertProformaLocal(updatedPf);state.currentProforma=updatedPf;state.srvAll=[];await precargarDatos();renderProformasList();if(!silent){if(window.showToast){showToast('Cambios guardados en BD: '+proforma.num,'ok',2200)}else{alert('✓ Cambios guardados en BD: '+proforma.num)}}return true}catch(e){if(!silent) alert('Error: '+e.message);return false}}
 
 function closePrint(){document.getElementById('printArea').style.display='none';document.getElementById('printCtrl').style.display='none';document.getElementById('app').style.display='block'}
 function saveCfg(){state.cfg.url=document.getElementById('cfgUrl').value.trim();state.cfg.secret=document.getElementById('cfgSecret').value.trim()||SECRET_DEFAULT;saveCfgRaw();alert('Configuración guardada ✓')}
@@ -1143,13 +1145,101 @@ function mostrarPreviaInferior(pf,scrollToPreview){state.currentProforma=pf;rend
 
 async function guardarCambiosDesdeNueva(){if(state.lines.length===0){alert('Agrega al menos un item');return}const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);state.editingProformaNum=pf.num;updateFormModeUI();renderProformasList();mostrarPreviaInferior(pf,false);if(pf.savedToDb){await replaceProformaEnSheets(pf,true);if(window.showToast){showToast('Cambios guardados: '+pf.num,'ok',2200);}else{alert('✓ Cambios guardados: '+pf.num);}}else{if(window.showToast){showToast('Cambios guardados localmente: '+pf.num,'info',2200);}else{alert('✓ Cambios guardados localmente: '+pf.num);}}}
 
-async function guardarDesdeNuevaEnBd(){if(state.role!=='dueno'){alert('Solo el due�o puede guardar en base de datos.');return}if(state.lines.length===0){alert('Agrega al menos un item');return}const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);state.editingProformaNum=pf.num;updateFormModeUI();renderProformasList();mostrarPreviaInferior(pf,false);await guardarProformaEnSheets(pf);}
+async function guardarDesdeNuevaEnBd(){if(state.role!=='dueno'){alert('Solo el dueño puede guardar en base de datos.');return}if(state.lines.length===0){alert('Agrega al menos un item');return}const pf=buildCurrentProforma();state.currentProforma=pf;upsertProformaLocal(pf);state.editingProformaNum=pf.num;updateFormModeUI();renderProformasList();mostrarPreviaInferior(pf,false);await guardarProformaEnSheets(pf);}
 
 function renderProformaLive(){try{if(typeof buildCurrentProforma!=='function'||typeof mostrarPreviaInferior!=='function')return;const pf=buildCurrentProforma();state.currentProforma=pf;mostrarPreviaInferior(pf,false);}catch(e){console.error('renderProformaLive',e);}}function __debounceLive(){clearTimeout(window.__livePf);window.__livePf=setTimeout(renderProformaLive,80);}function setupLiveProformaBindings(){const root=document.getElementById('formNueva')||document.body;if(root.__liveBound)return;root.__liveBound=true;root.addEventListener('input',__debounceLive,true);root.addEventListener('change',__debounceLive,true);root.addEventListener('keyup',__debounceLive,true);root.addEventListener('click',function(e){if(e.target&&e.target.closest&&(e.target.closest('button')||e.target.closest('.line-row'))){setTimeout(__debounceLive,150);}},true);setTimeout(renderProformaLive,400);}async function imprimirProformaConGuardado(){try{if(typeof state==='undefined'){window.print();return;}if(state.role!=='dueno'){if(!confirm('Solo el due\u00f1o puede guardar en BD. \u00bfDeseas solo imprimir sin guardar?'))return;window.print();return;}if(!state.lines||state.lines.length===0){alert('Agrega al menos un \u00edtem antes de imprimir.');return;}const ok=confirm('\u00bfDeseas imprimir la proforma? Los datos se guardar\u00e1n autom\u00e1ticamente en la base de datos.');if(!ok)return;try{await guardarDesdeNuevaEnBd();}catch(err){console.error(err);if(!confirm('Hubo un problema guardando en BD. \u00bfImprimir de todas formas?'))return;}setTimeout(function(){window.print();},300);}catch(e){console.error('imprimirProformaConGuardado',e);alert('Error al imprimir: '+e.message);}}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',setupLiveProformaBindings);}else{setupLiveProformaBindings();}loadCfg();attachUppercaseBehavior();const savedRole = sessionStorage.getItem(ROLE_KEY);if (savedRole) {state.role = savedRole;enterApp();}
 document.getElementById('gatePass').addEventListener('keydown', function (e) {if (e.key === 'Enter') doLogin();});
 const pfPlacaEl = document.getElementById('pfPlaca');if (pfPlacaEl) {pfPlacaEl.addEventListener('input', function () {this.value = this.value.toUpperCase();autocompletarProformaPorPlaca();});pfPlacaEl.addEventListener('blur', function () {autocompletarProformaPorPlaca();});pfPlacaEl.addEventListener('keydown', function (e) {if (e.key === 'Enter') {e.preventDefault();autocompletarProformaPorPlaca();}});}
 if (document.getElementById('pfFecha') && !document.getElementById('pfFecha').value) document.getElementById('pfFecha').value=todayInputValue();if (document.getElementById('pfPreviewNum')) document.getElementById('pfPreviewNum').value=nextProformaNum();if (state.lines.length === 0) addLine();
-/* === Vehicle CRUD additions === */ ;(function(){ let _editingVehRow=null; const origRender=window.renderVehTable; const origSave=window.saveNewVehicle; const origClear=window.clearVehicleForm; window.renderVehTable=function(){ origRender(); if(!window.state||state.role!=='dueno') return; const box=document.getElementById('vehTableBox'); if(!box) return; const table=box.querySelector('table.data-table'); if(!table) return; const thead=table.querySelector('thead tr'); if(thead && !thead.querySelector('.acc-th')){ const th=document.createElement('th'); th.className='acc-th'; th.textContent='Acciones'; thead.appendChild(th); } const q=(document.getElementById('vehFilter').value||'').trim().toLowerCase(); let rows=state.vehAll; if(q) rows=rows.filter(v=>Object.values(v).some(x=>(x||'').toString().toLowerCase().includes(q))); const trs=table.querySelectorAll('tbody tr'); trs.forEach((tr,i)=>{ if(tr.querySelector('.acc-td')) return; const v=rows[i]; if(!v||!v._row) return; const td=document.createElement('td'); td.className='acc-td'; td.style.cssText='white-space:nowrap'; const placaSafe=String(v.placa||'').replace(/'/g,"\'"); td.innerHTML='<button type="button" class="btn sec" style="padding:4px 8px;font-size:11px;margin-right:4px;display:inline-block;width:auto" onclick="editVehicleByRow('+v._row+')">&#9999;&#65039; Editar</button><button type="button" class="btn" style="padding:4px 8px;font-size:11px;background:#c0392b;color:#fff;display:inline-block;width:auto" onclick="deleteVehicleByRow('+v._row+',\''+placaSafe+'\')">&#128465;&#65039; Eliminar</button>'; tr.appendChild(td); }); }; window.editVehicleByRow=function(rowNum){ const v=state.vehAll.find(x=>x._row===rowNum); if(!v){alert('No se encontro el vehiculo.'); return;} _editingVehRow=rowNum; const set=(id,val)=>{const el=document.getElementById(id); if(el) el.value=(val==null?'':val);}; set('nvPlaca',v.placa); set('nvModelo',v.modelo||v.modelo_base); set('nvAno',v.ano); set('nvCombustible',v.combustible); set('nvCliente',v.chofer__empresa||v.chofer_empresa||v.cliente); set('nvRuc',v.ruc); set('nvDireccion',v.direccion); set('nvTelefono',v.telefono); set('nvDni',v.dni); set('nvMotor',v.motor); set('nvCaja',v.caja); set('nvVin',v.vin); const btn=document.querySelector('button[onclick="saveNewVehicle()"]'); if(btn){ btn.textContent='Guardar cambios'; btn.style.background='#f39c12'; btn.style.color='#0b0f17'; } const ph=document.getElementById('nvPlaca'); if(ph) ph.scrollIntoView({behavior:'smooth',block:'center'}); }; window.deleteVehicleByRow=async function(rowNum,placa){ if(state.role!=='dueno'){alert('Solo el dueno puede eliminar vehiculos.'); return;} if(!confirm('Eliminar el vehiculo '+placa+' ? Esta accion es irreversible.')) return; if(!state.cfg.url){alert('Configura la URL'); return;} try{ const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'delete',target:'veh',rowNum:rowNum}),headers:{'Content-Type':'text/plain;charset=utf-8'}}); const data=await res.json(); if(!data.ok) throw new Error(data.error||'Error al eliminar'); const idx=state.vehAll.findIndex(v=>v._row===rowNum); if(idx>=0) state.vehAll.splice(idx,1); state.vehAll.forEach(v=>{ if(v._row>rowNum) v._row-=1; }); window.renderVehTable(); alert('Vehiculo eliminado: '+placa); }catch(e){alert('Error: '+e.message);} }; window.saveNewVehicle=async function(){ if(state.role!=='dueno'){alert('Solo el dueno puede modificar vehiculos.'); return;} const row={ placa:(document.getElementById('nvPlaca').value||'').toUpperCase().trim(), modelo:(document.getElementById('nvModelo').value||'').toUpperCase().trim(), ano:(document.getElementById('nvAno').value||'').toUpperCase().trim(), combustible:(document.getElementById('nvCombustible').value||'').toUpperCase().trim(), chofer__empresa:(document.getElementById('nvCliente').value||'').toUpperCase().trim(), ruc:(document.getElementById('nvRuc').value||'').toUpperCase().trim(), direccion:(document.getElementById('nvDireccion').value||'').toUpperCase().trim(), telefono:(document.getElementById('nvTelefono').value||'').toUpperCase().trim(), dni:(document.getElementById('nvDni').value||'').toUpperCase().trim(), motor:(document.getElementById('nvMotor').value||'').toUpperCase().trim(), caja:(document.getElementById('nvCaja').value||'').toUpperCase().trim(), vin:(document.getElementById('nvVin').value||'').toUpperCase().trim() }; if(!row.placa||!row.modelo){alert('Ingresa al menos placa y modelo.'); return;} if(!state.cfg.url){alert('Configura la URL'); return;} try{ let body; if(_editingVehRow){ body={token:state.cfg.secret,action:'update',target:'veh',rowNum:_editingVehRow,row:row}; }else{ if(state.vehAll.some(v=>(typeof normPlaca==='function'?normPlaca(v.placa):String(v.placa||'').toUpperCase().replace(/[^A-Z0-9]/g,''))===(typeof normPlaca==='function'?normPlaca(row.placa):String(row.placa||'').toUpperCase().replace(/[^A-Z0-9]/g,'')))){alert('La placa '+row.placa+' ya existe en la base cargada.'); return;} body={token:state.cfg.secret,action:'add',target:'veh',row:row}; } const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'text/plain;charset=utf-8'}}); const data=await res.json(); if(!data.ok) throw new Error(data.error||'Error al guardar vehiculo'); if(_editingVehRow){ const v=state.vehAll.find(x=>x._row===_editingVehRow); if(v) Object.assign(v,row); alert('Vehiculo actualizado: '+row.placa); }else{ const maxRow=state.vehAll.reduce((m,v)=>Math.max(m,v._row||0),1); row._row=maxRow+1; state.vehAll.unshift(row); alert('Vehiculo guardado: '+row.placa); } window.renderVehTable(); window.clearVehicleForm(); }catch(e){alert('Error: '+e.message);} }; window.clearVehicleForm=function(){ origClear(); _editingVehRow=null; const btn=document.querySelector('button[onclick="saveNewVehicle()"]'); if(btn){ btn.textContent='Guardar vehiculo'; btn.style.background=''; btn.style.color=''; } }; })();    </script>
+/* === Vehicle CRUD additions === */ ;(function(){ let _editingVehRow=null; const origRender=window.renderVehTable; const origSave=window.saveNewVehicle; const origClear=window.clearVehicleForm; window.renderVehTable=function(){ origRender(); if(!window.state||state.role!=='dueno') return; const box=document.getElementById('vehTableBox'); if(!box) return; const table=box.querySelector('table.data-table'); if(!table) return; const thead=table.querySelector('thead tr'); if(thead && !thead.querySelector('.acc-th')){ const th=document.createElement('th'); th.className='acc-th'; th.textContent='Acciones'; thead.appendChild(th); } const q=(document.getElementById('vehFilter').value||'').trim().toLowerCase(); let rows=state.vehAll; if(q) rows=rows.filter(v=>Object.values(v).some(x=>(x||'').toString().toLowerCase().includes(q))); const trs=table.querySelectorAll('tbody tr'); trs.forEach((tr,i)=>{ if(tr.querySelector('.acc-td')) return; const v=rows[i]; if(!v||!v._row) return; const td=document.createElement('td'); td.className='acc-td'; td.style.cssText='white-space:nowrap'; const placaSafe=String(v.placa||'').replace(/'/g,"\'"); td.innerHTML='<button type="button" class="btn sec" style="padding:4px 8px;font-size:11px;margin-right:4px;display:inline-block;width:auto" onclick="editVehicleByRow('+v._row+')">&#9999;&#65039; Editar</button><button type="button" class="btn" style="padding:4px 8px;font-size:11px;background:#c0392b;color:#fff;display:inline-block;width:auto" onclick="deleteVehicleByRow('+v._row+',\''+placaSafe+'\')">&#128465;&#65039; Eliminar</button>'; tr.appendChild(td); }); }; window.editVehicleByRow=function(rowNum){ const v=state.vehAll.find(x=>x._row===rowNum); if(!v){alert('No se encontro el vehiculo.'); return;} _editingVehRow=rowNum; const set=(id,val)=>{const el=document.getElementById(id); if(el) el.value=(val==null?'':val);}; set('nvPlaca',v.placa); set('nvModelo',v.modelo||v.modelo_base); set('nvAno',v.ano); set('nvCombustible',v.combustible); set('nvCliente',v.chofer__empresa||v.chofer_empresa||v.cliente); set('nvRuc',v.ruc); set('nvDireccion',v.direccion); set('nvTelefono',v.telefono); set('nvDni',v.dni); set('nvMotor',v.motor); set('nvCaja',v.caja); set('nvVin',v.vin); const btn=document.querySelector('button[onclick="saveNewVehicle()"]'); if(btn){ btn.textContent='Guardar cambios'; btn.style.background='#f39c12'; btn.style.color='#0b0f17'; } const ph=document.getElementById('nvPlaca'); if(ph) ph.scrollIntoView({behavior:'smooth',block:'center'}); }; window.deleteVehicleByRow=async function(rowNum,placa){ if(state.role!=='dueno'){alert('Solo el dueno puede eliminar vehiculos.'); return;} if(!confirm('Eliminar el vehiculo '+placa+' ? Esta accion es irreversible.')) return; if(!state.cfg.url){alert('Configura la URL'); return;} try{ const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify({token:state.cfg.secret,action:'delete',target:'veh',rowNum:rowNum}),headers:{'Content-Type':'text/plain;charset=utf-8'}}); const data=await res.json(); if(!data.ok) throw new Error(data.error||'Error al eliminar'); const idx=state.vehAll.findIndex(v=>v._row===rowNum); if(idx>=0) state.vehAll.splice(idx,1); state.vehAll.forEach(v=>{ if(v._row>rowNum) v._row-=1; }); window.renderVehTable(); alert('Vehiculo eliminado: '+placa); }catch(e){alert('Error: '+e.message);} }; window.saveNewVehicle=async function(){ if(state.role!=='dueno'){alert('Solo el dueno puede modificar vehiculos.'); return;} const row={ placa:(document.getElementById('nvPlaca').value||'').toUpperCase().trim(), modelo:(document.getElementById('nvModelo').value||'').toUpperCase().trim(), ano:(document.getElementById('nvAno').value||'').toUpperCase().trim(), combustible:(document.getElementById('nvCombustible').value||'').toUpperCase().trim(), chofer__empresa:(document.getElementById('nvCliente').value||'').toUpperCase().trim(), ruc:(document.getElementById('nvRuc').value||'').toUpperCase().trim(), direccion:(document.getElementById('nvDireccion').value||'').toUpperCase().trim(), telefono:(document.getElementById('nvTelefono').value||'').toUpperCase().trim(), dni:(document.getElementById('nvDni').value||'').toUpperCase().trim(), motor:(document.getElementById('nvMotor').value||'').toUpperCase().trim(), caja:(document.getElementById('nvCaja').value||'').toUpperCase().trim(), vin:(document.getElementById('nvVin').value||'').toUpperCase().trim() }; if(!row.placa||!row.modelo){alert('Ingresa al menos placa y modelo.'); return;} if(!state.cfg.url){alert('Configura la URL'); return;} try{ let body; if(_editingVehRow){ body={token:state.cfg.secret,action:'update',target:'veh',rowNum:_editingVehRow,row:row}; }else{ if(state.vehAll.some(v=>(typeof normPlaca==='function'?normPlaca(v.placa):String(v.placa||'').toUpperCase().replace(/[^A-Z0-9]/g,''))===(typeof normPlaca==='function'?normPlaca(row.placa):String(row.placa||'').toUpperCase().replace(/[^A-Z0-9]/g,'')))){alert('La placa '+row.placa+' ya existe en la base cargada.'); return;} body={token:state.cfg.secret,action:'add',target:'veh',row:row}; } const res=await fetch(state.cfg.url,{method:'POST',body:JSON.stringify(body),headers:{'Content-Type':'text/plain;charset=utf-8'}}); const data=await res.json(); if(!data.ok) throw new Error(data.error||'Error al guardar vehiculo'); if(_editingVehRow){ const v=state.vehAll.find(x=>x._row===_editingVehRow); if(v) Object.assign(v,row); alert('Vehiculo actualizado: '+row.placa); }else{ const maxRow=state.vehAll.reduce((m,v)=>Math.max(m,v._row||0),1); row._row=maxRow+1; state.vehAll.unshift(row); alert('Vehiculo guardado: '+row.placa); } window.renderVehTable(); window.clearVehicleForm(); }catch(e){alert('Error: '+e.message);} }; window.clearVehicleForm=function(){ origClear(); _editingVehRow=null; const btn=document.querySelector('button[onclick="saveNewVehicle()"]'); if(btn){ btn.textContent='Guardar vehiculo'; btn.style.background=''; btn.style.color=''; } }; })();    
+// ===== Patch v6: estabilizar correlativo + botones en historial + abrir/imprimir desde historial =====
+(function(){
+  if(typeof resetProformaForm === 'function' && typeof nextProformaNum === 'function'){
+    const _origReset = resetProformaForm;
+    window.resetProformaForm = function(){
+      const prevInput = document.getElementById('pfPreviewNum');
+      const prevNum = prevInput ? prevInput.value : '';
+      _origReset.apply(this, arguments);
+      try{
+        const cur = nextProformaNum();
+        if(prevNum && prevInput && prevNum !== cur){
+          const saved = (state && state.proformas) ? state.proformas : [];
+          const usedNums = new Set(saved.map(p=>p && p.num).filter(Boolean));
+          if(!usedNums.has(prevNum)){
+            prevInput.value = prevNum;
+          }
+        }
+      }catch(e){}
+    };
+  }
+
+  if(typeof renderSearchPreview === 'function'){
+    const _origPreview = renderSearchPreview;
+    window.renderSearchPreview = function(doc, index){
+      const result = _origPreview.apply(this, arguments);
+      try{
+        const box = document.getElementById('histPreviewBox');
+        if(box && doc){
+          let bar = box.querySelector('.hist-actions-bar');
+          if(!bar){
+            bar = document.createElement('div');
+            bar.className = 'hist-actions-bar';
+            bar.style.cssText = 'display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
+            box.appendChild(bar);
+          }
+          bar.innerHTML = '';
+          const btnOpen = document.createElement('button');
+          btnOpen.className = 'btn nuevo-doc';
+          btnOpen.style.flex = '1';
+          btnOpen.textContent = 'Abrir proforma';
+          btnOpen.onclick = function(){ window.abrirProformaDesdeHistorial(index); };
+          const btnPrint = document.createElement('button');
+          btnPrint.className = 'btn ok';
+          btnPrint.style.flex = '1';
+          btnPrint.textContent = 'Imprimir';
+          btnPrint.onclick = function(){ window.imprimirProformaDesdeHistorial(index); };
+          bar.appendChild(btnOpen);
+          bar.appendChild(btnPrint);
+        }
+      }catch(e){ console.warn('hist actions:', e); }
+      return result;
+    };
+  }
+
+  window.abrirProformaDesdeHistorial = function(index){
+    try{
+      const docs = (state && state.searchDocs) ? state.searchDocs : [];
+      const doc = docs[parseInt(index,10)];
+      if(!doc){ alert('No se encontró el documento'); return; }
+      const num = doc.num || (doc.doc && doc.doc.num);
+      let pf = null;
+      if(num && state.proformas){
+        pf = state.proformas.find(p=>p && p.num===num);
+      }
+      if(pf && typeof openStoredProforma==='function'){
+        openStoredProforma(pf.num);
+      } else if(typeof buildPrintableProformaFromDoc==='function'){
+        const pf2 = buildPrintableProformaFromDoc(doc);
+        state.currentProforma = pf2;
+        if(typeof renderPrintFromProforma==='function') renderPrintFromProforma(pf2);
+        document.getElementById('app').style.display='none';
+        document.getElementById('printArea').style.display='block';
+        if(typeof renderPrintControls==='function') renderPrintControls();
+        window.scrollTo(0,0);
+      } else {
+        alert('No se pudo abrir la proforma');
+      }
+    }catch(e){ console.error(e); alert('Error al abrir: '+e.message); }
+  };
+
+  window.imprimirProformaDesdeHistorial = function(index){
+    try{
+      window.abrirProformaDesdeHistorial(index);
+      setTimeout(function(){ window.print(); }, 400);
+    }catch(e){ console.error(e); }
+  };
+})();
+</script>
 
 
 </body>
