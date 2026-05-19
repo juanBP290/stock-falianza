@@ -794,6 +794,15 @@ function matchesFilters(r, ignoreMin){
       if(m!==fMinVal) return false;
     }
   }
+  // Filtro por Rotación
+  const fr = $('#fRot').value;
+  if(fr){
+    const v = typeof r.rotacion === 'number' ? r.rotacion : null;
+    if(fr === 'sin'   && !(v === 0 || v == null)) return false;
+    if(fr === 'baja'  && !(v >= 1 && v <= 4))     return false;
+    if(fr === 'media' && !(v >= 5 && v <= 9))     return false;
+    if(fr === 'alta'  && !(v >= 10))              return false;
+  }
   // Búsqueda por texto
   if(groups.length || exc.length){
     const t = rowText(r);
@@ -1600,7 +1609,7 @@ document.querySelectorAll('thead th[data-k]').forEach(th=>{
     apply();
   });
 });
-['q','fMarca','fProd','fProv','fStk','fMin','pageSize'].forEach(id=>{
+['q','fMarca','fProd','fProv','fStk','fMin','fRot','pageSize'].forEach(id=>{
   const el=$('#'+id); if(el) el.addEventListener('input',apply);
 });
 $('#btnClearAll').onclick = ()=>{
@@ -1610,6 +1619,7 @@ $('#btnClearAll').onclick = ()=>{
   $('#fProv').value = '';
   $('#fStk').value = '';
   $('#fMin').value = '';
+  $('#fRot').value = '';
   apply();
   toast('✓ Filtros limpiados');
 };
