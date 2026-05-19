@@ -609,7 +609,12 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
       var btn = document.getElementById("evSave");
       try {
         btn.disabled = true; btn.textContent = "Guardando...";
-        var data = await window.callAS({ action: "update", target: "veh", rowNum: cur._row, row: row });
+        var res = await fetch(window.state.cfg.url, {
+  method: "POST",
+  body: JSON.stringify({ token: window.state.cfg.secret, action: "update", target: "veh", rowNum: cur._row, row: row }),
+  headers: { "Content-Type": "text/plain;charset=utf-8" }
+});
+var data = await res.json();
         if (!data || !data.ok) throw new Error((data && data.error) || "Error al actualizar");
         Object.keys(row).forEach(function(k){ cur[k] = row[k]; });
         if (typeof window.renderVehTable === "function") window.renderVehTable();
