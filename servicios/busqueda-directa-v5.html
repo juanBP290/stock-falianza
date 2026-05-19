@@ -568,7 +568,7 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
       document.getElementById("evOverlay").addEventListener("click", function(ev){ if (ev.target.id === "evOverlay") closeEditVehicle(); });
     }
     function findVehByPlaca(placa){
-      var list = (window.state && window.state.vehAll) || [];
+      var list = window.__vehAllCache || (window.state && window.state.vehAll) || [];
       var P = (placa||"").toString().replace(/[^A-Za-z0-9]/g,"").toUpperCase();
       return list.find(function(v){ return (v.placa||"").toString().replace(/[^A-Za-z0-9]/g,"").toUpperCase() === P; });
     }
@@ -576,7 +576,7 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     function openEditVehicle(placaOrRow){
       var v = null;
       if (typeof placaOrRow === "number") {
-        v = ((window.state && window.state.vehAll) || []).find(function(x){ return x._row === placaOrRow; });
+        v = (window.__vehAllCache || (window.state && window.state.vehAll) || []).find(function(x){ return x._row === placaOrRow; });
       } else {
         v = findVehByPlaca(placaOrRow);
       }
@@ -625,7 +625,7 @@ body{margin:0;background:#0b0f17;color:#e5e7eb;font-family:"Segoe UI",sans-serif
     function decorateTable(){ var box = document.getElementById("vehTableBox"); if (!box) return; var oldTh = box.querySelector("thead .veh-edit-col"); if (oldTh) oldTh.remove(); box.querySelectorAll("tbody .veh-edit-cell").forEach(function(c){ c.remove(); }); var hostCard = box.closest(".card") || box.parentElement; if (hostCard && !document.getElementById("vehEditBar")) { var bar = document.createElement("div"); bar.id = "vehEditBar"; bar.style.cssText = "display:flex;align-items:center;gap:10px;margin:8px 0;padding:8px 12px;background:#1f2937;border:1px solid #374151;border-radius:8px;color:#e5e7eb;font-size:13px"; var ebtn = document.createElement("button"); ebtn.type = "button"; ebtn.id = "btnEditarVehiculo"; ebtn.textContent = "✏️ Editar"; ebtn.style.cssText = "background:#3b82f6;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold"; ebtn.onclick = function(){ var p = window.__evSelected; if (!p) { alert("Selecciona primero un vehiculo haciendo click en su fila."); return; } window.openEditVehicle(p); }; var hint = document.createElement("span"); hint.id = "vehEditHint"; hint.textContent = "Selecciona una fila y pulsa Editar."; bar.appendChild(ebtn); bar.appendChild(hint); hostCard.insertBefore(bar, box); } var rows = box.querySelectorAll("tbody tr"); rows.forEach(function(tr){ if (tr.__evWired) return; tr.__evWired = true; tr.style.cursor = "pointer"; tr.title = "Click para seleccionar este vehiculo"; tr.addEventListener("click", function(){ var placaCell = tr.querySelector(".placa-cell") || tr.children[0]; var placa = placaCell ? placaCell.textContent.replace(/[^A-Za-z0-9]/g,"").toUpperCase() : ""; if (!placa) return; window.__evSelected = placa; box.querySelectorAll("tbody tr.veh-row-selected").forEach(function(r){ r.classList.remove("veh-row-selected"); r.style.background=""; }); tr.classList.add("veh-row-selected"); tr.style.background = "#1e3a5f"; var h = document.getElementById("vehEditHint"); if (h) h.textContent = "Seleccionado: " + placa; }); }); } window.decorateVehTable = decorateTable;
     var originalRender = window.renderVehTable;
     window.renderVehTable = function(){
-      var ret = originalRender.apply(this, arguments);
+      var ret = originalRender.apply(this, arguments); try { if (typeof window.ensureVehRowsLoaded === "function") { window.ensureVehRowsLoaded().then(function(rows){ window.__vehAllCache = rows; }); } } catch(_e){}
       try { decorateTable(); } catch (e) { console.warn("decorate err", e); }
       return ret;
     };
